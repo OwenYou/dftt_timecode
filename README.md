@@ -1,3 +1,190 @@
-## About
+## 1. 简介 Introduction
 
-Timecode library for film and TV industry, supports HFR and a bunch of cool features
+为影视行业设计的Python时码库，支持HFR高帧率以及其他丰富的功能。
+
+Python timecode library for film and TV industry, supports HFR and a bunch of cool features.
+
+### 1.1 主要功能 Main Features
+
+- 支持多种时码格式输入，如SMPTE、SRT、DLP（Cine Canvas）、FFMPEG、FCPX、帧号、现实时间等。
+
+  Multiple timecode format support, including SMPTE, SRT, DLP(Cine Canvas), FFMPEG, FCPX, frame count, time, etc.
+
+- 支持高帧率，目前支持0.01-999.99fps范围内的帧率。
+
+  High frame rate support, currently support frame range from 0.01 to 999.99fps.
+
+- 支持严格的丢帧/非丢帧SMPTE格式。
+
+  Strictly support SMPTE DF/NDF format.
+
+- 目前支持-99到99小时时间范围。
+
+  Currently support time range from -99 to 99 hours.
+
+- 支持**严格**模式，在该模式下时码会在0-24小时范围内循环，任意超出该范围的时码会自动转换至范围内。
+
+  **Strict** Mode support, timecode will circulate from 0 to 24 hours, any timecode outside this range will be automaticly converted to a timecode inside it.
+
+- 内部以高精度时间戳进行存储和计算，各类FPS转换、时码格式转换输出都能保持最高精度。
+
+  Uses high precision time stamp inside for storage and calculation, any FPS conversion or format conversion output can maintain their highest precision.
+
+- 常用运算符支持，包括时码与时码、时码与数字的各类加减乘除、比较运算。
+
+  Common operator support, including addtion, subtraction, multiplication, division and comparison operator between two timecode object or a timecode object and a number.
+
+## 2. 如何安装 How to install
+
+```python
+python pip install dftt_timecode
+```
+
+### 2.1 包依赖 Package dependency
+
+- fractions
+- logging
+- math
+- functools
+- re
+
+## 3. 使用方法说明 How to use 
+
+### 3.1 导入 Import
+
+```python
+from dftt_timecode import DfttTimecode
+```
+
+### 3.2 新建时码类对象 Create timecode objects
+
+```Python
+a = DfttTimecode('01:00:00:00', 'auto', fps=24, drop_frame=False, strict=True)
+#以SMPTE非丢帧时码新建对象 Create object using SMPTE NDF
+a = DfttTimecode('1000f', 'auto', fps=119.88, drop_frame=True, strict=True)
+#以帧数新建对象 Create object using frame count
+a = DfttTimecode('3600.0s', 'auto', fps=Fraction(60000,1001), drop_frame=True, strict=True)
+#以时间秒新建对象 Create object using time
+a = DfttTimecode(-1200, 'auto', fps=23.976, drop_frame=False, strict=False)
+#以int帧数新建对象 Create object using int frame count
+```
+
+对DfttTimecode()相关参数的详细说明，请查阅`4.1 DfttTimecode()参数说明`。
+
+For detailed parameters descriptions of DfttTimecode(), please refer to chapter `4.1 Parameters Descriptions of DfttTimecode()`.
+
+### 3.3 操作时码类对象 Operate DfttTimecode objects
+
+```python
+a = DfttTimecode('01:00:00:00', 'auto', fps=24, drop_frame=False, strict=True)
+assert a.type == 'smpte'
+assert a.fps == 24
+assert a.framecount == 86400
+assert a.is_drop_frame == False
+assert a.is_strict == True
+assert a.timecode_output('smpte',output_part=0) == '01:00:00:00'
+assert a.timecode_output('srt',output_part=1) == '01'
+
+a = DfttTimecode('25:00:01:103', 'auto', fps=120, drop_frame=False, strict=False)
+a.set_fps(24)
+assert a.fps == 24
+assert a.timecode_output('smpte') == '25:00:01:21'
+a.set_strict(strict=True)
+assert a.timecode_output('smpte') == '01:00:01:21'
+a.set_strict(strict=False)
+assert a.is_strict == False
+```
+对时码类对象操作的详细说明，请查阅`4.2 时码类对象操作说明`。
+
+For detailed descriptions of DfttTimecode objects' operations, please refer to chapter `4.2 Descriptions of DfttTimecode class operations`.
+
+### 3.4 时码类运算符 Operators of DfttTimecode class
+
+对时码类运算符的详细说明，请查阅`4.3 时码类运算符说明`
+
+For detailed descriptions of DfttTimecode's operators, please refer to chapter `4.3 Descriptions of DfttTimecode class operators`.
+
+## 4 参数详细说明 Detailed Parameters Descriptions
+
+### 4.1 DfttTimecode()参数说明 Parameters Descriptions of DfttTimecode()
+
+#### 4.1.1 参数一览 General Descriptions
+
+```python
+a = DfttTimecode(timecode_value, timecode_type, fps, drop_frame, strict)
+```
+
+- **`timecode_value`** 是时码对象的时码值，可以是`str`、`int`、`float`、`tuple`、`list`、`Fraction`类型。
+
+  **`timecode_value`** is the value of a timecode, it can be a `str`, `int`, `float`, `tuple`, `list` or a `Fraction`.
+
+- **`timecode_type`** 是时码对象的类型，是`str`类型，目前支持的时码类型包括`auto`、 `smpte`、 `srt`、 `ffmpeg`、 `fcpx`、 `frame`、 `time`。
+
+  **`timecode_type`** must be a `str`, currently supported timecode types include `auto`, `smpte`, `srt`, `ffmpeg`, `fcpx`, `frame`, `time`.
+
+- **`fps`** 是时码对象的帧率，可以是`int`、`float`、`Fraction`类型。
+
+  **`fps`** is the frame rate of the timecode object, can be a `int`, `float` or a `Fraction`.
+
+- **`drop_frame`** 是时码对象的丢帧设置，是`bool`类型，只有当帧率存在丢帧格式时，这一设置才会生效，否则会强制将丢帧设为`False`。**`drop_frame `** 的默认值是`False`。
+
+  **`drop_frame`** must be a `bool`, a timecode object can only be drop-frameable under spcific frame rate settings, if not so, **`drop_frame`** will be forced to `False`. The default value of **`drop_frame`** is `False`.
+
+- **`strict`** 为时码对象设置严格模式，是`bool`类型。设为`True`后，负值和超过24小时的时码都将被转换为0-24小时范围内的值，例如`25:00:00:00`将被转换为`01:00:00:00`, `-01:00:00:00`将被转换为`23:00:00:00`。
+
+  **`strict`** will set strict mode for a timecode object, it must be a `bool`. When set to `True`, negative timecode value and timecode value over 24 hours will be converted to a value inside range 0 to 24 hours. For example, 25:00:00:00 will be converted to 01:00:00:00, -01:00:00:00 will be converted to 23:00:00:00.
+#### 4.1.2 timecode_value
+
+#### 4.1.3 timecode_type
+
+#### 4.1.4 fps
+
+#### 4.1.5 drop_frame
+
+#### 4.1.6 strict
+
+#### 4.1.7 补充说明 Additional info
+
+### 4.2 时码类对象操作说明 Descriptions of DfttTimecode class operations
+
+#### 4.2.1 self.type
+
+#### 4.2.2 self.fps
+
+#### 4.2.3 self.framecount
+
+#### 4.2.4 self.is_drop_frame
+
+#### 4.2.5 self.is_strict
+
+#### 4.2.6 self.set_fps()
+
+#### 4.2.7 self.set_type()
+
+#### 4.2.8 self.set_strict()
+
+### 4.3 时码类运算符说明 Descriptions of DfttTimecode class operators
+
+#### 4.3.1 \_\_repr\_\_()
+
+#### 4.3.2 +
+
+#### 4.3.3 -
+
+#### 4.3.4 \*
+
+#### 4.3.5 /
+
+#### 4.3.6 =
+
+#### 4.3.7 \!=
+
+#### 4.3.8 >
+
+#### 4.3.9 >=
+
+#### 4.3.10 <
+
+#### 4.3.11 <=
+
+
