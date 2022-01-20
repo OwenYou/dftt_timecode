@@ -1,3 +1,10 @@
+# dftt_timecode
+
+[![pypi](https://img.shields.io/badge/pypi-0.1.0-brightgreen)](https://pypi.org/project/dftt-timecode/)
+[![python](https://img.shields.io/badge/python-3-blue)]()
+[![GitHub license](https://img.shields.io/badge/license-LGPL2.1-green)](https://github.com/OwenYou/dftt_timecode/blob/main/LICENSE)
+
+
 ## 1. 简介 Introduction
 
 为影视行业设计的Python时码库，支持HFR高帧率以及其他丰富的功能。
@@ -135,7 +142,36 @@ a = DfttTimecode(timecode_value, timecode_type, fps, drop_frame, strict)
   **`strict`** will set strict mode for a timecode object, it must be a `bool`. When set to `True`, negative timecode value and timecode value over 24 hours will be converted to a value inside range 0 to 24 hours. For example, 25:00:00:00 will be converted to 01:00:00:00, -01:00:00:00 will be converted to 23:00:00:00.
 #### 4.1.2 timecode_value
 
+**`timecode_value`** 决定了时码对象的时间值，DfttTimecode支持以多种类型的数据初始化时间值。下面详细列出了各个数据类型对应的（可选）初始化方式：
+
+**`timecode_value`** determines the actual time of a timecode object. DfttTimecode supports initialize time by different data types. The following table lists different data types and their supported initialization methods.
+
+| 数据类型 Data type |     支持的初始化方式 Supported initialization methods     |
+| :----------------: | :-------------------------------------------------------: |
+|       `str`        | `auto`, `smpte`, `srt`, `ffmpeg`, `fcpx`, `frame`, `time` |
+|       `int`        |                  `auto`, `frame`, `time`                  |
+|      `float`       |                      `auto`, `time`                       |
+|      `tuple`       |                      `auto`, `time`                       |
+|       `list`       |                      `auto`, `time`                       |
+|     `fraction`     |                      `auto`, `time`                       |
+
+目前，DfttTimecode不支持以小数为单位的帧计数方式。
+
+Currently, DfttTimecode does not support frame count value in decimals.
+
 #### 4.1.3 timecode_type
+
+**`timecode_type`** 决定了时码对象的类型，DfttTimecode支持自动判断类型，也支持手动指定类型。在部分场景，如输入值是`int`类时，手动指定类型可以有效地区分以帧计数初始化时码和以时间初始化时码这两种行为。
+
+下表列出了一系列样例timecode_value输入和他们在auto模式下对应的时码类型：
+
+| timecode_value  | auto模式下的type<br />Type under auto mode |                      备注<br />Comment                       |
+| :-------------: | :----------------------------------------: | :----------------------------------------------------------: |
+| `'01:00:00:00'` |                  `smpte`                   | **`drop_frame`** 将自动设为`False `<br />**`drop_frame`** will be set to `False` |
+| `'01:00:00;00'` |                  `smpte`                   | **`drop_frame`** 将自动设为`True`<br />**`drop_frame`** will be set to `True` |
+|                 |                                            |                                                              |
+
+
 
 #### 4.1.4 fps
 
