@@ -1,6 +1,6 @@
 # dftt_timecode
 
-[![pypi](https://img.shields.io/badge/pypi-0.1.0-brightgreen)](https://pypi.org/project/dftt-timecode/)
+[![pypi](https://img.shields.io/badge/pypi-0.0.9-brightgreen)](https://pypi.org/project/dftt-timecode/)
 [![python](https://img.shields.io/badge/python-3-blue)]()
 [![GitHub license](https://img.shields.io/badge/license-LGPL2.1-green)](https://github.com/OwenYou/dftt_timecode/blob/main/LICENSE)
 
@@ -142,18 +142,18 @@ a = DfttTimecode(timecode_value, timecode_type, fps, drop_frame, strict)
   **`strict`** will set strict mode for a timecode object, it must be a `bool`. When set to `True`, negative timecode value and timecode value over 24 hours will be converted to a value inside range 0 to 24 hours. For example, 25:00:00:00 will be converted to 01:00:00:00, -01:00:00:00 will be converted to 23:00:00:00.
 #### 4.1.2 timecode_value
 
-**`timecode_value`** 决定了时码对象的时间值，DfttTimecode支持以多种类型的数据初始化时间值。下面详细列出了各个数据类型对应的（可选）初始化方式：
+**`timecode_value`** 决定了时码对象的时间值，DfttTimecode支持以多种类型的数据初始化时间值，且都支持负数。下面详细列出了各个数据类型对应的（可选）初始化方式：
 
-**`timecode_value`** determines the actual time of a timecode object. DfttTimecode supports initialize time by different data types. The following table lists different data types and their supported initialization methods.
+**`timecode_value`** determines the actual time of a timecode object. DfttTimecode supports initialize time by different data types, including negative numbers. The following table lists different data types and their supported initialization methods.
 
-| 数据类型 Data type |     支持的初始化方式 Supported initialization methods     |
-| :----------------: | :-------------------------------------------------------: |
-|       `str`        | `auto`, `smpte`, `srt`, `ffmpeg`, `fcpx`, `frame`, `time` |
-|       `int`        |                  `auto`, `frame`, `time`                  |
-|      `float`       |                      `auto`, `time`                       |
-|      `tuple`       |                      `auto`, `time`                       |
-|       `list`       |                      `auto`, `time`                       |
-|     `fraction`     |                      `auto`, `time`                       |
+| 数据类型<br />Data type |  支持的初始化方式<br />Supported initialization methods   |
+| :---------------------: | :-------------------------------------------------------: |
+|          `str`          | `auto`, `smpte`, `srt`, `ffmpeg`, `fcpx`, `frame`, `time` |
+|          `int`          |                  `auto`, `frame`, `time`                  |
+|         `float`         |                      `auto`, `time`                       |
+|         `tuple`         |                      `auto`, `time`                       |
+|         `list`          |                      `auto`, `time`                       |
+|       `fraction`        |                      `auto`, `time`                       |
 
 目前，DfttTimecode不支持以小数为单位的帧计数方式。
 
@@ -165,21 +165,57 @@ Currently, DfttTimecode does not support frame count value in decimals.
 
 下表列出了一系列样例timecode_value输入和他们在auto模式下对应的时码类型：
 
-| timecode_value  | auto模式下的type<br />Type under auto mode |                      备注<br />Comment                       |
-| :-------------: | :----------------------------------------: | :----------------------------------------------------------: |
-| `'01:00:00:00'` |                  `smpte`                   | **`drop_frame`** 将自动设为`False `<br />**`drop_frame`** will be set to `False` |
-| `'01:00:00;00'` |                  `smpte`                   | **`drop_frame`** 将自动设为`True`<br />**`drop_frame`** will be set to `True` |
-|                 |                                            |                                                              |
-
-
+|          timecode_value           | auto模式下的type<br />Type under auto mode |                      备注<br />Comment                       |
+| :-------------------------------: | :----------------------------------------: | :----------------------------------------------------------: |
+|          `'01:00:00:00'`          |                  `smpte`                   | **`drop_frame`** 将自动设为`False `<br />**`drop_frame`** will be set to `False` |
+| `'01:00:00;00'`, `'01:00:00;000'` |                  `smpte`                   | **`drop_frame`** 将自动设为`True`<br />**`drop_frame`** will be set to `True` |
+|         `'01:00:00:000'`          |                  `smpte`                   | 高帧率`smpte`时码，形式与`dlp`相近，如果输入值为`dlp`请强制指认**`timecode_type`** 为`dlp`<br />High frame rate timecode, this format is similar to `dlp` timecode, so if your input timecode is actually in `dlp` format, please force **`timecode_type`** to `dlp` |
+|         `'01:00:00,000'`          |                   `srt`                    | 最后三位表示毫秒<br />The last three digits represents milliseconds |
+|          `'01:00:00.00'`          |                  `ffmpeg`                  | 最后两位表示秒的小数部分<br />The last two digits represents the decimal part of a second |
+|        `'1/24s'`, `'1/24'`        |                   `fcpx`                   |             可以省略“s”<br />*s* can be omitted              |
+|        `'1000f`, `'1000'`         |                  `frame`                   |             可以省略“f”<br />*f* can be omitted              |
+| `’1000s'`,`'1000.0'`,`'1000.0s'`  |                   `time`                   |             可以省略“s”<br />*s* can be omitted              |
+|              `1000`               |                  `frame`                   | `int` 数据会自动被认定为`frame`类<br />`int` data will be considered as a `frame` type |
+|             `1000.0`              |                   `time`                   | `float` 数据会自动被认定为`time`类<br />`float` data will be considered as a `time` type |
+|           [1000, 2000]            |                   `time`                   | 前者会成为`Fraction`的分子，后者成为分母<br />the former part will become the numerator of a `Fraction`, and the latter will become the dominator |
+|           (1000, 2000)            |                   `time`                   | 前者会成为`Fraction`的分子，后者成为分母<br />the former part will become the numerator of a `Fraction`, and the latter will become the dominator |
+|       Fraction(1000, 2000)        |                   `time`                   | 也可以直接传入一个`Fraction`对象<br />Just pass a `Fration` object is also acceptable |
 
 #### 4.1.4 fps
 
+**`fps`** 是时码对象的帧率，可以是`int`、`float`、`Fraction`类型。
+
+**`fps`** is the frame rate of the timecode object, can be a `int`, `float` or a `Fraction`.
+
 #### 4.1.5 drop_frame
+
+**`drop_frame`** 是时码对象的丢帧设置，是`bool`类型，只有当帧率存在丢帧格式时，这一设置才会生效，否则会强制将丢帧设为`False`。**`drop_frame `** 的默认值是`False`。
+
+**`drop_frame`** must be a `bool`, a timecode object can only be drop-frameable under spcific frame rate settings, if not so, **`drop_frame`** will be forced to `False`. The default value of **`drop_frame`** is `False`.
+
+当**`timecode_type`** 为`auto`时，会根据输入数据的分隔符自动设置**`drop_frame`** 。
+
+When  **`timecode_type`** is set to `auto`, **`drop_frame`** will be auto set according to the separator of the input data.
+
+当**`timecode_value`** 在当前**`drop_frame`** 设置下不合法时（仅当**`timecode_type`** 为`smpte`时会有这种情况），将会报错。
+
+When **`timecode_value`** is illegal under current **`drop_frame`** setting (this should only happend when **`timecode_type`** is `smpte`), there will be an error.
 
 #### 4.1.6 strict
 
+**`strict`** 为时码对象设置严格模式，是`bool`类型。设为`True`后，负值和超过24小时的时码都将被转换为0-24小时范围内的值，例如`25:00:00:00`将被转换为`01:00:00:00`, `-01:00:00:00`将被转换为`23:00:00:00`。
+
+**`strict`** will set strict mode for a timecode object, it must be a `bool`. When set to `True`, negative timecode value and timecode value over 24 hours will be converted to a value inside range 0 to 24 hours. For example, 25:00:00:00 will be converted to 01:00:00:00, -01:00:00:00 will be converted to 23:00:00:00.
+
+特别地，对于丢帧时码，由于严格模式的规则是不出现超过24:00:00:00的时码（实际上这个值会被转为00:00:00:00）。因此，在该模式下可容纳的总帧数会小于相同帧率的非丢帧时码。
+
+In particular, as for a dropframe timecode, because the rule of strict mode do not allow there to be a timecode value greater than 24:00:00:00 (actually this value will be converted to 00:00:00:00). So, under strict mode, the maximum frame count number a dropframe timecode can reach will be less than a timecode with the same framerate but set to non-dropframe mode.
+
 #### 4.1.7 补充说明 Additional info
+
+暂无。
+
+Currently this part is intentionally remained blank.
 
 ### 4.2 时码类对象操作说明 Descriptions of DfttTimecode class operations
 
@@ -222,5 +258,4 @@ Currently, DfttTimecode does not support frame count value in decimals.
 #### 4.3.10 <
 
 #### 4.3.11 <=
-
 
