@@ -177,9 +177,9 @@ Currently, DfttTimecode does not support frame count value in decimals.
 | `’1000s'`,`'1000.0'`,`'1000.0s'`  |                   `time`                   |             可以省略“s”<br />*s* can be omitted              |
 |              `1000`               |                  `frame`                   | `int` 数据会自动被认定为`frame`类<br />`int` data will be considered as a `frame` type |
 |             `1000.0`              |                   `time`                   | `float` 数据会自动被认定为`time`类<br />`float` data will be considered as a `time` type |
-|           [1000, 2000]            |                   `time`                   | 前者会成为`Fraction`的分子，后者成为分母<br />the former part will become the numerator of a `Fraction`, and the latter will become the dominator |
-|           (1000, 2000)            |                   `time`                   | 前者会成为`Fraction`的分子，后者成为分母<br />the former part will become the numerator of a `Fraction`, and the latter will become the dominator |
-|       Fraction(1000, 2000)        |                   `time`                   | 也可以直接传入一个`Fraction`对象<br />Just pass a `Fration` object is also acceptable |
+|          `[1000, 2000]`           |                   `time`                   | 前者会成为`Fraction`的分子，后者成为分母<br />the former part will become the numerator of a `Fraction`, and the latter will become the dominator |
+|          `(1000, 2000)`           |                   `time`                   | 前者会成为`Fraction`的分子，后者成为分母<br />the former part will become the numerator of a `Fraction`, and the latter will become the dominator |
+|      `Fraction(1000, 2000)`       |                   `time`                   | 也可以直接传入一个`Fraction`对象<br />Just pass a `Fration` object is also acceptable |
 
 #### 4.1.4 fps
 
@@ -258,4 +258,5 @@ Currently this part is intentionally remained blank.
 #### 4.3.10 <
 
 #### 4.3.11 <=
+
 
