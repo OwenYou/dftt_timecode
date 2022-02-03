@@ -187,7 +187,7 @@ Currently, DfttTimecode does not support frame count value in decimals.
 
 **`timecode_type`** determines the timecode type of a timecode object. DfttTimecode supports auto-configure timecode type as well as manual assign a timecode type. Under some circumstances, for example, the input data is `int`, manual assign a timecode type is a sufficient way to clarify whether the input is intended to be a frame or a time value.
 
-下表列出了一系列样例**`timecode_value`** 输入和他们在`'auto'`模式下对应的时码类型：
+下表列出了一系列样例 **`timecode_value`** 输入和他们在`'auto'`模式下对应的时码类型：
 
 The following sheet gives a list of example **`timecode_value`** input and their corresponding timecode type under `'auto'` mode.
 
@@ -195,7 +195,7 @@ The following sheet gives a list of example **`timecode_value`** input and their
 | :-------------------------------: | :----------------------------------------: | :----------------------------------------------------------: |
 |          `'01:00:00:00'`          |                  `smpte`                   | **`drop_frame`** 将自动设为`False `<br />**`drop_frame`** will be set to `False` |
 | `'01:00:00;00'`, `'01:00:00;000'` |                  `smpte`                   | **`drop_frame`** 将自动设为`True`<br />**`drop_frame`** will be set to `True` |
-|         `'01:00:00:000'`          |                  `smpte`                   | 高帧率`smpte`时码，形式与`dlp`相近，如果输入值为`dlp`请强制指认**`timecode_type`** 为`dlp`<br />High frame rate timecode, this format is similar to `dlp` timecode, so if your input timecode is actually in `dlp` format, please force **`timecode_type`** to `dlp` |
+|         `'01:00:00:000'`          |                  `smpte`                   | 高帧率`smpte`时码，形式与`dlp`相近，如果输入值为`dlp`请强制指认 **`timecode_type`** 为`dlp`<br />High frame rate timecode, this format is similar to `dlp` timecode, so if your input timecode is actually in `dlp` format, please force **`timecode_type`** to `dlp` |
 |         `'01:00:00,000'`          |                   `srt`                    | 最后三位表示毫秒<br />The last three digits represent milliseconds |
 |          `'01:00:00.00'`          |                  `ffmpeg`                  | 最后两位表示秒的小数部分<br />The last two digits represent the decimal part of a second |
 |        `'1/24s'`, `'1/24'`        |                   `fcpx`                   |             可以省略“s”<br />*s* can be omitted              |
@@ -223,11 +223,11 @@ If the input timecode value does not match the given timecode type, an error wil
 
 **`drop_frame`** must be a `bool`, a timecode object can only be drop-frameable under specific frame rate settings, if not so, **`drop_frame`** will be forced to `False`. The default value of **`drop_frame`** is `False`.
 
-当**`timecode_type`** 为`auto`时，会根据输入数据的分隔符自动设置**`drop_frame`** 。
+当 **`timecode_type`** 为`auto`时，会根据输入数据的分隔符自动设置 **`drop_frame`** 。
 
 When  **`timecode_type`** is set to `auto`, **`drop_frame`** will be auto-set according to the separator of the input data.
 
-当**`timecode_value`** 在当前**`drop_frame`** 设置下不合法时（仅当**`timecode_type`** 为`smpte`时会有这种情况），将会报错。
+当 **`timecode_value`** 在当前 **`drop_frame`** 设置下不合法时（仅当 **`timecode_type`** 为`smpte`时会有这种情况），将会报错。
 
 When **`timecode_value`** is illegal under the current **`drop_frame`** setting (this should only happen when **`timecode_type`** is `smpte`), there will be an error.
 
@@ -256,7 +256,7 @@ a = DfttTimecode('01:00:00:00', 'auto', fps=24, drop_frame=False, strict=True)
 assert a.type == 'smpte'
 ```
 
-返回DfttTimecode对象的**`timecode_type`** 属性，返回类型为`str`。
+返回DfttTimecode对象的 **`timecode_type`** 属性，返回类型为`str`。
 
 Returns the **`timecode_type`** attribute of a DfttTimecode object, returned data type is `str`.
 
@@ -267,7 +267,7 @@ a = DfttTimecode('01:00:00:00', 'auto', fps=24, drop_frame=False, strict=True)
 assert a.fps == 24
 ```
 
-返回DfttTimecode对象的**`fps`** 属性，返回类型取决于设置fps所用的变量类型。
+返回DfttTimecode对象的 **`fps`** 属性，返回类型取决于设置fps所用的变量类型。
 
 Returns the **`fps`** attribute of a DfttTimecode object, returned data type is determined by the data type used to set the **`fps`** attribute.
 
@@ -300,7 +300,7 @@ a = DfttTimecode('01:00:00:00', 'auto', fps=24, drop_frame=False, strict=True)
 assert a.is_drop_frame == False
 ```
 
-返回DfttTimecode对象的**`drop_frame`** 属性，返回类型为`bool`.
+返回DfttTimecode对象的 **`drop_frame`** 属性，返回类型为`bool`.
 
 Returns the **`drop_frame`** attribute of a DfttTimecode object, returned data type is `bool`.
 
@@ -311,7 +311,7 @@ a = DfttTimecode('01:00:00:00', 'auto', fps=24, drop_frame=False, strict=True)
 assert a.is_strict == True
 ```
 
-返回DfttTimecode对象的**`strict`** 属性，返回类型为`bool`.
+返回DfttTimecode对象的 **`strict`** 属性，返回类型为`bool`.
 
 Returns the **`strict`** attribute of a DfttTimecode object, returned data type is `bool`.
 
@@ -328,7 +328,7 @@ assert a.timecode_output('smpte') == '01:00:00:100'
 
 This function will change the frame rate of a DfttTimecode object, you can choose whether or not to round the timecode value while changing the frame rate.
 
-`self.set_fps()`函数共有两个参数，分别是**`dest_fps`** 和**`rounding`**。
+`self.set_fps()`函数共有两个参数，分别是 **`dest_fps`** 和 **`rounding`** 。
 
 There are two parameters of `self.set_fps()`, they are **`dest_fps`** and **`rounding`**.
 
@@ -364,7 +364,7 @@ assert a.timecode_output('srt') == '01:00:00,125'
 
 This function will change the timecode type of a DfttTimecode object, you can choose whether or not to round the timecode value while changing the timecode type.
 
-`self.set_type()`函数共有两个参数，分别是**`dest_type`** 和**`rounding`**。
+`self.set_type()`函数共有两个参数，分别是 **`dest_type`** 和 **`rounding`** 。
 
 `self.set_type()` has two parameters, they are **`dest_type`** and **`rounding`**  .
 
@@ -399,7 +399,7 @@ assert a.is_strict == False
 
 This function will change the strict mode bool value of a DfttTimecode object.
 
-`self.set_strict()` 只有一个参数，即**`strict`** 。**`strict`** 的类型是`bool`，默认值为`True`。
+`self.set_strict()` 只有一个参数，即 **`strict`** 。**`strict`** 的类型是`bool`，默认值为`True`。
 
 `self.set_strict()` has one parameter, which is **`strict`**. The data type of **`strict`** is `bool`, the default value of **`strict`** is `Ture`. 
 
@@ -419,7 +419,7 @@ assert a.timecode_output('srt', output_part=4) == '208'
 
 This function will return the timecode value of a DfttTimecode object in the given timecode type and partition number format, the returned data type is `str`.
 
-`self.timecode_output()` 有两个参数，分别是**`dest_type`** 和**`output_part`** 。
+`self.timecode_output()` 有两个参数，分别是 **`dest_type`** 和 **`output_part`** 。
 
 `self.timecode_output()` has two parameters, they are **`dest_type`** and **`output_part`** .
 
