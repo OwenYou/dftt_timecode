@@ -87,7 +87,7 @@ class DfttTimecode:
                 frame_index = ff + self.__nominal_fps * (ss + mm * 60 + hh * 3600)
             else:
                 drop_per_min = self.__nominal_fps / 30 * 2
-                if mm % 10 != 0 and ff in (0, drop_per_min - 1):  # 检查是否有DF下不合法的帧号
+                if mm % 10 != 0 and ss == 0 and ff in (0, drop_per_min - 1):  # 检查是否有DF下不合法的帧号
                     logging.error(
                                 'Timecode.__init__.smpte: This timecode is illegal under given params, check your input!')
                     raise DFTTTimecodeValueError
