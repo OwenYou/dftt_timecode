@@ -577,9 +577,9 @@ When performing a comparison between two DfttTimecode objects, a comparison of t
 
 #### 4.3.13 `float(self)`
 
-返回 `self.timestamp` 的值.参考[self.timestamp](#-4.2.4-self.timestamp)
+返回 `self.timestamp` 的值.参考[self.timestamp](#424-selftimestamp)
 
-Return value of `self.timestamp`.Reference to [self.timestamp](#-4.2.4-self.timestamp) 
+Return value of `self.timestamp`.Reference to [self.timestamp](#424-selftimestamp) 
 
 ```python
 tc_a = DfttTimecode('01:00:00:00', 'auto', fps=24, drop_frame=False, strict=True)
@@ -589,9 +589,9 @@ float(tc_a)
 
 #### 4.3.14 `int(self)`
 
-返回 `self.framecount` 的值.参考[self.framecount](#-4.2.3-self.framecount)
+返回 `self.framecount` 的值.参考[self.framecount](#423-selfframecount)
 
-Return value of `self.framecount`.Reference to [self.framecount](#-4.2.3-self.framecount) 
+Return value of `self.framecount`.Reference to [self.framecount](#423-selfframecount) 
 
 ```python
 tc_a = DfttTimecode('01:00:00:00', 'auto', fps=24, drop_frame=False, strict=True)
