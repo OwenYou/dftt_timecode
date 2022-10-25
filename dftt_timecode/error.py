@@ -1,11 +1,27 @@
-class Error(Exception):
+class DFTTError(Exception):
     pass
 
 
-class DFTTTimecodeValueError(Error):
+class DFTTTimecodeValueError(DFTTError):
     pass
 
 
-class DFTTTimecodeTypeError(Error):
+class DFTTTimecodeTypeError(DFTTError):
     pass
+
+class DFTTTimecodeOperatorError(DFTTError):
+    pass
+
+class DFTTTimeRangeMethodError(DFTTError):
+    pass
+
+class DFTTTimeRangeValueError(DFTTError):
+    pass
+
+class DFTTTimeRangeTypeError(DFTTError):
+    pass
+
+class DFTTTimeRangeFPSError(DFTTError):
+    pass
+
 
