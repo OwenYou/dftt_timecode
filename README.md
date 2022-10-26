@@ -243,13 +243,18 @@ In particular, as for a drop-frame timecode, the rule of strict mode does not al
 
 #### 4.1.7 补充说明 Additional info
 
-暂无。
+支持使用DfttTimecode对象初始化新DfttTimecode对象
 
-Currently, this part intentionally remains blank.
+Using a DfttTimecode object to instance a new DfttTimecode object.
+
+```python
+tc_a = DfttTimecode('01:00:00:00', 'auto', fps=24, drop_frame=False, strict=True)
+tc_b = DfttTimecode(tc_a)
+```
 
 ### 4.2 时码类对象操作说明 Descriptions of DfttTimecode class operations
 
-#### 4.2.1 self.type
+#### 4.2.1 `self.type`
 
 ```python
 a = DfttTimecode('01:00:00:00', 'auto', fps=24, drop_frame=False, strict=True)
@@ -260,7 +265,7 @@ assert a.type == 'smpte'
 
 Returns the **`timecode_type`** attribute of a DfttTimecode object, returned data type is `str`.
 
-#### 4.2.2 self.fps
+#### 4.2.2 `self.fps`
 
 ```python
 a = DfttTimecode('01:00:00:00', 'auto', fps=24, drop_frame=False, strict=True)
@@ -271,7 +276,7 @@ assert a.fps == 24
 
 Returns the **`fps`** attribute of a DfttTimecode object, returned data type is determined by the data type used to set the **`fps`** attribute.
 
-#### 4.2.3 self.framecount
+#### 4.2.3 `self.framecount`
 
 ```python
 a = DfttTimecode('01:00:00:00', 'auto', fps=24, drop_frame=False, strict=True)
@@ -282,7 +287,7 @@ assert a.framecount == 86400
 
 Returns the total frame count from 0 of a DfttTimecode, returned data type is `int`.
 
-#### 4.2.4 self.timestamp
+#### 4.2.4 `self.timestamp`
 
 ```python
 a = DfttTimecode('01:00:00:01', 'auto', fps=24, drop_frame=False, strict=True)
@@ -293,7 +298,7 @@ assert a.timestamp == 3600.04167
 
 Returns the total time elapsed from 0 of a DfttTimecode, returned data type is `float`, the precision of the returned value is 5 decimal places.
 
-#### 4.2.5 self.is_drop_frame
+#### 4.2.5 `self.is_drop_frame`
 
 ```python
 a = DfttTimecode('01:00:00:00', 'auto', fps=24, drop_frame=False, strict=True)
@@ -304,7 +309,7 @@ assert a.is_drop_frame == False
 
 Returns the **`drop_frame`** attribute of a DfttTimecode object, returned data type is `bool`.
 
-#### 4.2.6 self.is_strict
+#### 4.2.6 `self.is_strict`
 
 ```python
 a = DfttTimecode('01:00:00:00', 'auto', fps=24, drop_frame=False, strict=True)
@@ -315,7 +320,18 @@ assert a.is_strict == True
 
 Returns the **`strict`** attribute of a DfttTimecode object, returned data type is `bool`.
 
-#### 4.2.7 self.set_fps()
+#### 4.2.7 `self.precise_timestamp`
+
+```python
+a = DfttTimecode('01:00:00:00', 'auto', fps=24, drop_frame=False, strict=True)
+assert a.precise_timestamp == 3600
+```
+返回DfttTimecode对象的 **`precise_timestamp`** 属性，返回类型为`Fraction`.
+
+Returns the **`precise_timestamp`** attribute of a DfttTimecode object, returned data type is `Fraction`.
+
+
+#### 4.2.8 `self.set_fps()`
 
 ```python
 a = DfttTimecode('01:00:00:101', 'auto', fps=120, drop_frame=False, strict=True)
@@ -350,7 +366,7 @@ a.set_fps(120)
 assert a.timecode_output('smpte') == '01:00:00:100'
 ```
 
-#### 4.2.8 self.set_type()
+#### 4.2.9 `self.set_type()`
 
 ```python
 a = DfttTimecode('01:00:00,123', 'auto', fps=24)
@@ -384,7 +400,7 @@ assert a.type == 'smpte'
 assert a.timecode_output('srt') == '01:00:00,125'
 ```
 
-#### 4.2.9 self.set_strict()
+#### 4.2.10 `self.set_strict()`
 
 ```python
 a = DfttTimecode('25:01:02:05', 'auto', fps=24, strict=False)
@@ -403,7 +419,7 @@ This function will change the strict mode bool value of a DfttTimecode object.
 
 `self.set_strict()` has one parameter, which is **`strict`**. The data type of **`strict`** is `bool`, the default value of **`strict`** is `Ture`. 
 
-#### 4.2.10 self.timecode_output()
+#### 4.2.11 `self.timecode_output()`
 
 ```python
 a = DfttTimecode('01:02:03:05', 'auto', fps=24)
@@ -433,7 +449,7 @@ This function will return the timecode value of a DfttTimecode object in the giv
 
 ### 4.3 时码类运算符说明 Descriptions of DfttTimecode class operators
 
-#### 4.3.1 print(self)
+#### 4.3.1 `print(self)`
 
 该运算符会打印DfttTimecode对象相关的基本信息，如下所示。
 
@@ -444,7 +460,7 @@ a = DfttTimecode('01:00:00,123', 'srt', fps=24, drop_frame=False, strict=True)
 print(a)  # <DfttTimecode>(Timecode:01:00:00,123, Type:srt, FPS:24.00 NDF, Strict)
 ```
 
-#### 4.3.2 -self
+#### 4.3.2 `-self`
 
 该运算符会将DfttTimecode对象的时码值取负，且不改变其他属性，如下所示。
 
@@ -455,7 +471,7 @@ a = DfttTimecode('01:00:00,123', 'srt', fps=24, drop_frame=False, strict=True)
 print(-a)  # <DfttTimecode>(Timecode:22:59:59,877, Type:srt, FPS:24.00 NDF, Strict)
 ```
 
-#### 4.3.3 +
+#### 4.3.3 `+`
 
 该运算符可以将两个DfttTimecode对象相加，或将DfttTimecode对象与`int`，`float`或`Fraction`相加。
 
@@ -469,7 +485,7 @@ When adding a DfttTimecode object with an `int`, the `int` will be considered as
 
 The two DfttTimecode objects to perform the addition must have the same frame rate.
 
-#### 4.3.4 -
+#### 4.3.4 `-`
 
 该运算符可以将两个DfttTimecode对象相减，或将DfttTimecode对象与`int`，`float`或`Fraction`相减。
 
@@ -483,13 +499,13 @@ When performing a subtraction between a DfttTimecode object and an `int`, the `i
 
 The two DfttTimecode objects to perform the subtraction must have the same frame rate.
 
-#### 4.3.5 \*
+#### 4.3.5 `\*`
 
 该运算符可以将一个DfttTimecode对象与一个`int`，`float`或`Fraction`相乘，后者的数学意义是倍数。
 
 This operator can perform a multiplication between a DfttTimecode object and an `int`, `float`, or a `Fraction`, the mathematical meaning of the latter is a factor.
 
-#### 4.3.6 /
+#### 4.3.6 `/`
 
 该运算符可以将一个DfttTimecode对象与一个`int`，`float`或`Fraction`相除，后者的数学意义是倍数。
 
@@ -499,7 +515,7 @@ This operator can perform a division between a DfttTimecode object and an `int`,
 
 Please be noted, the division operation only makes sense when the DfttTimecode object is used as the dividend, the DfttTimecode object cannot be used as a divisor.
 
-#### 4.3.7 ==
+#### 4.3.7 `==`
 
 该运算符可以比较两个DfttTimecode对象是否相等，或比较DfttTimecode对象和`int`，`float`或`Fraction`是否相等。
 
@@ -509,7 +525,7 @@ This operator can perform a comparison between two DfttTimecode objects, or perf
 
 When performing a comparison between two DfttTimecode objects, a comparison of their timestamp will be performed. When performing a comparison between a DfttTimecode object and an `int`, the `int` will be considered as a frame number. When performing a comparison between a DfttTimecode object and a `float` or a `Fraction`, the latter will be considered as a time stamp.
 
-#### 4.3.8 \!=
+#### 4.3.8 `\!=`
 
 该运算符可以比较两个DfttTimecode对象是否相等，或比较DfttTimecode对象和`int`，`float`或`Fraction`是否相等。
 
@@ -519,7 +535,7 @@ This operator can perform a comparison between two DfttTimecode objects, or perf
 
 When performing a comparison between two DfttTimecode objects, a comparison of their timestamp will be performed. When performing a comparison between a DfttTimecode object and an `int`, the `int` will be considered as a frame number. When performing a comparison between a DfttTimecode object and a `float` or a `Fraction`, the latter will be considered as a time stamp.
 
-#### 4.3.9 >
+#### 4.3.9 `>`
 
 该运算符可以比较两个DfttTimecode对象的大小，或比较DfttTimecode对象和`int`，`float`或`Fraction`的大小。
 
@@ -529,7 +545,7 @@ This operator can perform a comparison between two DfttTimecode objects, or perf
 
 When performing a comparison between two DfttTimecode objects, a comparison of their timestamp will be performed. When performing a comparison between a DfttTimecode object and an `int`, the `int` will be considered as a frame number. When performing a comparison between a DfttTimecode object and a `float` or a `Fraction`, the latter will be considered as a time stamp.
 
-#### 4.3.10 >=
+#### 4.3.10 `>=`
 
 该运算符可以比较两个DfttTimecode对象的大小，或比较DfttTimecode对象和`int`，`float`或`Fraction`的大小。
 
@@ -539,7 +555,7 @@ This operator can perform a comparison between two DfttTimecode objects, or perf
 
 When performing a comparison between two DfttTimecode objects, a comparison of their timestamp will be performed. When performing a comparison between a DfttTimecode object and an `int`, the `int` will be considered as a frame number. When performing a comparison between a DfttTimecode object and a `float` or a `Fraction`, the latter will be considered as a time stamp.
 
-#### 4.3.11 <
+#### 4.3.11 `<`
 
 该运算符可以比较两个DfttTimecode对象的大小，或比较DfttTimecode对象和`int`，`float`或`Fraction`的大小。
 
@@ -549,7 +565,7 @@ This operator can perform a comparison between two DfttTimecode objects, or perf
 
 When performing a comparison between two DfttTimecode objects, a comparison of their timestamp will be performed. When performing a comparison between a DfttTimecode object and an `int`, the `int` will be considered as a frame number. When performing a comparison between a DfttTimecode object and a `float` or a `Fraction`, the latter will be considered as a time stamp.
 
-#### 4.3.12 <=
+#### 4.3.12 `<=`
 
 该运算符可以比较两个DfttTimecode对象的大小，或比较DfttTimecode对象和`int`，`float`或`Fraction`的大小。
 
@@ -558,4 +574,28 @@ This operator can perform a comparison between two DfttTimecode objects, or perf
 当两个DfttTimecode对象作比较时，将比较二者的时间戳。当DfttTimecode对象与`int`作比较时，`int`值将被当作帧计数处理。当DfttTimecode对象与`float`或`Fraction`作比较时，后者的值将被当作时间戳处理。
 
 When performing a comparison between two DfttTimecode objects, a comparison of their timestamp will be performed. When performing a comparison between a DfttTimecode object and an `int`, the `int` will be considered as a frame number. When performing a comparison between a DfttTimecode object and a `float` or a `Fraction`, the latter will be considered as a time stamp.
+
+#### 4.3.13 `float(self)`
+
+返回 `self.timestamp` 的值.参考[self.timestamp](#424-selftimestamp)
+
+Return value of `self.timestamp`.Reference to [self.timestamp](#424-selftimestamp) 
+
+```python
+tc_a = DfttTimecode('01:00:00:00', 'auto', fps=24, drop_frame=False, strict=True)
+float(tc_a)
+#36000.0
+```
+
+#### 4.3.14 `int(self)`
+
+返回 `self.framecount` 的值.参考[self.framecount](#423-selfframecount)
+
+Return value of `self.framecount`.Reference to [self.framecount](#423-selfframecount) 
+
+```python
+tc_a = DfttTimecode('01:00:00:00', 'auto', fps=24, drop_frame=False, strict=True)
+int(tc_a)
+#864000
+```
 
