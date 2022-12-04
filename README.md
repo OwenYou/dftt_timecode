@@ -499,7 +499,7 @@ When performing a subtraction between a DfttTimecode object and an `int`, the `i
 
 The two DfttTimecode objects to perform the subtraction must have the same frame rate.
 
-#### 4.3.5 `\*`
+#### 4.3.5 `*`
 
 该运算符可以将一个DfttTimecode对象与一个`int`，`float`或`Fraction`相乘，后者的数学意义是倍数。
 
@@ -525,7 +525,7 @@ This operator can perform a comparison between two DfttTimecode objects, or perf
 
 When performing a comparison between two DfttTimecode objects, a comparison of their timestamp will be performed. When performing a comparison between a DfttTimecode object and an `int`, the `int` will be considered as a frame number. When performing a comparison between a DfttTimecode object and a `float` or a `Fraction`, the latter will be considered as a time stamp.
 
-#### 4.3.8 `\!=`
+#### 4.3.8 `!=`
 
 该运算符可以比较两个DfttTimecode对象是否相等，或比较DfttTimecode对象和`int`，`float`或`Fraction`是否相等。
 
