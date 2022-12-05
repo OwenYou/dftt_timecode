@@ -368,14 +368,6 @@ assert a.timecode_output('smpte') == '01:00:00:100'
 
 #### 4.2.9 `self.set_type()`
 
-```python
-a = DfttTimecode('01:00:00,123', 'auto', fps=24)
-a.set_type('smpte', rounding=True)
-assert a.type == 'smpte'
-a.set_type('srt')
-assert a.timecode_output('srt') == '01:00:00,125'
-```
-
 该函数会更改DfttTimecode对象的时码类型，并可以选择在更改类型时是否取整。
 
 This function will change the timecode type of a DfttTimecode object, you can choose whether or not to round the timecode value while changing the timecode type.
