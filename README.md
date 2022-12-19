@@ -443,13 +443,13 @@ This function will return the timecode value of a DfttTimecode object in the giv
 
 #### 4.3.1 `print(self)`
 
-该运算符会打印DfttTimecode对象相关的基本信息，如下所示。
+该运算符会打印DfttTimecode对象相关的时间码值，如下所示。
 
-This operator will print basic information of a DfttTimecode object, as the following codes show.
+This operator will print timecode value of a DfttTimecode object, as the following codes show.
 
 ```python
 a = DfttTimecode('01:00:00,123', 'srt', fps=24, drop_frame=False, strict=True)
-print(a)  # <DfttTimecode>(Timecode:01:00:00,123, Type:srt, FPS:24.00 NDF, Strict)
+print(a)  # 01:00:00,123
 ```
 
 #### 4.3.2 `-self`
@@ -460,7 +460,7 @@ This operator will yield the negation of the timecode value of a DfttTimecode ob
 
 ```python
 a = DfttTimecode('01:00:00,123', 'srt', fps=24, drop_frame=False, strict=True)
-print(-a)  # <DfttTimecode>(Timecode:22:59:59,877, Type:srt, FPS:24.00 NDF, Strict)
+print(-a)  # 22:59:59,877
 ```
 
 #### 4.3.3 `+`
