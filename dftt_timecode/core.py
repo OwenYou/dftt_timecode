@@ -871,7 +871,6 @@ class DfttTimecode:
         return self.framecount
 
 
-class DfttTimeRange:
     __start = DfttTimecode(0)
     __end = DfttTimecode(1)
     __fps = 24.0
