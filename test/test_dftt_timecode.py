@@ -51,9 +51,8 @@ def test_auto_type(timecode_value, timecode_type, fps, drop_frame, strict, resul
     "timecode_value, timecode_type, fps, drop_frame, strict",
     [
         ('01:00:00:23', 'smpte', 20, False, True),
-        ('00:01:00;00', 'smpte', 23.97, False, True),
     ],
-    ids=['smpte', 'smpte_df']
+    ids=['smpte']
 )
 def test_invalid_timecode(timecode_value, timecode_type, fps, drop_frame, strict):
     from dftt_timecode.error import DFTTTimecodeValueError
