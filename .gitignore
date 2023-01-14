@@ -1,2 +1,9 @@
 dftt_timecode/__pycache__
-test.py
+.vscode
+__pycache__
+.venv
+.DS_Store
+.env
+dftt_timecode.egg-info
+.pytest_cache
+.DS_Store

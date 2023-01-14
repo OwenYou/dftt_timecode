@@ -368,14 +368,6 @@ assert a.timecode_output('smpte') == '01:00:00:100'
 
 #### 4.2.9 `self.set_type()`
 
-```python
-a = DfttTimecode('01:00:00,123', 'auto', fps=24)
-a.set_type('smpte', rounding=True)
-assert a.type == 'smpte'
-a.set_type('srt')
-assert a.timecode_output('srt') == '01:00:00,125'
-```
-
 该函数会更改DfttTimecode对象的时码类型，并可以选择在更改类型时是否取整。
 
 This function will change the timecode type of a DfttTimecode object, you can choose whether or not to round the timecode value while changing the timecode type.
@@ -451,13 +443,13 @@ This function will return the timecode value of a DfttTimecode object in the giv
 
 #### 4.3.1 `print(self)`
 
-该运算符会打印DfttTimecode对象相关的基本信息，如下所示。
+该运算符会打印DfttTimecode对象相关的时间码值，如下所示。
 
-This operator will print basic information of a DfttTimecode object, as the following codes show.
+This operator will print timecode value of a DfttTimecode object, as the following codes show.
 
 ```python
 a = DfttTimecode('01:00:00,123', 'srt', fps=24, drop_frame=False, strict=True)
-print(a)  # <DfttTimecode>(Timecode:01:00:00,123, Type:srt, FPS:24.00 NDF, Strict)
+print(a)  # 01:00:00,123
 ```
 
 #### 4.3.2 `-self`
@@ -468,7 +460,7 @@ This operator will yield the negation of the timecode value of a DfttTimecode ob
 
 ```python
 a = DfttTimecode('01:00:00,123', 'srt', fps=24, drop_frame=False, strict=True)
-print(-a)  # <DfttTimecode>(Timecode:22:59:59,877, Type:srt, FPS:24.00 NDF, Strict)
+print(-a)  # 22:59:59,877
 ```
 
 #### 4.3.3 `+`
@@ -499,7 +491,7 @@ When performing a subtraction between a DfttTimecode object and an `int`, the `i
 
 The two DfttTimecode objects to perform the subtraction must have the same frame rate.
 
-#### 4.3.5 `\*`
+#### 4.3.5 `*`
 
 该运算符可以将一个DfttTimecode对象与一个`int`，`float`或`Fraction`相乘，后者的数学意义是倍数。
 
@@ -525,7 +517,7 @@ This operator can perform a comparison between two DfttTimecode objects, or perf
 
 When performing a comparison between two DfttTimecode objects, a comparison of their timestamp will be performed. When performing a comparison between a DfttTimecode object and an `int`, the `int` will be considered as a frame number. When performing a comparison between a DfttTimecode object and a `float` or a `Fraction`, the latter will be considered as a time stamp.
 
-#### 4.3.8 `\!=`
+#### 4.3.8 `!=`
 
 该运算符可以比较两个DfttTimecode对象是否相等，或比较DfttTimecode对象和`int`，`float`或`Fraction`是否相等。
 
