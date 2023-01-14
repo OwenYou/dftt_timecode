@@ -42,7 +42,7 @@ class DfttTimecode:
         self.__nominal_fps = ceil(fps)
         self.__drop_frame = drop_frame
         self.__strict = strict
-        if (round(self.__fps, 2) % 29.97 != 0 and round(self.__fps, 2) % 23.97 != 0 and round(self.__fps, 2) % 23.98 != 0 and self.is_drop_frame == True):  # 判断丢帧状态与时码输入是否匹配 不匹配则强制转换
+        if (round(self.__fps, 2) % 29.97 != 0 and  round(self.__fps, 2) % 23.98 != 0 and self.is_drop_frame == True):  # 判断丢帧状态与时码输入是否匹配 不匹配则强制转换
             self.__drop_frame = False
             logging.info(
                 'Timecode.__init__.str: This FPS is NOT Drop-Framable, force drop_frame to False')
@@ -53,7 +53,7 @@ class DfttTimecode:
                 timecode_type = 'smpte'
                 if self.__drop_frame == True:
                     # 判断丢帧状态与帧率是否匹配 不匹配则强制转换
-                    if round(self.__fps, 2) % 29.97 == 0 or round(self.__fps, 2) % 23.97 == 0:
+                    if round(self.__fps, 2) % 29.97 == 0 or round(self.__fps, 2) % 23.98 == 0:
                         self.__drop_frame = True
                     else:
                         self.__drop_frame = False
@@ -64,7 +64,7 @@ class DfttTimecode:
             elif SMPTE_DF_REGEX.match(timecode_value):
                 timecode_type = 'smpte'
                 # 判断丢帧状态与帧率是否匹配 不匹配则强制转换
-                if round(self.__fps, 2) % 29.97 == 0 or round(self.__fps, 2) % 23.97 == 0 :
+                if round(self.__fps, 2) % 29.97 == 0 or round(self.__fps, 2) % 23.98 == 0 :
                     self.__drop_frame = True
                 else:
                     self.__drop_frame = False

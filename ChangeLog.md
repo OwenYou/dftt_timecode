@@ -41,7 +41,7 @@ First Public Release.
   Unit test for DfttTimecode (Using pytest)
 
 修改 Modify：
-- 对丢帧的检测条件添加有关23.97/23.976的判定
+- 对丢帧的检测条件添加有关23.98/23.976的判定
   
   Add 23.97/23.976FPS to drop frame conditions
 
