@@ -41,7 +41,7 @@ First Public Release.
   Unit test for DfttTimecode (Using pytest)
 
 修改 Modify：
-- 对丢帧的检测条件添加有关23.97/23.976的判定
+- 对丢帧的检测条件添加有关23.98/23.976的判定
   
   Add 23.97/23.976FPS to drop frame conditions
 
@@ -53,6 +53,9 @@ First Public Release.
   
   Comparison operators, such as `==`, `>`, `>=`, in the comparison of two DfttTimecode objects will first compare the frame rate of the two objects, if the frame rate is different throw an exception
 
+- `print(self)` 将会输出基于类型的时间码字符串
+  
+  `print(self)` will output a timecode string
 
 修复 BugFix:
 - `timecode_output(self, dest_type, output_part)` 中`output_part = 3`时错误返回分钟数据的问题
