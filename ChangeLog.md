@@ -43,7 +43,7 @@ First Public Release.
 修改 Modify：
 - 对丢帧的检测条件添加有关23.98/23.976的判定
   
-  Add 23.97/23.976FPS to drop frame conditions
+  Add 23.98/23.976FPS to drop frame conditions
 
 - `+` `-`运算符对相加的两个DfttTimecode对象的strict属性进行或运算
   
