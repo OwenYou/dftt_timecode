@@ -879,16 +879,16 @@ class DfttTimeRange:
 
     def __init__(self, start_tc, end_tc, fps=24.0):
         if isinstance(start_tc, DfttTimecode) and isinstance(end_tc, DfttTimecode):
-            if start_tc.fps == end_tc.fps:
-                if start_tc.timestamp != end_tc.timestamp:
-                    self.__start = start_tc
-                    self.__end = end_tc
-                    self.__fps = start_tc.fps
-                else:
-                    raise DFTTTimeRangeValueError(
-                        'Time range cannot be zero-length!')
-            else:
+            if start_tc.fps != end_tc.fps:
                 raise DFTTTimeRangeFPSError
+            
+            if start_tc.timestamp == end_tc.timestamp:
+                raise DFTTTimeRangeValueError(
+                    'Time range cannot be zero-length!')
+                
+            self.__start = start_tc
+            self.__end = end_tc
+            self.__fps = start_tc.fps      
         elif isinstance(start_tc, DfttTimecode):
             try:
                 end_tc = DfttTimecode(end_tc, fps=start_tc.fps, drop_frame=start_tc.is_drop_frame,
@@ -917,19 +917,19 @@ class DfttTimeRange:
             raise DFTTTimeRangeTypeError
 
     @property
-    def duration(self):
+    def duration(self) -> float:
         return float(self.__end - self.__start)
 
     @property
-    def framecount(self):
+    def framecount(self) -> int:
         return int(self.__end - self.__start)
 
     @property
-    def start(self):
+    def start(self) -> DfttTimecode:
         return deepcopy(self.__start)
 
     @property
-    def end(self):
+    def end(self) -> DfttTimecode:
         return deepcopy(self.__end)
 
     def offset(self, offset_value):
@@ -986,6 +986,7 @@ class DfttTimeRange:
 
     def seperate_with(self, other):
         if isinstance(other, DfttTimeRange):
+            #TODO
             pass
 
     def __repr__(self):
