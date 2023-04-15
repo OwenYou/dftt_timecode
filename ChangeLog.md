@@ -62,3 +62,12 @@ First Public Release.
 
   Addressed a problem when `output_part = 3` in `timecode_output(self, dest_type, output_part)` would return minute value in timecode value
   
+ ## V0.0.12
+ 修复 BugFix:
+- 修复DLP正则表达式错误导致范围在50-99 150-199的DLP tick不能被匹配的问题。
+  这一bug会导致使用形如`'00:00:27:183'`的字符串初始化dlp时间码对象时的报错。
+
+  Fix DLP pattern error causing DLP ticks range [50-99] [150-199] cannot be matched.
+  This bug will cause error when using strings like `'00:00:27:183'` to initilize a dlp timecode object.
+ 
+  
