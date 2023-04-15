@@ -5,7 +5,7 @@ with open("README.md", "r",encoding='UTF-8') as fh:
 
 setuptools.setup(
     name="dftt_timecode",
-    version="0.0.9",
+    version="0.0.12",
     author="You Ziyuan",
     author_email="hikaridragon0216@gmail.com",
     description="Timecode library for film and TV industry, supports HFR and a bunch of cool features",
