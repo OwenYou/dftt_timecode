@@ -1,10 +1,11 @@
 import logging
 from fractions import Fraction
-from dftt_timecode.dispatch import InstanceMethodDispatch
-from dftt_timecode.error import *
-from dftt_timecode.pattern import *
+from functools import singledispatchmethod
 from math import ceil
 from copy import deepcopy
+
+from dftt_timecode.error import *
+from dftt_timecode.pattern import *
 
 # logging.basicConfig(filename='dftt_timecode_log.txt',
 #                     filemode='w',
@@ -27,12 +28,12 @@ class DfttTimecode:
         else:
             return super(DfttTimecode, cls).__new__(cls)
 
-    @InstanceMethodDispatch.dispatch()  # 用InstanceMethodDispatch实现多构造函数
+    @singledispatchmethod
     def __init__(self, timecode_value, timecode_type, fps, drop_frame, strict):  # 构造函数
         pass
 
-    @InstanceMethodDispatch.register('__init__', str)  # 若传入的TC值为字符串，则调用此函数
-    def _(self, timecode_value, timecode_type='auto', fps=24.0, drop_frame=False, strict=True):
+    @__init__.register  # 若传入的TC值为字符串，则调用此函数
+    def _(self, timecode_value: str, timecode_type='auto', fps=24.0, drop_frame=False, strict=True):
         if timecode_value[0] == '-':  # 判断首位是否为负，并为flag赋值
             minus_flag = True
         else:
@@ -42,7 +43,7 @@ class DfttTimecode:
         self.__nominal_fps = ceil(fps)
         self.__drop_frame = drop_frame
         self.__strict = strict
-        if (round(self.__fps, 2) % 29.97 != 0 and  round(self.__fps, 2) % 23.98 != 0 and self.is_drop_frame == True):  # 判断丢帧状态与时码输入是否匹配 不匹配则强制转换
+        if (round(self.__fps, 2) % 29.97 != 0 and round(self.__fps, 2) % 23.98 != 0 and self.is_drop_frame == True):  # 判断丢帧状态与时码输入是否匹配 不匹配则强制转换
             self.__drop_frame = False
             logging.info(
                 'Timecode.__init__.str: This FPS is NOT Drop-Framable, force drop_frame to False')
@@ -64,7 +65,7 @@ class DfttTimecode:
             elif SMPTE_DF_REGEX.match(timecode_value):
                 timecode_type = 'smpte'
                 # 判断丢帧状态与帧率是否匹配 不匹配则强制转换
-                if round(self.__fps, 2) % 29.97 == 0 or round(self.__fps, 2) % 23.98 == 0 :
+                if round(self.__fps, 2) % 29.97 == 0 or round(self.__fps, 2) % 23.98 == 0:
                     self.__drop_frame = True
                 else:
                     self.__drop_frame = False
@@ -270,9 +271,8 @@ class DfttTimecode:
             self.__fps) + ', dropframe=' + str(self.__drop_frame) + ', strict=' + str(self.__strict)
         logging.debug(instance_success_log)
 
-    # 输入为Fraction类分数，此时认为输入是时间戳，若不是，则会报错
-    @InstanceMethodDispatch.register('__init__', Fraction)
-    def _(self, timecode_value, timecode_type='time', fps=24.0, drop_frame=False, strict=True):
+    @__init__.register  # 输入为Fraction类分数，此时认为输入是时间戳，若不是，则会报错
+    def _(self, timecode_value: Fraction, timecode_type='time', fps=24.0, drop_frame=False, strict=True):
         if timecode_type in ('time', 'auto'):
             self.__type = 'time'
             self.__fps = fps
@@ -293,8 +293,8 @@ class DfttTimecode:
             self.__fps) + ', dropframe=' + str(self.__drop_frame) + ', strict=' + str(self.__strict)
         logging.debug(instance_success_log)
 
-    @InstanceMethodDispatch.register('__init__', int)
-    def _(self, timecode_value, timecode_type='frame', fps=24.0, drop_frame=False, strict=True):
+    @__init__.register
+    def _(self, timecode_value: int, timecode_type='frame', fps=24.0, drop_frame=False, strict=True):
         if timecode_type in ('frame', 'auto'):
             self.__type = 'frame'
             self.__fps = fps
@@ -329,8 +329,8 @@ class DfttTimecode:
             self.__fps) + ', dropframe=' + str(self.__drop_frame) + ', strict=' + str(self.__strict)
         logging.debug(instance_success_log)
 
-    @InstanceMethodDispatch.register('__init__', float)
-    def _(self, timecode_value, timecode_type='time', fps=24.0, drop_frame=False, strict=True):
+    @__init__.register
+    def _(self, timecode_value: float, timecode_type='time', fps=24.0, drop_frame=False, strict=True):
         if timecode_type in ('time', 'auto'):
             self.__type = 'time'
             self.__fps = fps
@@ -350,8 +350,8 @@ class DfttTimecode:
             self.__fps) + ', dropframe=' + str(self.__drop_frame) + ', strict=' + str(self.__strict)
         logging.debug(instance_success_log)
 
-    @InstanceMethodDispatch.register('__init__', tuple)
-    def _(self, timecode_value, timecode_type='time', fps=24.0, drop_frame=False, strict=True):
+    @__init__.register
+    def _(self, timecode_value: tuple, timecode_type='time', fps=24.0, drop_frame=False, strict=True):
         if timecode_type in ('time', 'auto'):
             self.__type = 'time'
             self.__fps = fps
@@ -372,8 +372,8 @@ class DfttTimecode:
             self.__fps) + ', dropframe=' + str(self.__drop_frame) + ', strict=' + str(self.__strict)
         logging.debug(instance_success_log)
 
-    @InstanceMethodDispatch.register('__init__', list)
-    def _(self, timecode_value, timecode_type='time', fps=24.0, drop_frame=False, strict=True):
+    @__init__.register
+    def _(self, timecode_value: list, timecode_type='time', fps=24.0, drop_frame=False, strict=True):
         if timecode_type in ('time', 'auto'):
             self.__type = timecode_type
             self.__fps = fps
@@ -422,7 +422,7 @@ class DfttTimecode:
     def precise_timestamp(self):
         return self.__precise_time
 
-    def _convert_to_output_smpte(self, output_part=0)->str:
+    def _convert_to_output_smpte(self, output_part=0) -> str:
         minus_flag = False
         frame_index = round(self.__precise_time * self.__fps)  # 从内部时间戳计算得帧计数
         if frame_index < 0:  # 负值时，打上flag，并翻转负号
@@ -486,7 +486,7 @@ class DfttTimecode:
             else:
                 return '{:03d}'.format(output_ff)
 
-    def _convert_to_output_srt(self, output_part=0)->str:
+    def _convert_to_output_srt(self, output_part=0) -> str:
         minus_flag = False
         if self.__precise_time < 0:  # 负值时，打上flag，并翻转负号
             minus_flag = True
@@ -514,7 +514,7 @@ class DfttTimecode:
                 'Timecode._convert_to_output_srt: No such part, will return the last part of timecode')
             return '{:03d}'.format(output_sub_sec)
 
-    def _convert_to_output_dlp(self, output_part=0)->str:
+    def _convert_to_output_dlp(self, output_part=0) -> str:
         minus_flag = False
         if self.__precise_time < 0:  # 负值时，打上flag，并翻转负号
             minus_flag = True
@@ -542,7 +542,7 @@ class DfttTimecode:
                 'Timecode._convert_to_output_dlp: No such part, will return the last part of timecode')
             return '{:03d}'.format(output_sub_sec)
 
-    def _convert_to_output_ffmpeg(self, output_part=0)->str:
+    def _convert_to_output_ffmpeg(self, output_part=0) -> str:
         minus_flag = False
         if self.__precise_time < 0:  # 负值时，打上flag，并翻转负号
             minus_flag = True
@@ -570,7 +570,7 @@ class DfttTimecode:
                 'Timecode._convert_to_output_ffmpeg: No such part, will return the last part of timecode')
             return '{:03d}'.format(output_sub_sec)
 
-    def _convert_to_output_fcpx(self, output_part=0)->str:
+    def _convert_to_output_fcpx(self, output_part=0) -> str:
         if output_part == 0:
             pass
         else:
@@ -581,7 +581,7 @@ class DfttTimecode:
                                                       self.__precise_time).is_integer() else '/{}'.format(
                                                       self.__precise_time.denominator))
 
-    def _convert_to_output_frame(self, output_part=0)->str:
+    def _convert_to_output_frame(self, output_part=0) -> str:
         if output_part == 0:
             pass
         else:
@@ -589,7 +589,7 @@ class DfttTimecode:
                 'Timecode._convert_to_output_frame: This timecode type has only one part.')
         return str(round(self.__precise_time * self.__fps))
 
-    def _convert_to_output_time(self, output_part=0)->str:
+    def _convert_to_output_time(self, output_part=0) -> str:
         if output_part == 0:
             pass
         else:
@@ -611,7 +611,7 @@ class DfttTimecode:
             func = getattr(self, '_convert_to_output_smpte', None)
             return func(output_part)
 
-    def set_fps(self, dest_fps, rounding=True)->'DfttTimecode':
+    def set_fps(self, dest_fps, rounding=True) -> 'DfttTimecode':
         self.__fps = dest_fps
         self.__nominal_fps = ceil(self.__fps)
         if rounding == True:
@@ -621,7 +621,7 @@ class DfttTimecode:
             pass
         return self
 
-    def set_type(self, dest_type='smpte', rounding=True)->'DfttTimecode':
+    def set_type(self, dest_type='smpte', rounding=True) -> 'DfttTimecode':
         if dest_type in ('smpte', 'srt', 'dlp', 'ffmpeg', 'fcpx', 'frame', 'time'):
             self.__type = dest_type
         else:
@@ -635,7 +635,7 @@ class DfttTimecode:
             pass
         return self
 
-    def set_strict(self, strict=True)->'DfttTimecode':
+    def set_strict(self, strict=True) -> 'DfttTimecode':
         if strict == self.__strict:
             pass
         else:
@@ -654,13 +654,13 @@ class DfttTimecode:
 
     def __str__(self):
         return self.timecode_output()
-    
+
     def __add__(self, other):  # 运算符重载，加号，加int则认为是帧，加float则认为是时间
         temp_sum = self.__precise_time
         if isinstance(other, DfttTimecode):
             if self.__fps == other.__fps and self.__drop_frame == other.__drop_frame:
                 temp_sum = self.__precise_time + other.__precise_time
-                self.__strict=self.__strict or other.__strict
+                self.__strict = self.__strict or other.__strict
             else:  # 帧率不同不允许相加，报错
                 logging.error(
                     'Timecode.__add__: Timecode addition requires exact same FPS.')
@@ -687,7 +687,7 @@ class DfttTimecode:
         if isinstance(other, DfttTimecode):
             if self.__fps == other.__fps and self.__drop_frame == other.__drop_frame:
                 diff = self.__precise_time - other.__precise_time
-                self.__strict=self.__strict or other.__strict
+                self.__strict = self.__strict or other.__strict
             else:
                 logging.error(
                     'Timecode.__sub__: Timecode subtraction requires exact same FPS.')
@@ -869,3 +869,7 @@ class DfttTimecode:
 
     def __int__(self):
         return self.framecount
+
+# if start_tc and end_tc is strict,time range(duration) will be in 24 hour
+
+
