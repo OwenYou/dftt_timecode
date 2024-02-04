@@ -1,10 +1,11 @@
 import logging
 from fractions import Fraction
-from dftt_timecode.dispatch import InstanceMethodDispatch
-from dftt_timecode.error import *
-from dftt_timecode.pattern import *
+from functools import singledispatchmethod
 from math import ceil
 from copy import deepcopy
+
+from dftt_timecode.error import *
+from dftt_timecode.pattern import *
 
 # logging.basicConfig(filename='dftt_timecode_log.txt',
 #                     filemode='w',
@@ -27,12 +28,12 @@ class DfttTimecode:
         else:
             return super(DfttTimecode, cls).__new__(cls)
 
-    @InstanceMethodDispatch.dispatch()  # 用InstanceMethodDispatch实现多构造函数
+    @singledispatchmethod
     def __init__(self, timecode_value, timecode_type, fps, drop_frame, strict):  # 构造函数
         pass
 
-    @InstanceMethodDispatch.register('__init__', str)  # 若传入的TC值为字符串，则调用此函数
-    def _(self, timecode_value, timecode_type='auto', fps=24.0, drop_frame=False, strict=True):
+    @__init__.register  # 若传入的TC值为字符串，则调用此函数
+    def _(self, timecode_value: str, timecode_type='auto', fps=24.0, drop_frame=False, strict=True):
         if timecode_value[0] == '-':  # 判断首位是否为负，并为flag赋值
             minus_flag = True
         else:
@@ -42,7 +43,7 @@ class DfttTimecode:
         self.__nominal_fps = ceil(fps)
         self.__drop_frame = drop_frame
         self.__strict = strict
-        if (round(self.__fps, 2) % 29.97 != 0 and  round(self.__fps, 2) % 23.98 != 0 and self.is_drop_frame == True):  # 判断丢帧状态与时码输入是否匹配 不匹配则强制转换
+        if (round(self.__fps, 2) % 29.97 != 0 and round(self.__fps, 2) % 23.98 != 0 and self.is_drop_frame == True):  # 判断丢帧状态与时码输入是否匹配 不匹配则强制转换
             self.__drop_frame = False
             logging.info(
                 'Timecode.__init__.str: This FPS is NOT Drop-Framable, force drop_frame to False')
@@ -64,7 +65,7 @@ class DfttTimecode:
             elif SMPTE_DF_REGEX.match(timecode_value):
                 timecode_type = 'smpte'
                 # 判断丢帧状态与帧率是否匹配 不匹配则强制转换
-                if round(self.__fps, 2) % 29.97 == 0 or round(self.__fps, 2) % 23.98 == 0 :
+                if round(self.__fps, 2) % 29.97 == 0 or round(self.__fps, 2) % 23.98 == 0:
                     self.__drop_frame = True
                 else:
                     self.__drop_frame = False
@@ -270,9 +271,8 @@ class DfttTimecode:
             self.__fps) + ', dropframe=' + str(self.__drop_frame) + ', strict=' + str(self.__strict)
         logging.debug(instance_success_log)
 
-    # 输入为Fraction类分数，此时认为输入是时间戳，若不是，则会报错
-    @InstanceMethodDispatch.register('__init__', Fraction)
-    def _(self, timecode_value, timecode_type='time', fps=24.0, drop_frame=False, strict=True):
+    @__init__.register  # 输入为Fraction类分数，此时认为输入是时间戳，若不是，则会报错
+    def _(self, timecode_value: Fraction, timecode_type='time', fps=24.0, drop_frame=False, strict=True):
         if timecode_type in ('time', 'auto'):
             self.__type = 'time'
             self.__fps = fps
@@ -293,8 +293,8 @@ class DfttTimecode:
             self.__fps) + ', dropframe=' + str(self.__drop_frame) + ', strict=' + str(self.__strict)
         logging.debug(instance_success_log)
 
-    @InstanceMethodDispatch.register('__init__', int)
-    def _(self, timecode_value, timecode_type='frame', fps=24.0, drop_frame=False, strict=True):
+    @__init__.register
+    def _(self, timecode_value: int, timecode_type='frame', fps=24.0, drop_frame=False, strict=True):
         if timecode_type in ('frame', 'auto'):
             self.__type = 'frame'
             self.__fps = fps
@@ -329,8 +329,8 @@ class DfttTimecode:
             self.__fps) + ', dropframe=' + str(self.__drop_frame) + ', strict=' + str(self.__strict)
         logging.debug(instance_success_log)
 
-    @InstanceMethodDispatch.register('__init__', float)
-    def _(self, timecode_value, timecode_type='time', fps=24.0, drop_frame=False, strict=True):
+    @__init__.register
+    def _(self, timecode_value: float, timecode_type='time', fps=24.0, drop_frame=False, strict=True):
         if timecode_type in ('time', 'auto'):
             self.__type = 'time'
             self.__fps = fps
@@ -350,8 +350,8 @@ class DfttTimecode:
             self.__fps) + ', dropframe=' + str(self.__drop_frame) + ', strict=' + str(self.__strict)
         logging.debug(instance_success_log)
 
-    @InstanceMethodDispatch.register('__init__', tuple)
-    def _(self, timecode_value, timecode_type='time', fps=24.0, drop_frame=False, strict=True):
+    @__init__.register
+    def _(self, timecode_value: tuple, timecode_type='time', fps=24.0, drop_frame=False, strict=True):
         if timecode_type in ('time', 'auto'):
             self.__type = 'time'
             self.__fps = fps
@@ -372,8 +372,8 @@ class DfttTimecode:
             self.__fps) + ', dropframe=' + str(self.__drop_frame) + ', strict=' + str(self.__strict)
         logging.debug(instance_success_log)
 
-    @InstanceMethodDispatch.register('__init__', list)
-    def _(self, timecode_value, timecode_type='time', fps=24.0, drop_frame=False, strict=True):
+    @__init__.register
+    def _(self, timecode_value: list, timecode_type='time', fps=24.0, drop_frame=False, strict=True):
         if timecode_type in ('time', 'auto'):
             self.__type = timecode_type
             self.__fps = fps
@@ -422,7 +422,7 @@ class DfttTimecode:
     def precise_timestamp(self):
         return self.__precise_time
 
-    def _convert_to_output_smpte(self, output_part=0)->str:
+    def _convert_to_output_smpte(self, output_part=0) -> str:
         minus_flag = False
         frame_index = round(self.__precise_time * self.__fps)  # 从内部时间戳计算得帧计数
         if frame_index < 0:  # 负值时，打上flag，并翻转负号
@@ -486,7 +486,7 @@ class DfttTimecode:
             else:
                 return '{:03d}'.format(output_ff)
 
-    def _convert_to_output_srt(self, output_part=0)->str:
+    def _convert_to_output_srt(self, output_part=0) -> str:
         minus_flag = False
         if self.__precise_time < 0:  # 负值时，打上flag，并翻转负号
             minus_flag = True
@@ -514,7 +514,7 @@ class DfttTimecode:
                 'Timecode._convert_to_output_srt: No such part, will return the last part of timecode')
             return '{:03d}'.format(output_sub_sec)
 
-    def _convert_to_output_dlp(self, output_part=0)->str:
+    def _convert_to_output_dlp(self, output_part=0) -> str:
         minus_flag = False
         if self.__precise_time < 0:  # 负值时，打上flag，并翻转负号
             minus_flag = True
@@ -542,7 +542,7 @@ class DfttTimecode:
                 'Timecode._convert_to_output_dlp: No such part, will return the last part of timecode')
             return '{:03d}'.format(output_sub_sec)
 
-    def _convert_to_output_ffmpeg(self, output_part=0)->str:
+    def _convert_to_output_ffmpeg(self, output_part=0) -> str:
         minus_flag = False
         if self.__precise_time < 0:  # 负值时，打上flag，并翻转负号
             minus_flag = True
@@ -570,7 +570,7 @@ class DfttTimecode:
                 'Timecode._convert_to_output_ffmpeg: No such part, will return the last part of timecode')
             return '{:03d}'.format(output_sub_sec)
 
-    def _convert_to_output_fcpx(self, output_part=0)->str:
+    def _convert_to_output_fcpx(self, output_part=0) -> str:
         if output_part == 0:
             pass
         else:
@@ -581,7 +581,7 @@ class DfttTimecode:
                                                       self.__precise_time).is_integer() else '/{}'.format(
                                                       self.__precise_time.denominator))
 
-    def _convert_to_output_frame(self, output_part=0)->str:
+    def _convert_to_output_frame(self, output_part=0) -> str:
         if output_part == 0:
             pass
         else:
@@ -589,7 +589,7 @@ class DfttTimecode:
                 'Timecode._convert_to_output_frame: This timecode type has only one part.')
         return str(round(self.__precise_time * self.__fps))
 
-    def _convert_to_output_time(self, output_part=0)->str:
+    def _convert_to_output_time(self, output_part=0) -> str:
         if output_part == 0:
             pass
         else:
@@ -611,7 +611,7 @@ class DfttTimecode:
             func = getattr(self, '_convert_to_output_smpte', None)
             return func(output_part)
 
-    def set_fps(self, dest_fps, rounding=True)->'DfttTimecode':
+    def set_fps(self, dest_fps, rounding=True) -> 'DfttTimecode':
         self.__fps = dest_fps
         self.__nominal_fps = ceil(self.__fps)
         if rounding == True:
@@ -621,7 +621,7 @@ class DfttTimecode:
             pass
         return self
 
-    def set_type(self, dest_type='smpte', rounding=True)->'DfttTimecode':
+    def set_type(self, dest_type='smpte', rounding=True) -> 'DfttTimecode':
         if dest_type in ('smpte', 'srt', 'dlp', 'ffmpeg', 'fcpx', 'frame', 'time'):
             self.__type = dest_type
         else:
@@ -635,7 +635,7 @@ class DfttTimecode:
             pass
         return self
 
-    def set_strict(self, strict=True)->'DfttTimecode':
+    def set_strict(self, strict=True) -> 'DfttTimecode':
         if strict == self.__strict:
             pass
         else:
@@ -654,13 +654,13 @@ class DfttTimecode:
 
     def __str__(self):
         return self.timecode_output()
-    
+
     def __add__(self, other):  # 运算符重载，加号，加int则认为是帧，加float则认为是时间
         temp_sum = self.__precise_time
         if isinstance(other, DfttTimecode):
             if self.__fps == other.__fps and self.__drop_frame == other.__drop_frame:
                 temp_sum = self.__precise_time + other.__precise_time
-                self.__strict=self.__strict or other.__strict
+                self.__strict = self.__strict or other.__strict
             else:  # 帧率不同不允许相加，报错
                 logging.error(
                     'Timecode.__add__: Timecode addition requires exact same FPS.')
@@ -687,7 +687,7 @@ class DfttTimecode:
         if isinstance(other, DfttTimecode):
             if self.__fps == other.__fps and self.__drop_frame == other.__drop_frame:
                 diff = self.__precise_time - other.__precise_time
-                self.__strict=self.__strict or other.__strict
+                self.__strict = self.__strict or other.__strict
             else:
                 logging.error(
                     'Timecode.__sub__: Timecode subtraction requires exact same FPS.')
@@ -870,166 +870,6 @@ class DfttTimecode:
     def __int__(self):
         return self.framecount
 
+# if start_tc and end_tc is strict,time range(duration) will be in 24 hour
 
-class DfttTimeRange:
-    __start = DfttTimecode(0)
-    __end = DfttTimecode(1)
-    __fps = 24.0
-    __forward = True
 
-    def __init__(self, start_tc, end_tc, fps=24.0):
-        if isinstance(start_tc, DfttTimecode) and isinstance(end_tc, DfttTimecode):
-            if start_tc.fps != end_tc.fps:
-                raise DFTTTimeRangeFPSError
-            
-            if start_tc.timestamp == end_tc.timestamp:
-                raise DFTTTimeRangeValueError(
-                    'Time range cannot be zero-length!')
-                
-            self.__start = start_tc
-            self.__end = end_tc
-            self.__fps = start_tc.fps      
-        elif isinstance(start_tc, DfttTimecode):
-            try:
-                end_tc = DfttTimecode(end_tc, fps=start_tc.fps, drop_frame=start_tc.is_drop_frame,
-                                      strict=start_tc.is_strict)
-                if start_tc.timestamp != end_tc.timestamp:
-                    self.__start = start_tc
-                    self.__end = end_tc
-                    self.__fps = start_tc.fps
-                else:
-                    raise DFTTTimeRangeValueError
-            except DFTTError:
-                raise DFTTTimeRangeTypeError
-        elif isinstance(end_tc, DfttTimecode):
-            try:
-                start_tc = DfttTimecode(start_tc, fps=end_tc.fps, drop_frame=end_tc.is_drop_frame,
-                                        strict=end_tc.is_strict)
-                if start_tc.timestamp != end_tc.timestamp:
-                    self.__start = start_tc
-                    self.__end = end_tc
-                    self.__fps = start_tc.fps
-                else:
-                    raise DFTTTimeRangeValueError
-            except DFTTError:
-                raise DFTTTimeRangeTypeError
-        else:
-            raise DFTTTimeRangeTypeError
-
-    @property
-    def duration(self) -> float:
-        return float(self.__end - self.__start)
-
-    @property
-    def framecount(self) -> int:
-        return int(self.__end - self.__start)
-
-    @property
-    def start(self) -> DfttTimecode:
-        return deepcopy(self.__start)
-
-    @property
-    def end(self) -> DfttTimecode:
-        return deepcopy(self.__end)
-
-    def offset(self, offset_value):
-        try:
-            self.__start += offset_value
-            self.__end += offset_value
-        except DFTTError:
-            raise DFTTTimeRangeMethodError
-
-    def align_to(self, time, head_or_tail=True):
-        # TODO
-        pass
-
-    def handle(self, head, tail=None):
-        tail = head if tail is None else tail
-        try:
-            self.__start -= head
-            self.__end += tail
-        except DFTTError:
-            raise DFTTTimeRangeMethodError
-        if self.__start == self.__end:
-            raise DFTTTimeRangeValueError
-        else:
-            pass
-
-    def retime(self, retime_factor):
-        if type(retime_factor) in (int, float, Fraction):
-            temp_duration = (self.__end - self.__start).precise_timestamp
-            self.__end = self.__start + temp_duration / retime_factor
-        else:
-            raise DFTTTimeRangeTypeError
-
-    def cut(self, cut_point):
-        try:
-            if cut_point in self:
-                return [DfttTimeRange(self.__start, cut_point), DfttTimeRange(self.__end, cut_point)]
-            else:
-                return [self]
-        except DFTTError:
-            raise DFTTTimeRangeTypeError
-
-    def iter(self, step=1):
-        return self.__iter__(step)
-
-    def overlap_with(self, other):
-        if isinstance(other, DfttTimeRange):
-            if self.__start < other.__start:
-                print(1)
-                return self.__end - other.__start > 0 and other.__start - self.__start > 0
-            else:
-                return other.__end - self.__start > 0 and self.__start - other.__start > 0
-        else:
-            raise DFTTTimeRangeTypeError('Other NOT DfttTimeRange')
-
-    def seperate_with(self, other):
-        if isinstance(other, DfttTimeRange):
-            #TODO
-            pass
-
-    def __repr__(self):
-        output_str1 = '{}{}, {}{}, {}{:.02f} {}, {}'.format('Timecode:',
-                                                            self.__start.timecode_output(
-                                                                self.__start.type),
-                                                            'Type:', self.__start.type, 'FPS:', float(
-                                                                self.__start.fps),
-                                                            'DF' if self.__start.is_drop_frame is True else 'NDF',
-                                                            'Strict' if self.__start.is_strict is True else 'Non-Strict')
-        output_str2 = '{}{}, {}{}, {}{:.02f} {}, {}'.format('Timecode:',
-                                                            self.__end.timecode_output(
-                                                                self.__end.type),
-                                                            'Type:', self.__end.type, 'FPS:', float(
-                                                                self.__end.fps),
-                                                            'DF' if self.__end.is_drop_frame is True else 'NDF',
-                                                            'Strict' if self.__end.is_strict is True else 'Non-Strict')
-        return '<DfttTimeRange>\n|{}{}|\n|{}{}|'.format('Start:', output_str1, 'End:', output_str2)
-
-    def __len__(self):
-        return self.framecount
-
-    def __contains__(self, item):
-        if isinstance(item, DfttTimecode):
-            # return self.__start <= item <= self.__end
-            return self.__end - item > 0 and item - self.__start > 0
-        elif isinstance(item, DfttTimeRange):
-            return self.__end - item.__start > 0 and item.__start - self.__start > 0 and\
-                self.__end - item.__end > 0 and item.__end - self.__start > 0
-        else:
-            try:
-                return self.__end - item > 0 and item - self.__start > 0
-            except DFTTError:
-                raise DFTTTimeRangeTypeError
-
-    def __iter__(self, step=1):
-        tc = self.start
-        while tc <= self.__end:
-            yield tc
-            tc += step
-
-    def __lshift__(self, other):
-        self.handle(head=other, tail=0)
-
-    def __rshift__(self, other):
-        self.handle(head=0, tail=other)

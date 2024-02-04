@@ -62,3 +62,15 @@ First Public Release.
 
   Addressed a problem when `output_part = 3` in `timecode_output(self, dest_type, output_part)` would return minute value in timecode value
   
+#TODO V0.1.00 changelog   
+## V0.1.00
+添加 Add:
+
+修改 Modify：
+
+修复 BugFix:
+
+弃用 Deprecate:
+- 使用`functools.singledispatchmethod` 代替 `dispatch.InstanceMethodDispatch`
+
+  Use`functools.singledispatchmethod` instead of `dispatch.InstanceMethodDispatch`
