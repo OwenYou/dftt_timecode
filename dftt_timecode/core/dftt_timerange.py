@@ -6,7 +6,7 @@ from dftt_timecode.error import DFTTError, DFTTTimeRangeFPSError, DFTTTimeRangeM
 
 
 class DfttTimeRange:
-    TIME_24H = 86400
+    TIME_24H_SECONDS = 86400
 
     __start = DfttTimecode(0.0)
     __end = DfttTimecode(1.0)
@@ -87,7 +87,7 @@ class DfttTimeRange:
         # 避免反向Range(Forward == False)并且strict == True时
         # __start-__end的precise_timestamp被mapping到(0.0,86400.0)内的问题
         if self.__strict_24h is True and self.__midnight is True:
-            return float(self.TIME_24H)-abs(float(self.__end.precise_timestamp - self.__start.precise_timestamp))
+            return float(self.TIME_24H_SECONDS)-abs(float(self.__end.precise_timestamp - self.__start.precise_timestamp))
         else:
             return abs(float(self.__end.precise_timestamp - self.__start.precise_timestamp))
 
@@ -97,7 +97,7 @@ class DfttTimeRange:
         # 避免反向Range(Forward == False)并且strict == True时
         # __start-__end的precise_timestamp被mapping到(0.0,86400.0*fps)内的问题
         if self.__strict_24h is True and self.__midnight is True:
-            return int(round(self.TIME_24H*self.__fps))-abs(int(self.__end.framecount - self.__start.framecount))
+            return int(round(self.TIME_24H_SECONDS*self.__fps))-abs(int(self.__end.framecount - self.__start.framecount))
         else:
             return abs(int(self.__end.framecount - self.__start.framecount))
 
@@ -162,7 +162,9 @@ class DfttTimeRange:
             raise DFTTTimeRangeTypeError('Other NOT DfttTimeRange')
 
     def seperate_with(self, other):
+        #TODO if self.framecount == 1 raise OperationError
         if isinstance(other, DfttTimeRange):
+            
             # TODO
             pass
 

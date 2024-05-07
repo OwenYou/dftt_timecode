@@ -59,9 +59,9 @@ def test_duration(range_value,x_duration_value):
 @pytest.mark.parametrize(
    argnames="range_value,x_framecount_value",
    argvalues=[
-    ({'start_tc':TC('00:00:00:00','auto',fps=24),'end_tc':TC('00:00:01:00','auto',fps=24)},24),
-    ({'start_tc':TC('00:00:00:00','auto',fps=24),'end_tc':TC('00:00:01:00','auto',fps=24),'forward':False},86399), 
-    ({'start_tc':TC('23:59:59:00','auto',fps=24),'end_tc':TC('00:00:01:00','auto',fps=24)},2),
+    ({'start_tc':TC('00:00:00:00','auto',fps=24),'end_tc':TC('00:00:01:01','auto',fps=24)},25),
+    ({'start_tc':TC('00:00:00:00','auto',fps=24),'end_tc':TC('00:00:00:01','auto',fps=24),'forward':False},2073599), 
+    ({'start_tc':TC('23:59:59:00','auto',fps=24),'end_tc':TC('00:00:00:01','auto',fps=24)},2),
     ({'start_tc':TC('00:00:01:00','auto',fps=24),'end_tc':TC('23:59:59:00','auto',fps=24),'forward':False},2),
     
     ({'start_tc':TC('00:00:00:00','auto',fps=24),'end_tc':2.0},2),

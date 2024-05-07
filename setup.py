@@ -1,11 +1,11 @@
 import setuptools
-
+import dftt_timecode as package
 with open("README.md", "r",encoding='UTF-8') as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="dftt_timecode",
-    version="0.0.12",
+    name=package.name,
+    version=package.__version__,
     author="You Ziyuan",
     author_email="hikaridragon0216@gmail.com",
     description="Timecode library for film and TV industry, supports HFR and a bunch of cool features",
