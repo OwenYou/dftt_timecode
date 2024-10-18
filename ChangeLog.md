@@ -71,13 +71,16 @@ First Public Release.
   This bug will cause error when using strings like `'00:00:27:183'` to initilize a dlp timecode object.
  
   
-#TODO V0.0.13 changelog   
+V0.0.13 changelog   
 ## V0.0.13
-添加 Add:
+重构 Refactor:
+- 使用`f-string`处理字符串格式输出
+  
+  Handling string format output using `f-string`
 
-修改 Modify：
+- 重构时间码输出函数,减少代码重复
 
-修复 BugFix:
+  Refactor the time code output function to reduce code duplication
 
 弃用 Deprecate:
 - 使用`functools.singledispatchmethod` 代替 `dispatch.InstanceMethodDispatch`

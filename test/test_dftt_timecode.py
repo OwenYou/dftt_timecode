@@ -181,8 +181,11 @@ def test_set_strict(set_strict_data):
 
 @pytest.mark.parametrize(argnames="timecode_value, timecode_type, fps, drop_frame, strict,output_smpte,output_frame,output_time,output_srt,output_fcpx,output_ffmpeg",
                          argvalues=[('00:00:01:00', 'auto', 24, False, True, '00:00:01:00',
-                                     '24', '1.0', '00:00:01,000', '1s', '00:00:01.00'), ],
-                         ids=['smpte'])
+                                     '24', '1.0', '00:00:01,000', '1s', '00:00:01.00'), 
+                                    ('00:10:00;00', 'auto', 29.97, True, True, '00:10:00;00',
+                                     '17982', '600.0', '00:10:00,000', '600s', '00:10:00.00'),
+                                    ],
+                         ids=['NDF','DF'])
 def test_timecode_output(timecode_value, timecode_type, fps, drop_frame, strict, output_smpte, output_frame, output_time, output_srt, output_fcpx, output_ffmpeg):
     tc = TC(timecode_value, timecode_type, fps, drop_frame, strict)
     assert tc.timecode_output() == timecode_value
