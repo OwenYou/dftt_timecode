@@ -1,7 +1,7 @@
 import logging
 from fractions import Fraction
 from functools import singledispatchmethod
-from math import ceil
+from math import ceil, floor
 from copy import deepcopy
 
 from dftt_timecode.error import *
@@ -608,6 +608,10 @@ class DfttTimecode:
             self.__strict = strict
         return self
 
+    def get_audio_sample_count(self, sample_rate: int) -> int:
+        numerator,denominator=self.__precise_time.as_integer_ratio()
+        return floor(numerator * sample_rate/denominator)
+
     def __repr__(self):
         return f'<DfttTimecode>(Timecode:{self.timecode_output(self.__type)}, Type:{self.__type},FPS:{float(self.__fps):.02f} {'DF' if self.__drop_frame == True else 'NDF'}, {'Strict' if self.__strict == True else 'Non-Strict'})'
 
@@ -828,4 +832,3 @@ class DfttTimecode:
 
     def __int__(self):
         return self.framecount
-

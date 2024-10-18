@@ -556,3 +556,15 @@ def test_int(tc_value,xvalue):
     tc=TC(*tc_value)
     assert int(tc) == xvalue
 
+
+@pytest.mark.parametrize(
+    argnames="tc_value,sample_rate,xvalue",
+    argvalues=[(('00:00:01:00', 'auto', 24, False, True),48000,48000),
+               (('00:00:01:01', 'auto', 24, False, True),48000,50000),
+                (('00:00:01:01', 'auto', 24, False, True),44100,45937),
+    ],
+    ids=['ideal','single_frame','24fps_44100']
+)
+def test_audio_sample_count(tc_value,sample_rate,xvalue):
+    tc=TC(*tc_value)
+    assert tc.get_audio_sample_count(sample_rate) == xvalue
