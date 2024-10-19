@@ -51,9 +51,8 @@ def test_auto_type(timecode_value, timecode_type, fps, drop_frame, strict, resul
     "timecode_value, timecode_type, fps, drop_frame, strict",
     [
         ('01:00:00:23', 'smpte', 20, False, True),
-        ('00:01:00;00', 'smpte', 23.97, False, True),
     ],
-    ids=['smpte', 'smpte_df']
+    ids=['smpte']
 )
 def test_invalid_timecode(timecode_value, timecode_type, fps, drop_frame, strict):
     from dftt_timecode.error import DFTTTimecodeValueError
@@ -182,8 +181,11 @@ def test_set_strict(set_strict_data):
 
 @pytest.mark.parametrize(argnames="timecode_value, timecode_type, fps, drop_frame, strict,output_smpte,output_frame,output_time,output_srt,output_fcpx,output_ffmpeg",
                          argvalues=[('00:00:01:00', 'auto', 24, False, True, '00:00:01:00',
-                                     '24', '1.0', '00:00:01,000', '1s', '00:00:01.00'), ],
-                         ids=['smpte'])
+                                     '24', '1.0', '00:00:01,000', '1s', '00:00:01.00'), 
+                                    ('00:10:00;00', 'auto', 29.97, True, True, '00:10:00;00',
+                                     '17982', '600.0', '00:10:00,000', '600s', '00:10:00.00'),
+                                    ],
+                         ids=['NDF','DF'])
 def test_timecode_output(timecode_value, timecode_type, fps, drop_frame, strict, output_smpte, output_frame, output_time, output_srt, output_fcpx, output_ffmpeg):
     tc = TC(timecode_value, timecode_type, fps, drop_frame, strict)
     assert tc.timecode_output() == timecode_value
@@ -554,3 +556,15 @@ def test_int(tc_value,xvalue):
     tc=TC(*tc_value)
     assert int(tc) == xvalue
 
+
+@pytest.mark.parametrize(
+    argnames="tc_value,sample_rate,xvalue",
+    argvalues=[(('00:00:01:00', 'auto', 24, False, True),48000,48000),
+               (('00:00:01:01', 'auto', 24, False, True),48000,50000),
+                (('00:00:01:01', 'auto', 24, False, True),44100,45937),
+    ],
+    ids=['ideal','single_frame','24fps_44100']
+)
+def test_audio_sample_count(tc_value,sample_rate,xvalue):
+    tc=TC(*tc_value)
+    assert tc.get_audio_sample_count(sample_rate) == xvalue

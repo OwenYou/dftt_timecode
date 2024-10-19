@@ -1,10 +1,11 @@
 import logging
 from fractions import Fraction
-from dftt_timecode.dispatch import InstanceMethodDispatch
+from functools import singledispatchmethod
+from math import ceil, floor
+from copy import deepcopy
+
 from dftt_timecode.error import *
 from dftt_timecode.pattern import *
-from math import ceil
-from copy import deepcopy
 
 # logging.basicConfig(filename='dftt_timecode_log.txt',
 #                     filemode='w',
@@ -27,12 +28,12 @@ class DfttTimecode:
         else:
             return super(DfttTimecode, cls).__new__(cls)
 
-    @InstanceMethodDispatch.dispatch()  # 用InstanceMethodDispatch实现多构造函数
+    @singledispatchmethod
     def __init__(self, timecode_value, timecode_type, fps, drop_frame, strict):  # 构造函数
         pass
 
-    @InstanceMethodDispatch.register('__init__', str)  # 若传入的TC值为字符串，则调用此函数
-    def _(self, timecode_value, timecode_type='auto', fps=24.0, drop_frame=False, strict=True):
+    @__init__.register  # 若传入的TC值为字符串，则调用此函数
+    def _(self, timecode_value: str, timecode_type='auto', fps=24.0, drop_frame=False, strict=True):
         if timecode_value[0] == '-':  # 判断首位是否为负，并为flag赋值
             minus_flag = True
         else:
@@ -42,7 +43,7 @@ class DfttTimecode:
         self.__nominal_fps = ceil(fps)
         self.__drop_frame = drop_frame
         self.__strict = strict
-        if (round(self.__fps, 2) % 29.97 != 0 and  round(self.__fps, 2) % 23.98 != 0 and self.is_drop_frame == True):  # 判断丢帧状态与时码输入是否匹配 不匹配则强制转换
+        if (round(self.__fps, 2) % 29.97 != 0 and round(self.__fps, 2) % 23.98 != 0 and self.is_drop_frame == True):  # 判断丢帧状态与时码输入是否匹配 不匹配则强制转换
             self.__drop_frame = False
             logging.info(
                 'Timecode.__init__.str: This FPS is NOT Drop-Framable, force drop_frame to False')
@@ -64,7 +65,7 @@ class DfttTimecode:
             elif SMPTE_DF_REGEX.match(timecode_value):
                 timecode_type = 'smpte'
                 # 判断丢帧状态与帧率是否匹配 不匹配则强制转换
-                if round(self.__fps, 2) % 29.97 == 0 or round(self.__fps, 2) % 23.98 == 0 :
+                if round(self.__fps, 2) % 29.97 == 0 or round(self.__fps, 2) % 23.98 == 0:
                     self.__drop_frame = True
                 else:
                     self.__drop_frame = False
@@ -118,7 +119,8 @@ class DfttTimecode:
                     total_minutes = 60 * hh + mm
                     frame_index = (hh * 3600 + mm * 60 + ss) * self.__nominal_fps + ff - (
                         self.__nominal_fps / 30) * 2 * (
-                        total_minutes - total_minutes // 10)  # 逢十分钟不丢帧 http://andrewduncan.net/timecodes/
+                        # 逢十分钟不丢帧 http://andrewduncan.net/timecodes/
+                        total_minutes - total_minutes // 10)
             if self.__strict == True:  # strict输入逻辑
                 frame_index = frame_index % (self.__fps * 86400) if self.__drop_frame == True else frame_index % (
                     self.__nominal_fps * 86400)  # 对于DF时码来说，严格处理取真实FPS的模，对于NDF时码，则取名义FPS的模
@@ -201,11 +203,11 @@ class DfttTimecode:
             sub_sec = temp_timecode_list[3]
             if minus_flag == False:
                 self.__precise_time = Fraction(
-                    hh * 3600 + mm * 60 + ss + float('0.{}'.format(sub_sec)))
+                    hh * 3600 + mm * 60 + ss + float(f'0.{sub_sec}'))
             else:
                 self.__precise_time = - \
                     Fraction(hh * 3600 + mm * 60 + ss +
-                             float('0.{}'.format(sub_sec)))
+                             float(f'0.{sub_sec}'))
             if self.__strict == True:  # strict逻辑 对于非帧相关值（时间戳） 直接取模
                 self.__precise_time = self.__precise_time % 86400
             else:
@@ -270,9 +272,8 @@ class DfttTimecode:
             self.__fps) + ', dropframe=' + str(self.__drop_frame) + ', strict=' + str(self.__strict)
         logging.debug(instance_success_log)
 
-    # 输入为Fraction类分数，此时认为输入是时间戳，若不是，则会报错
-    @InstanceMethodDispatch.register('__init__', Fraction)
-    def _(self, timecode_value, timecode_type='time', fps=24.0, drop_frame=False, strict=True):
+    @__init__.register  # 输入为Fraction类分数，此时认为输入是时间戳，若不是，则会报错
+    def _(self, timecode_value: Fraction, timecode_type='time', fps=24.0, drop_frame=False, strict=True):
         if timecode_type in ('time', 'auto'):
             self.__type = 'time'
             self.__fps = fps
@@ -293,8 +294,8 @@ class DfttTimecode:
             self.__fps) + ', dropframe=' + str(self.__drop_frame) + ', strict=' + str(self.__strict)
         logging.debug(instance_success_log)
 
-    @InstanceMethodDispatch.register('__init__', int)
-    def _(self, timecode_value, timecode_type='frame', fps=24.0, drop_frame=False, strict=True):
+    @__init__.register
+    def _(self, timecode_value: int, timecode_type='frame', fps=24.0, drop_frame=False, strict=True):
         if timecode_type in ('frame', 'auto'):
             self.__type = 'frame'
             self.__fps = fps
@@ -329,8 +330,8 @@ class DfttTimecode:
             self.__fps) + ', dropframe=' + str(self.__drop_frame) + ', strict=' + str(self.__strict)
         logging.debug(instance_success_log)
 
-    @InstanceMethodDispatch.register('__init__', float)
-    def _(self, timecode_value, timecode_type='time', fps=24.0, drop_frame=False, strict=True):
+    @__init__.register
+    def _(self, timecode_value: float, timecode_type='time', fps=24.0, drop_frame=False, strict=True):
         if timecode_type in ('time', 'auto'):
             self.__type = 'time'
             self.__fps = fps
@@ -350,8 +351,8 @@ class DfttTimecode:
             self.__fps) + ', dropframe=' + str(self.__drop_frame) + ', strict=' + str(self.__strict)
         logging.debug(instance_success_log)
 
-    @InstanceMethodDispatch.register('__init__', tuple)
-    def _(self, timecode_value, timecode_type='time', fps=24.0, drop_frame=False, strict=True):
+    @__init__.register
+    def _(self, timecode_value: tuple, timecode_type='time', fps=24.0, drop_frame=False, strict=True):
         if timecode_type in ('time', 'auto'):
             self.__type = 'time'
             self.__fps = fps
@@ -372,8 +373,8 @@ class DfttTimecode:
             self.__fps) + ', dropframe=' + str(self.__drop_frame) + ', strict=' + str(self.__strict)
         logging.debug(instance_success_log)
 
-    @InstanceMethodDispatch.register('__init__', list)
-    def _(self, timecode_value, timecode_type='time', fps=24.0, drop_frame=False, strict=True):
+    @__init__.register
+    def _(self, timecode_value: list, timecode_type='time', fps=24.0, drop_frame=False, strict=True):
         if timecode_type in ('time', 'auto'):
             self.__type = timecode_type
             self.__fps = fps
@@ -395,7 +396,7 @@ class DfttTimecode:
         logging.debug(instance_success_log)
 
     @property
-    def type(self):
+    def type(self) -> str:
         return self.__type
 
     @property
@@ -403,185 +404,147 @@ class DfttTimecode:
         return self.__fps
 
     @property
-    def is_drop_frame(self):
+    def is_drop_frame(self) -> bool:
         return self.__drop_frame
 
     @property
-    def is_strict(self):
+    def is_strict(self) -> bool:
         return self.__strict
 
     @property
-    def framecount(self):
+    def framecount(self) -> int:
         return int(self._convert_to_output_frame())
 
     @property
-    def timestamp(self):
+    def timestamp(self) -> float:
         return float(self._convert_to_output_time())
 
     @property
     def precise_timestamp(self):
         return self.__precise_time
 
-    def _convert_to_output_smpte(self, output_part=0)->str:
+    def _convert_to_output_smpte(self, output_part=0) -> str:
         minus_flag = False
         frame_index = round(self.__precise_time * self.__fps)  # 从内部时间戳计算得帧计数
         if frame_index < 0:  # 负值时，打上flag，并翻转负号
             minus_flag = True
             frame_index = -frame_index
-        else:
-            pass
+
+        # 计算framecount用于输出smpte时码个部分值
         if self.__drop_frame == False:  # 不丢帧
-            # 对于不丢帧时码而言 时码到帧不需要额外预处理
-            output_ff = round(frame_index % self.__nominal_fps)
-            output_ss = round((frame_index // self.__nominal_fps) % 60)
-            output_mm = round(((frame_index // self.__nominal_fps) // 60) % 60)
-            output_hh = round(
-                (((frame_index // self.__nominal_fps) // 60) // 60))
+            # 对于不丢帧时码而言 framecount 为帧计数
+            _nominal_framecount = frame_index
         else:  # 丢帧
             drop_per_min = self.__nominal_fps / 30 * 2  # 提前计算每分钟丢帧数量 简化后续计算
-            d = frame_index // (self.__nominal_fps * 600 -
-                                9 * drop_per_min)  # 计算经过几个十分钟
-            m = frame_index % (self.__nominal_fps * 600 -
-                               9 * drop_per_min)  # 经过几个十分钟再取余
-            if m == 0 or m == 1:
-                drop_frame_frame_number = frame_index + drop_per_min * 9 * d  # 负数整除逻辑额外处理
-            else:
-                drop_frame_frame_number = frame_index + drop_per_min * 9 * d + drop_per_min * (
-                    (m - drop_per_min) // (self.__nominal_fps * 60 - drop_per_min))  # 剩余小于十分钟部分计算丢了多少帧，补偿
-            output_ff = round(drop_frame_frame_number % self.__nominal_fps)
-            output_ss = round(
-                (drop_frame_frame_number // self.__nominal_fps) % 60)
-            output_mm = round(
-                ((drop_frame_frame_number // self.__nominal_fps) // 60) % 60)
-            output_hh = round(
-                (((drop_frame_frame_number // self.__nominal_fps) // 60) // 60))
-        if output_part == 0:
-            if self.__drop_frame == False:  # 丢帧时码的帧号前应为分号
-                output_str = '{}{:02d}:{:02d}:{:02d}:'.format('' if minus_flag == False else '-',
-                                                              output_hh, output_mm, output_ss)
-            else:
-                output_str = '{}{:02d}:{:02d}:{:02d};'.format('' if minus_flag == False else '-',
-                                                              output_hh, output_mm, output_ss)
-            if self.__fps < 100:  # 高帧频时码最后需要补零为三位
-                output_str = output_str + '{:02d}'.format(output_ff)
-            else:
-                output_str = output_str + '{:03d}'.format(output_ff)
-            return output_str
-        elif output_part == 1:
-            return '{}{:02d}'.format('' if minus_flag == False else '-', output_hh)
-        elif output_part == 2:
-            return '{:02d}'.format(output_mm)
-        elif output_part == 3:
-            return '{:02d}'.format(output_ss)
-        elif output_part == 4:
-            if self.__fps < 100:  # 高帧频时码最后需要补零为三位
-                return '{:02d}'.format(output_ff)
-            else:
-                return '{:03d}'.format(output_ff)
-        else:
+            df_framecount_10min = self.__nominal_fps * 600 - 9 * drop_per_min
+
+            d, m = divmod(frame_index, df_framecount_10min)
+            drop_frame_frame_number = frame_index + drop_per_min * 9 * d + drop_per_min * (
+                # 剩余小于十分钟部分计算丢了多少帧，补偿
+                ((m - drop_per_min) // (self.__nominal_fps * 60 - drop_per_min)) if m > 2 else 0)
+
+            _nominal_framecount = drop_frame_frame_number
+
+        def _convert_framecount_to_smpte_parts(frame_count: int, fps: int) -> tuple:
+            hour, r_1 = divmod(frame_count, 60*60*fps)
+            minute, r_2 = divmod(r_1, 60*fps)
+            second, frame = divmod(r_2, fps)
+            return int(hour), int(minute), int(second), round(frame)
+
+        output_hh, output_mm, output_ss, output_ff = _convert_framecount_to_smpte_parts(
+            _nominal_framecount, self.__nominal_fps)
+
+        output_strs = (
+            f'{'' if minus_flag == False else '-'}{output_hh:02d}',
+            f'{output_mm:02d}',
+            f'{output_ss:02d}',
+            f'{output_ff:{'02d' if self.__fps < 100 else '03d'}}')
+
+        if output_part > len(output_strs):
             logging.warning(
                 'Timecode._convert_to_output_smpte: No such part, will return the last part of timecode')
-            if self.__fps < 100:  # 高帧频时码最后需要补零为三位
-                return '{:02d}'.format(output_ff)
-            else:
-                return '{:03d}'.format(output_ff)
+            return output_strs[-1]
 
-    def _convert_to_output_srt(self, output_part=0)->str:
-        minus_flag = False
-        if self.__precise_time < 0:  # 负值时，打上flag，并翻转负号
-            minus_flag = True
-            temp_precise_time = -self.__precise_time
-        else:
-            temp_precise_time = self.__precise_time
-        output_hh = int(temp_precise_time / 3600)
-        output_mm = (temp_precise_time - output_hh * 3600) // 60
-        output_ss = round(
-            (temp_precise_time - output_hh * 3600 - output_mm * 60) // 1)
-        output_sub_sec = round((temp_precise_time % 1) * 1000)  # 计算毫秒
+        # 输出完整时码字符串
         if output_part == 0:
-            return '{}{:02d}:{:02d}:{:02d},{:03d}'.format('' if minus_flag == False else '-',
-                                                          output_hh, output_mm, output_ss, output_sub_sec)
-        elif output_part == 1:
-            return '{}{:02d}'.format('' if minus_flag == False else '-', output_hh)
-        elif output_part == 2:
-            return '{:02d}'.format(output_mm)
-        elif output_part == 3:
-            return '{:02d}'.format(output_ss)
-        elif output_part == 4:
-            return '{:03d}'.format(output_sub_sec)
+            main_part = ':'.join(output_strs[:3])
+            # 丢帧时码的帧号前应为分号
+            separator = ';' if self.__drop_frame else ':'
+            output_str = f'{main_part}{separator}{output_strs[3]}'
+            return output_str
+
+        elif 1 <= output_part <= len(output_strs):
+            return output_strs[output_part-1]
+
         else:
+            raise IndexError(
+                'Timecode._convert_to_output_smpte: Negtive output_part is not allowed')
+
+    def _convert_precise_time_to_parts(self, sub_sec_multiplier: int, frame_seperator: str, sub_sec_format: str) -> tuple[str, str, str, str, str]:
+        minus_flag: bool = self.__precise_time < 0
+        temp_precise_time = abs(self.__precise_time)
+        _hh, r_1 = divmod(temp_precise_time, 60*60)
+        _mm, r_2 = divmod(r_1, 60)
+        _ss, r_3 = divmod(r_2, 1)
+        _sub_sec = round(r_3*sub_sec_multiplier)
+
+        output_hh = f'{'' if minus_flag == False else '-'}{_hh:02d}'
+        outpur_mm = f'{_mm:02d}'
+        output_ss = f'{_ss:02d}'
+        output_ff = f'{_sub_sec:{sub_sec_format}}'
+
+        output_full_str = f'{output_hh}:{outpur_mm}:{
+            output_ss}{frame_seperator}{output_ff}'
+
+        return output_full_str, output_hh, outpur_mm, output_ss, output_ff
+
+    def _convert_to_output_srt(self, output_part=0) -> str:
+        output_strs = self._convert_precise_time_to_parts(sub_sec_multiplier=1000,
+                                                          frame_seperator=',',
+                                                          sub_sec_format='03d')
+
+        if output_part > 4:
             logging.warning(
                 'Timecode._convert_to_output_srt: No such part, will return the last part of timecode')
-            return '{:03d}'.format(output_sub_sec)
+            return output_strs[-1]
 
-    def _convert_to_output_dlp(self, output_part=0)->str:
-        minus_flag = False
-        if self.__precise_time < 0:  # 负值时，打上flag，并翻转负号
-            minus_flag = True
-            temp_precise_time = -self.__precise_time
-        else:
-            temp_precise_time = self.__precise_time
-        output_hh = int(temp_precise_time / 3600)
-        output_mm = (temp_precise_time - output_hh * 3600) // 60
-        output_ss = round(
-            (temp_precise_time - output_hh * 3600 - output_mm * 60) // 1)
-        output_sub_sec = round((temp_precise_time % 1) * 250)  # 计算帧戳
-        if output_part == 0:
-            return '{}{:02d}:{:02d}:{:02d}:{:03d}'.format('' if minus_flag == False else '-',
-                                                          output_hh, output_mm, output_ss, output_sub_sec)
-        elif output_part == 1:
-            return '{}{:02d}'.format('' if minus_flag == False else '-', output_hh)
-        elif output_part == 2:
-            return '{:02d}'.format(output_mm)
-        elif output_part == 3:
-            return '{:02d}'.format(output_ss)
-        elif output_part == 4:
-            return '{:03d}'.format(output_sub_sec)
-        else:
+        return output_strs[output_part]
+    ##
+
+    def _convert_to_output_dlp(self, output_part=0) -> str:
+        output_strs = self._convert_precise_time_to_parts(sub_sec_multiplier=250,
+                                                          frame_seperator=':',
+                                                          sub_sec_format='03d')
+
+        if output_part > 4:
             logging.warning(
-                'Timecode._convert_to_output_dlp: No such part, will return the last part of timecode')
-            return '{:03d}'.format(output_sub_sec)
+                'Timecode._convert_to_output_srt: No such part, will return the last part of timecode')
+            return output_strs[-1]
 
-    def _convert_to_output_ffmpeg(self, output_part=0)->str:
-        minus_flag = False
-        if self.__precise_time < 0:  # 负值时，打上flag，并翻转负号
-            minus_flag = True
-            temp_precise_time = -self.__precise_time
-        else:
-            temp_precise_time = self.__precise_time
-        output_hh = int(temp_precise_time / 3600)
-        output_mm = (temp_precise_time - output_hh * 3600) // 60
-        output_ss = round(
-            (temp_precise_time - output_hh * 3600 - output_mm * 60) // 1)
-        output_sub_sec = round((temp_precise_time % 1) * 100)  # 计算毫秒
-        if output_part == 0:
-            return '{}{:02d}:{:02d}:{:02d}.{:02d}'.format('' if minus_flag == False else '-',
-                                                          output_hh, output_mm, output_ss, output_sub_sec)
-        elif output_part == 1:
-            return '{}{:02d}'.format('' if minus_flag == False else '-', output_hh)
-        elif output_part == 2:
-            return '{:02d}'.format(output_mm)
-        elif output_part == 3:
-            return '{:02d}'.format(output_ss)
-        elif output_part == 4:
-            return '{:0d}'.format(output_sub_sec)
-        else:
+        return output_strs[output_part]
+
+    def _convert_to_output_ffmpeg(self, output_part=0) -> str:
+        output_strs = self._convert_precise_time_to_parts(sub_sec_multiplier=100,
+                                                          frame_seperator='.',
+                                                          sub_sec_format='02d')
+
+        if output_part > 4:
             logging.warning(
-                'Timecode._convert_to_output_ffmpeg: No such part, will return the last part of timecode')
-            return '{:03d}'.format(output_sub_sec)
+                'Timecode._convert_to_output_srt: No such part, will return the last part of timecode')
+            return output_strs[-1]
 
-    def _convert_to_output_fcpx(self, output_part=0)->str:
+        return output_strs[output_part]
+
+    def _convert_to_output_fcpx(self, output_part=0) -> str:
         if output_part == 0:
             pass
         else:
             logging.warning(
                 '_convert_to_output_fcpx: This timecode type has only one part.')
-        return '{numerator}{denominator}s'.format(numerator=self.__precise_time.numerator,
-                                                  denominator='' if float(
-                                                      self.__precise_time).is_integer() else '/{}'.format(
-                                                      self.__precise_time.denominator))
+        return f'{self.__precise_time.numerator}{'' if float(
+            self.__precise_time).is_integer() else self.__precise_time.denominator}s'
 
-    def _convert_to_output_frame(self, output_part=0)->str:
+    def _convert_to_output_frame(self, output_part=0) -> str:
         if output_part == 0:
             pass
         else:
@@ -589,7 +552,7 @@ class DfttTimecode:
                 'Timecode._convert_to_output_frame: This timecode type has only one part.')
         return str(round(self.__precise_time * self.__fps))
 
-    def _convert_to_output_time(self, output_part=0)->str:
+    def _convert_to_output_time(self, output_part=0) -> str:
         if output_part == 0:
             pass
         else:
@@ -600,9 +563,9 @@ class DfttTimecode:
 
     def timecode_output(self, dest_type='auto', output_part=0):
         if dest_type == 'auto':
-            func = getattr(self, '_convert_to_output_{}'.format(self.__type))
+            func = getattr(self, f'_convert_to_output_{self.__type}')
         else:
-            func = getattr(self, '_convert_to_output_{}'.format(dest_type))
+            func = getattr(self, f'_convert_to_output_{dest_type}')
         if func:
             return func(output_part)
         else:
@@ -611,7 +574,7 @@ class DfttTimecode:
             func = getattr(self, '_convert_to_output_smpte', None)
             return func(output_part)
 
-    def set_fps(self, dest_fps, rounding=True)->'DfttTimecode':
+    def set_fps(self, dest_fps, rounding=True) -> 'DfttTimecode':
         self.__fps = dest_fps
         self.__nominal_fps = ceil(self.__fps)
         if rounding == True:
@@ -621,7 +584,7 @@ class DfttTimecode:
             pass
         return self
 
-    def set_type(self, dest_type='smpte', rounding=True)->'DfttTimecode':
+    def set_type(self, dest_type='smpte', rounding=True) -> 'DfttTimecode':
         if dest_type in ('smpte', 'srt', 'dlp', 'ffmpeg', 'fcpx', 'frame', 'time'):
             self.__type = dest_type
         else:
@@ -635,7 +598,7 @@ class DfttTimecode:
             pass
         return self
 
-    def set_strict(self, strict=True)->'DfttTimecode':
+    def set_strict(self, strict=True) -> 'DfttTimecode':
         if strict == self.__strict:
             pass
         else:
@@ -645,22 +608,22 @@ class DfttTimecode:
             self.__strict = strict
         return self
 
+    def get_audio_sample_count(self, sample_rate: int) -> int:
+        numerator,denominator=self.__precise_time.as_integer_ratio()
+        return floor(numerator * sample_rate/denominator)
+
     def __repr__(self):
-        return '<DfttTimecode>({}{}, {}{}, {}{:.02f} {}, {})'.format('Timecode:', self.timecode_output(self.__type),
-                                                                     'Type:', self.__type, 'FPS:', float(
-                                                                         self.__fps),
-                                                                     'DF' if self.__drop_frame == True else 'NDF',
-                                                                     'Strict' if self.__strict == True else 'Non-Strict')
+        return f'<DfttTimecode>(Timecode:{self.timecode_output(self.__type)}, Type:{self.__type},FPS:{float(self.__fps):.02f} {'DF' if self.__drop_frame == True else 'NDF'}, {'Strict' if self.__strict == True else 'Non-Strict'})'
 
     def __str__(self):
         return self.timecode_output()
-    
+
     def __add__(self, other):  # 运算符重载，加号，加int则认为是帧，加float则认为是时间
         temp_sum = self.__precise_time
         if isinstance(other, DfttTimecode):
             if self.__fps == other.__fps and self.__drop_frame == other.__drop_frame:
                 temp_sum = self.__precise_time + other.__precise_time
-                self.__strict=self.__strict or other.__strict
+                self.__strict = self.__strict or other.__strict
             else:  # 帧率不同不允许相加，报错
                 logging.error(
                     'Timecode.__add__: Timecode addition requires exact same FPS.')
@@ -687,7 +650,7 @@ class DfttTimecode:
         if isinstance(other, DfttTimecode):
             if self.__fps == other.__fps and self.__drop_frame == other.__drop_frame:
                 diff = self.__precise_time - other.__precise_time
-                self.__strict=self.__strict or other.__strict
+                self.__strict = self.__strict or other.__strict
             else:
                 logging.error(
                     'Timecode.__sub__: Timecode subtraction requires exact same FPS.')

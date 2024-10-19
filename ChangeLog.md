@@ -71,3 +71,23 @@ First Public Release.
   This bug will cause error when using strings like `'00:00:27:183'` to initilize a dlp timecode object.
  
   
+V0.0.13 changelog   
+## V0.0.13
+重构 Refactor:
+- 使用`f-string`处理字符串格式输出
+  
+  Handling string format output using `f-string`
+
+- 重构时间码输出函数,减少代码重复
+
+  Refactor the time code output function to reduce code duplication
+
+添加 Add:
+- 添加`get_audio_sample_count` 方法用于正确输出TC时间戳下的音频采样数, 解决issue [#9](https://github.com/OwenYou/dftt_timecode/issues/9)
+
+  Add `get_audio_sample_count` method for correctly outputting the count of audio samples at TC timestamps,solve issue [#9](https://github.com/OwenYou/dftt_timecode/issues/9)
+
+弃用 Deprecate:
+- 使用`functools.singledispatchmethod` 代替 `dispatch.InstanceMethodDispatch`
+
+  Use`functools.singledispatchmethod` instead of `dispatch.InstanceMethodDispatch`
