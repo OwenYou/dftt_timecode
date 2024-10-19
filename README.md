@@ -591,4 +591,3 @@ int(tc_a)
 #864000
 ```
 
-#TODO TimeRange readme
