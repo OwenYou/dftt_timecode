@@ -7,3 +7,4 @@ __pycache__
 dftt_timecode.egg-info
 .pytest_cache
 .DS_Store
+playground.ipynb
