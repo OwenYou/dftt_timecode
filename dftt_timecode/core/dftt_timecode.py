@@ -453,12 +453,14 @@ class DfttTimecode:
 
         output_hh, output_mm, output_ss, output_ff = _convert_framecount_to_smpte_parts(
             _nominal_framecount, self.__nominal_fps)
-
+        
+        output_ff_format = '02d' if self.__fps < 100 else '03d'
+        output_minus_flag = '' if minus_flag == False else '-'
         output_strs = (
-            f'{'' if minus_flag == False else '-'}{output_hh:02d}',
+            f'{output_minus_flag}{output_hh:02d}',
             f'{output_mm:02d}',
             f'{output_ss:02d}',
-            f'{output_ff:{'02d' if self.__fps < 100 else '03d'}}')
+            f'{output_ff:{output_ff_format}}')
 
         if output_part > len(output_strs):
             logging.warning(
@@ -487,14 +489,13 @@ class DfttTimecode:
         _mm, r_2 = divmod(r_1, 60)
         _ss, r_3 = divmod(r_2, 1)
         _sub_sec = round(r_3*sub_sec_multiplier)
-
-        output_hh = f'{'' if minus_flag == False else '-'}{_hh:02d}'
+        output_minus_flag = '' if minus_flag == False else '-'
+        output_hh = f'{output_minus_flag}{_hh:02d}'
         outpur_mm = f'{_mm:02d}'
         output_ss = f'{_ss:02d}'
         output_ff = f'{_sub_sec:{sub_sec_format}}'
 
-        output_full_str = f'{output_hh}:{outpur_mm}:{
-            output_ss}{frame_seperator}{output_ff}'
+        output_full_str = f'{output_hh}:{outpur_mm}:{output_ss}{frame_seperator}{output_ff}'
 
         return output_full_str, output_hh, outpur_mm, output_ss, output_ff
 
@@ -541,8 +542,8 @@ class DfttTimecode:
         else:
             logging.warning(
                 '_convert_to_output_fcpx: This timecode type has only one part.')
-        return f'{self.__precise_time.numerator}{'' if float(
-            self.__precise_time).is_integer() else self.__precise_time.denominator}s'
+        output_fcpx_denominator='' if float(self.__precise_time).is_integer() else self.__precise_time.denominator
+        return f'{self.__precise_time.numerator}{output_fcpx_denominator}s'
 
     def _convert_to_output_frame(self, output_part=0) -> str:
         if output_part == 0:
@@ -613,7 +614,9 @@ class DfttTimecode:
         return floor(numerator * sample_rate/denominator)
 
     def __repr__(self):
-        return f'<DfttTimecode>(Timecode:{self.timecode_output(self.__type)}, Type:{self.__type},FPS:{float(self.__fps):.02f} {'DF' if self.__drop_frame == True else 'NDF'}, {'Strict' if self.__strict == True else 'Non-Strict'})'
+        drop_frame_flag = 'DF' if self.__drop_frame == True else 'NDF'
+        strict_flag = 'Strict' if self.__strict == True else 'Non-Strict'
+        return f'<DfttTimecode>(Timecode:{self.timecode_output(self.__type)}, Type:{self.__type},FPS:{float(self.__fps):.02f} {drop_frame_flag}, {strict_flag})'
 
     def __str__(self):
         return self.timecode_output()
