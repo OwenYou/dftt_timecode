@@ -1,6 +1,5 @@
 name = 'dftt_timecode'
 __author__ = 'You Ziyuan'
-__version__ = '0.0.13'
+__version__ = '0.0.12'
 
-from dftt_timecode.core.dftt_timecode import DfttTimecode
-from dftt_timecode.core.dftt_timerange import DfttTimeRange
+from dftt_timecode.core import DfttTimecode
