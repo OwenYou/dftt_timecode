@@ -91,3 +91,9 @@ V0.0.13 changelog
 - 使用`functools.singledispatchmethod` 代替 `dispatch.InstanceMethodDispatch`
 
   Use`functools.singledispatchmethod` instead of `dispatch.InstanceMethodDispatch`
+
+## V0.0.14
+ 修复 BugFix:
+- 修复v0.0.13打包后不包含core，导致库无法使用的问题。
+
+  Fix v0.0.13 import failure. Caused by missing dftt_timecode.core while packing.

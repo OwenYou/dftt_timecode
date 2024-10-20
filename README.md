@@ -1,6 +1,6 @@
 # dftt_timecode
 
-[![pypi](https://img.shields.io/badge/pypi-0.0.11-brightgreen)](https://pypi.org/project/dftt-timecode/)
+[![pypi](https://img.shields.io/badge/pypi-0.0.14-brightgreen)](https://pypi.org/project/dftt-timecode/)
 [![python](https://img.shields.io/badge/python-3-blue)]()
 [![GitHub license](https://img.shields.io/badge/license-LGPL2.1-green)](https://github.com/OwenYou/dftt_timecode/blob/main/LICENSE)
 

@@ -12,7 +12,7 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/OwenYou/dftt_timecode",
-    packages=setuptools.find_packages(),
+    packages=['dftt_timecode','dftt_timecode.core'],
     python_requires=">=3.10",
     classifiers=[
         "Programming Language :: Python :: 3",
