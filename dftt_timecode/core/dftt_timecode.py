@@ -553,3 +553,8 @@ class DfttTimecode:
 
     def __int__(self):
         return self.framecount
+
+    def __deepcopy__(self, memo):
+        return DfttTimecode(
+            self.timestamp, self.type, self.fps, self.is_drop_frame, self.is_strict
+        )
