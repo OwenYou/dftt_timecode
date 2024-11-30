@@ -9,7 +9,6 @@ class DFTTTimecodeValueError(DFTTError):
 class DFTTTimecodeTypeError(DFTTError):
     pass
 
+
 class DFTTTimecodeOperatorError(DFTTError):
     pass
-
-

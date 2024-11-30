@@ -1,16 +1,9 @@
 import logging
 from fractions import Fraction
-from functools import singledispatchmethod
 from math import ceil, floor
 
+from dftt_timecode.core.timecode_parser import TimecodeParser
 import dftt_timecode.error as dftt_errors
-import dftt_timecode.pattern as tc_patterns
-
-# logging.basicConfig(filename='dftt_timecode_log.txt',
-#                     filemode='w',
-#                     format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
-#                     datefmt='%Y-%m-%d %a %H:%M:%S',
-#                     level=logging.DEBUG)
 
 
 class DfttTimecode:
@@ -23,7 +16,7 @@ class DfttTimecode:
 
     def __new__(
         cls,
-        timecode_value=0,
+        timecode_value,
         timecode_type="auto",
         fps=24.0,
         drop_frame=False,
@@ -34,540 +27,24 @@ class DfttTimecode:
         else:
             return super(DfttTimecode, cls).__new__(cls)
 
-    @singledispatchmethod
     def __init__(
-        self, timecode_value, timecode_type, fps, drop_frame, strict
-    ):  # 构造函数
-        pass
-
-    @__init__.register  # 若传入的TC值为字符串，则调用此函数
-    def _(
         self,
-        timecode_value: str,
+        timecode_value,
         timecode_type="auto",
         fps=24.0,
         drop_frame=False,
         strict=True,
-    ):
-        if timecode_value[0] == "-":  # 判断首位是否为负，并为flag赋值
-            minus_flag = True
-        else:
-            minus_flag = False
-        self.__fps = fps
-        # 读入帧率取整为名义帧率便于后续计算（包括判断时码是否合法，DF/NDF逻辑等) 用进一法是因为要判断ff值是否大于fps-1
-        self.__nominal_fps = ceil(fps)
-        self.__drop_frame = drop_frame
-        self.__strict = strict
-        if (
-            round(self.__fps, 2) % 29.97 != 0
-            and round(self.__fps, 2) % 23.98 != 0
-            and self.is_drop_frame == True
-        ):  # 判断丢帧状态与时码输入是否匹配 不匹配则强制转换
-            self.__drop_frame = False
-            logging.info(
-                "Timecode.__init__.str: This FPS is NOT Drop-Framable, force drop_frame to False"
-            )
-        else:
-            pass
-        if timecode_type == "auto":  # 自动判断类型逻辑
-            if tc_patterns.SMPTE_NDF_REGEX.match(
-                timecode_value
-            ):  # SMPTE NDF 强制DF为False
-                timecode_type = "smpte"
-                if self.__drop_frame == True:
-                    # 判断丢帧状态与帧率是否匹配 不匹配则强制转换
-                    if (
-                        round(self.__fps, 2) % 29.97 == 0
-                        or round(self.__fps, 2) % 23.98 == 0
-                    ):
-                        self.__drop_frame = True
-                    else:
-                        self.__drop_frame = False
-                        logging.info(
-                            "Timecode.__init__.str.auto: This FPS is NOT Drop-Framable, force drop_frame to False"
-                        )
-                else:
-                    self.__drop_frame = False
-            elif tc_patterns.SMPTE_DF_REGEX.match(timecode_value):
-                timecode_type = "smpte"
-                # 判断丢帧状态与帧率是否匹配 不匹配则强制转换
-                if (
-                    round(self.__fps, 2) % 29.97 == 0
-                    or round(self.__fps, 2) % 23.98 == 0
-                ):
-                    self.__drop_frame = True
-                else:
-                    self.__drop_frame = False
-                    logging.info(
-                        "Timecode.__init__.str.auto: This FPS is NOT Drop-Framable, force drop_frame to False"
-                    )
-            elif tc_patterns.SRT_REGEX.match(timecode_value):
-                timecode_type = "srt"
-            elif tc_patterns.FFMPEG_REGEX.match(timecode_value):
-                timecode_type = "ffmpeg"
-            elif tc_patterns.FCPX_REGEX.match(timecode_value):
-                timecode_type = "fcpx"
-            elif tc_patterns.FRAME_REGEX.match(timecode_value):
-                timecode_type = "frame"
-            elif tc_patterns.TIME_REGEX.match(timecode_value):
-                timecode_type = "time"
-            else:
-                pass
-        else:
-            pass  # 这里不用elif是因为auto类型也需要利用下面的部分进行操作
-        if timecode_type == "smpte":  # smpte TC
-            if tc_patterns.SMPTE_REGEX.match(
-                timecode_value
-            ):  # 判断输入是否符合SMPTE类型
-                pass
-            else:
-                logging.error(
-                    "Timecode.__init__.smpte: Timecode type DONOT match input value! Check input."
-                )
-                raise dftt_errors.dftt_errors.DFTTTimecodeTypeError
-            self.__type = timecode_type
-            temp_timecode_list = [
-                int(x) if x else 0
-                for x in tc_patterns.SMPTE_REGEX.match(timecode_value).groups()
-            ]  # 正则取值
-            hh = temp_timecode_list[0]
-            mm = temp_timecode_list[1]
-            ss = temp_timecode_list[2]
-            ff = temp_timecode_list[3]
-            if ff > self.__nominal_fps - 1:  # 判断输入帧号在当前帧率下是否合法
-                logging.error(
-                    "Timecode.__init__.smpte: This timecode is illegal under given params, check your input!"
-                )
-                raise dftt_errors.DFTTTimecodeValueError
-            else:
-                pass
-            if self.__drop_frame == False:  # 时码丢帧处理逻辑
-                frame_index = ff + self.__nominal_fps * (ss + mm * 60 + hh * 3600)
-            else:
-                drop_per_min = self.__nominal_fps / 30 * 2
-                # 检查是否有DF下不合法的帧号
-                if mm % 10 != 0 and ss == 0 and ff in (0, drop_per_min - 1):
-                    logging.error(
-                        "Timecode.__init__.smpte: This timecode is illegal under given params, check your input!"
-                    )
-                    raise dftt_errors.dftt_errors.DFTTTimecodeValueError
-                else:
-                    total_minutes = 60 * hh + mm
-                    frame_index = (
-                        (hh * 3600 + mm * 60 + ss) * self.__nominal_fps
-                        + ff
-                        - (self.__nominal_fps / 30)
-                        * 2
-                        * (
-                            # 逢十分钟不丢帧 http://andrewduncan.net/timecodes/
-                            total_minutes
-                            - total_minutes // 10
-                        )
-                    )
-            if self.__strict == True:  # strict输入逻辑
-                frame_index = (
-                    frame_index % (self.__fps * 86400)
-                    if self.__drop_frame == True
-                    else frame_index % (self.__nominal_fps * 86400)
-                )  # 对于DF时码来说，严格处理取真实FPS的模，对于NDF时码，则取名义FPS的模
-            else:
-                pass
-            if minus_flag == False:
-                pass
-            else:
-                frame_index = -frame_index
-            self.__precise_time = Fraction(frame_index / self.__fps)  # 时间戳=帧号/帧率
-        elif timecode_type == "srt":  # srt字幕
-            if tc_patterns.SRT_REGEX.match(timecode_value):  # 判断输入是否符合SRT类型
-                pass
-            else:
-                logging.error(
-                    "Timecode.__init__.srt: Timecode type DONOT match input value! Check input."
-                )
-                raise dftt_errors.DFTTTimecodeTypeError
-            self.__type = timecode_type
-            temp_timecode_list = [
-                int(x) if x else 0
-                for x in tc_patterns.SRT_REGEX.match(timecode_value).groups()
-            ]
-            # 由于SRT格式本身不存在帧率，将为SRT赋予默认帧率和丢帧状态
-            logging.info(
-                "Timecode.__init__.srt: SRT timecode framerate "
-                + str(self.__fps)
-                + ", DF="
-                + str(self.__drop_frame)
-                + " assigned"
-            )
-            hh = temp_timecode_list[0]
-            mm = temp_timecode_list[1]
-            ss = temp_timecode_list[2]
-            sub_sec = temp_timecode_list[3]  # 取毫秒
-            if minus_flag == False:
-                self.__precise_time = Fraction(
-                    hh * 3600 + mm * 60 + ss + sub_sec / 1000
-                )
-            else:
-                self.__precise_time = -(
-                    Fraction(hh * 3600 + mm * 60 + ss + sub_sec / 1000)
-                )
-            if self.__strict == True:  # strict逻辑 对于非帧相关值（时间戳） 直接取模
-                self.__precise_time = self.__precise_time % 86400
-            else:
-                pass
-        elif timecode_type == "dlp":  # cinecanvas字幕
-            if tc_patterns.DLP_REGEX.match(timecode_value):
-                pass
-            else:
-                logging.error(
-                    "Timecode.__init__.dlp: Timecode type DONOT match input value! Check input."
-                )
-                raise dftt_errors.DFTTTimecodeTypeError
-            self.__type = timecode_type
-            temp_timecode_list = [
-                int(x) if x else 0
-                for x in tc_patterns.DLP_REGEX.match(timecode_value).groups()
-            ]
-            # 由于DLP不存在帧率，将为DLP赋予默认帧率和丢帧状态
-            logging.info(
-                "Timecode.__init__.dlp: DLP timecode framerate "
-                + str(self.__fps)
-                + ", DF="
-                + str(self.__drop_frame)
-                + " assigned"
-            )
-            hh = temp_timecode_list[0]
-            mm = temp_timecode_list[1]
-            ss = temp_timecode_list[2]
-            sub_sec = temp_timecode_list[3]  # 取子帧戳 dlp每秒共250个子帧 即4ms一个
-            # 详见https://interop-docs.cinepedia.com/Reference_Documents/CineCanvas(tm)_RevC.pdf 第17页 “TimeIn”部分
-            if minus_flag == False:
-                self.__precise_time = Fraction(hh * 3600 + mm * 60 + ss + sub_sec / 250)
-            else:
-                self.__precise_time = -Fraction(
-                    hh * 3600 + mm * 60 + ss + sub_sec / 250
-                )
-            if self.__strict == True:  # strict逻辑 对于非帧相关值（时间戳） 直接取模
-                self.__precise_time = self.__precise_time % 86400
-            else:
-                pass
-        elif timecode_type == "ffmpeg":  # ffmpeg时间
-            if tc_patterns.FFMPEG_REGEX.match(timecode_value):
-                pass
-            else:
-                logging.error(
-                    "Timecode.__init__.ffmpeg: Timecode type DONOT match input value! Check input."
-                )
-                raise dftt_errors.DFTTTimecodeTypeError
-            self.__type = timecode_type
-            temp_timecode_list = [
-                int(x) if x else 0
-                for x in tc_patterns.FFMPEG_REGEX.match(timecode_value).groups()
-            ]
-            hh = temp_timecode_list[0]
-            mm = temp_timecode_list[1]
-            ss = temp_timecode_list[2]
-            sub_sec = temp_timecode_list[3]
-            if minus_flag == False:
-                self.__precise_time = Fraction(
-                    hh * 3600 + mm * 60 + ss + float(f"0.{sub_sec}")
-                )
-            else:
-                self.__precise_time = -Fraction(
-                    hh * 3600 + mm * 60 + ss + float(f"0.{sub_sec}")
-                )
-            if self.__strict == True:  # strict逻辑 对于非帧相关值（时间戳） 直接取模
-                self.__precise_time = self.__precise_time % 86400
-            else:
-                pass
-        elif timecode_type == "fcpx":  # fcpx xml时间戳
-            if tc_patterns.FCPX_REGEX.match(timecode_value):
-                pass
-            else:
-                logging.error(
-                    "Timecode.__init__.fcpx: Timecode type DONOT match input value! Check input."
-                )
-                raise dftt_errors.DFTTTimecodeTypeError
-            self.__type = timecode_type
-            temp_timecode_list = [
-                int(x) if x else 0
-                for x in tc_patterns.FCPX_REGEX.match(timecode_value).groups()
-            ]
-            print(temp_timecode_list[0])
-            if minus_flag == False:
-                self.__precise_time = Fraction(
-                    temp_timecode_list[0], temp_timecode_list[1]
-                )
-            else:
-                self.__precise_time = -Fraction(
-                    temp_timecode_list[0], temp_timecode_list[1]
-                )
-            if self.__strict == True:  # strict逻辑 对于非帧相关值（时间戳） 直接取模
-                self.__precise_time = self.__precise_time % 86400
-            else:
-                pass
-        elif timecode_type == "frame":  # 帧计数
-            if tc_patterns.FRAME_REGEX.match(timecode_value):
-                pass
-            else:
-                logging.error(
-                    "Timecode.__init__.frame: Timecode type DONOT match input value! Check input."
-                )
-                raise dftt_errors.DFTTTimecodeTypeError
-            self.__type = timecode_type
-            temp_frame_index = int(
-                tc_patterns.FRAME_REGEX.match(timecode_value).group(1)
-            )
-            if (
-                self.__strict == True
-            ):  # 严格模式，对于丢帧时码而言 用实际FPS运算，对于不丢帧时码而言，使用名义FPS运算
-                temp_frame_index = (
-                    temp_frame_index % (self.__fps * 86400)
-                    if self.__drop_frame == True
-                    else temp_frame_index % (self.__nominal_fps * 86400)
-                )
-            else:
-                pass
-            self.__precise_time = Fraction(
-                temp_frame_index / self.__fps
-            )  # 转换为内部精准时间戳
-        elif timecode_type == "time":  # 内部时间戳生成
-            if tc_patterns.TIME_REGEX.match(timecode_value):
-                pass
-            else:
-                logging.error(
-                    "Timecode.__init__.time: Timecode type DONOT match input value! Check input."
-                )
-                raise dftt_errors.DFTTTimecodeTypeError
-            self.__type = timecode_type
-            temp_timecode_value = tc_patterns.TIME_REGEX.match(timecode_value).group(1)
-            self.__precise_time = Fraction(
-                temp_timecode_value
-            )  # 内部时间戳直接等于输入值
-            if self.__strict == True:  # strict逻辑 对于非帧相关值（时间戳） 直接取模
-                self.__precise_time = self.__precise_time % 86400
-            else:
-                pass
-        else:
-            logging.error(
-                "Timecode.__init__.str: Unknown type or type DONOT match input value! Check input."
-            )
-            raise dftt_errors.DFTTTimecodeValueError
-        instance_success_log = (
-            "Timecode.__init__.str: Timecode instance, type="
-            + str(self.__type)
-            + ", fps="
-            + str(self.__fps)
-            + ", dropframe="
-            + str(self.__drop_frame)
-            + ", strict="
-            + str(self.__strict)
-        )
-        logging.debug(instance_success_log)
-
-    @__init__.register  # 输入为Fraction类分数，此时认为输入是时间戳，若不是，则会报错
-    def _(
-        self,
-        timecode_value: Fraction,
-        timecode_type="time",
-        fps=24.0,
-        drop_frame=False,
-        strict=True,
-    ):
-        if timecode_type in ("time", "auto"):
-            self.__type = "time"
-            self.__fps = fps
-            self.__nominal_fps = ceil(fps)
-            self.__drop_frame = drop_frame
-            self.__strict = strict
-            self.__precise_time = timecode_value  # 内部时间戳直接等于输入值
-            if self.__strict == True:  # strict逻辑 对于非帧相关值（时间戳） 直接取模
-                self.__precise_time = self.__precise_time % 86400
-            else:
-                pass
-        else:
-            logging.error(
-                "Timecode.__init__.Fraction: Timecode type DONOT match input value! Check input."
-            )
-            raise dftt_errors.DFTTTimecodeTypeError
-        instance_success_log = (
-            "Timecode.__init__.Fraction: Timecode instance, type="
-            + str(self.__type)
-            + ", fps="
-            + str(self.__fps)
-            + ", dropframe="
-            + str(self.__drop_frame)
-            + ", strict="
-            + str(self.__strict)
-        )
-        logging.debug(instance_success_log)
-
-    @__init__.register
-    def _(
-        self,
-        timecode_value: int,
-        timecode_type="frame",
-        fps=24.0,
-        drop_frame=False,
-        strict=True,
-    ):
-        if timecode_type in ("frame", "auto"):
-            self.__type = "frame"
-            self.__fps = fps
-            self.__nominal_fps = ceil(fps)
-            self.__drop_frame = drop_frame
-            self.__strict = strict
-            temp_frame_index = timecode_value
-            if self.__strict == True:
-                temp_frame_index = (
-                    temp_frame_index % (self.__fps * 86400)
-                    if self.__drop_frame == True
-                    else temp_frame_index % (self.__nominal_fps * 86400)
-                )
-            else:
-                pass
-            self.__precise_time = Fraction(temp_frame_index / self.__fps)
-        elif timecode_type == "time":
-            self.__type = "time"
-            self.__fps = fps
-            self.__nominal_fps = ceil(fps)
-            self.__drop_frame = drop_frame
-            self.__strict = strict
-            self.__precise_time = timecode_value  # 内部时间戳直接等于输入值
-            if self.__strict == True:  # strict逻辑 对于非帧相关值（时间戳） 直接取模
-                self.__precise_time = self.__precise_time % 86400
-            else:
-                pass
-        else:
-            logging.error(
-                "Timecode.__init__.int: Timecode type DONOT match input value! Check input."
-            )
-            raise dftt_errors.DFTTTimecodeTypeError
-        instance_success_log = (
-            "Timecode.__init__.int: Timecode instance, type="
-            + str(self.__type)
-            + ", fps="
-            + str(self.__fps)
-            + ", dropframe="
-            + str(self.__drop_frame)
-            + ", strict="
-            + str(self.__strict)
-        )
-        logging.debug(instance_success_log)
-
-    @__init__.register
-    def _(
-        self,
-        timecode_value: float,
-        timecode_type="time",
-        fps=24.0,
-        drop_frame=False,
-        strict=True,
-    ):
-        if timecode_type in ("time", "auto"):
-            self.__type = "time"
-            self.__fps = fps
-            self.__nominal_fps = ceil(fps)
-            self.__drop_frame = drop_frame
-            self.__strict = strict
-            self.__precise_time = Fraction(timecode_value)  # 内部时间戳直接等于输入值
-            if self.__strict == True:
-                self.__precise_time = self.__precise_time % 86400
-            else:
-                pass
-        else:
-            logging.error(
-                "Timecode.__init__.float: Timecode type DONOT match input value! Check input."
-            )
-            raise dftt_errors.DFTTTimecodeTypeError
-        instance_success_log = (
-            "Timecode.__init__.float: Timecode instance, type="
-            + str(self.__type)
-            + ", fps="
-            + str(self.__fps)
-            + ", dropframe="
-            + str(self.__drop_frame)
-            + ", strict="
-            + str(self.__strict)
-        )
-        logging.debug(instance_success_log)
-
-    @__init__.register
-    def _(
-        self,
-        timecode_value: tuple,
-        timecode_type="time",
-        fps=24.0,
-        drop_frame=False,
-        strict=True,
-    ):
-        if timecode_type in ("time", "auto"):
-            self.__type = "time"
-            self.__fps = fps
-            self.__nominal_fps = ceil(fps)
-            self.__drop_frame = drop_frame
-            self.__strict = strict
-            self.__precise_time = Fraction(
-                int(timecode_value[0]), int(timecode_value[1])
-            )  # 将tuple输入视为分数
-            if self.__strict == True:
-                self.__precise_time = self.__precise_time % 86400
-            else:
-                pass
-        else:
-            logging.error(
-                "Timecode.__init__.tuple: Timecode type DONOT match input value! Check input."
-            )
-            raise dftt_errors.DFTTTimecodeTypeError
-        instance_success_log = (
-            "Timecode.__init__.tuple: Timecode instance, type="
-            + str(self.__type)
-            + ", fps="
-            + str(self.__fps)
-            + ", dropframe="
-            + str(self.__drop_frame)
-            + ", strict="
-            + str(self.__strict)
-        )
-        logging.debug(instance_success_log)
-
-    @__init__.register
-    def _(
-        self,
-        timecode_value: list,
-        timecode_type="time",
-        fps=24.0,
-        drop_frame=False,
-        strict=True,
-    ):
-        if timecode_type in ("time", "auto"):
-            self.__type = timecode_type
-            self.__fps = fps
-            self.__nominal_fps = ceil(fps)
-            self.__drop_frame = drop_frame
-            self.__strict = strict
-            self.__precise_time = Fraction(
-                int(timecode_value[0]), int(timecode_value[1])
-            )  # 将list输入视为分数
-            if self.__strict == True:
-                self.__precise_time = self.__precise_time % 86400
-            else:
-                pass
-        else:
-            logging.error(
-                "Timecode.__init__.list: Timecode type DONOT match input value! Check input."
-            )
-            raise dftt_errors.DFTTTimecodeTypeError
-        instance_success_log = (
-            "Timecode.__init__.list: Timecode instance, type="
-            + str(self.__type)
-            + ", fps="
-            + str(self.__fps)
-            + ", dropframe="
-            + str(self.__drop_frame)
-            + ", strict="
-            + str(self.__strict)
-        )
-        logging.debug(instance_success_log)
+    ):  # 构造函数
+        if timecode_value is None:
+            timecode_value = 0
+        tc = TimecodeParser()
+        tc.parse_timecode(timecode_value, timecode_type, fps, drop_frame, strict)
+        self.__type = tc.tc_type
+        self.__fps = tc.fps
+        self.__nominal_fps = tc.nominal_fps
+        self.__drop_frame = tc.drop_frame
+        self.__strict = tc.strict
+        self.__precise_time = tc.precise_time
 
     @property
     def type(self) -> str:
@@ -607,7 +84,7 @@ class DfttTimecode:
             frame_index = -frame_index
 
         # 计算framecount用于输出smpte时码个部分值
-        if self.__drop_frame == False:  # 不丢帧
+        if not self.__drop_frame:  # 不丢帧
             # 对于不丢帧时码而言 framecount 为帧计数
             _nominal_framecount = frame_index
         else:  # 丢帧
@@ -638,11 +115,11 @@ class DfttTimecode:
             return int(hour), int(minute), int(second), round(frame)
 
         output_hh, output_mm, output_ss, output_ff = _convert_framecount_to_smpte_parts(
-            _nominal_framecount, self.__nominal_fps
+            int(_nominal_framecount), self.__nominal_fps
         )
 
         output_ff_format = "02d" if self.__fps < 100 else "03d"
-        output_minus_flag = "" if minus_flag == False else "-"
+        output_minus_flag = "" if not minus_flag else "-"
         output_strs = (
             f"{output_minus_flag}{output_hh:02d}",
             f"{output_mm:02d}",
@@ -681,7 +158,7 @@ class DfttTimecode:
         _mm, r_2 = divmod(r_1, 60)
         _ss, r_3 = divmod(r_2, 1)
         _sub_sec = round(r_3 * sub_sec_multiplier)
-        output_minus_flag = "" if minus_flag == False else "-"
+        output_minus_flag = "" if not minus_flag else "-"
         output_hh = f"{output_minus_flag}{_hh:02d}"
         outpur_mm = f"{_mm:02d}"
         output_ss = f"{_ss:02d}"
@@ -778,13 +255,13 @@ class DfttTimecode:
             logging.warning(
                 "Timecode.timecode_output: CANNOT find such destination type, will return SMPTE type"
             )
-            func = getattr(self, "_convert_to_output_smpte", None)
+            func = getattr(self, "_convert_to_output_smpte")
             return func(output_part)
 
     def set_fps(self, dest_fps, rounding=True) -> "DfttTimecode":
         self.__fps = dest_fps
         self.__nominal_fps = ceil(self.__fps)
-        if rounding == True:
+        if rounding:
             self.__precise_time = round(self.__precise_time * self.__fps) / self.__fps
         else:
             pass
@@ -795,10 +272,14 @@ class DfttTimecode:
             self.__type = dest_type
         else:
             logging.warning("No such type, will remain current type.")
-        if rounding == True:
+        if rounding:
             temp_str = self.timecode_output(dest_type)
             temp_timecode_object = DfttTimecode(
-                temp_str, dest_type, self.__fps, self.__drop_frame, self.__strict
+                temp_str,
+                dest_type,
+                self.__fps,
+                self.__drop_frame,
+                self.__strict,
             )
             self.__precise_time = temp_timecode_object.__precise_time
         else:
@@ -810,7 +291,11 @@ class DfttTimecode:
             pass
         else:
             temp_timecode_object = DfttTimecode(
-                self.__precise_time, "time", self.__fps, self.__drop_frame, strict
+                self.__precise_time,
+                "time",
+                self.__fps,
+                self.__drop_frame,
+                strict,
             )
             self.__precise_time = temp_timecode_object.__precise_time
             self.__strict = strict
@@ -821,8 +306,8 @@ class DfttTimecode:
         return floor(numerator * sample_rate / denominator)
 
     def __repr__(self):
-        drop_frame_flag = "DF" if self.__drop_frame == True else "NDF"
-        strict_flag = "Strict" if self.__strict == True else "Non-Strict"
+        drop_frame_flag = "DF" if self.__drop_frame else "NDF"
+        strict_flag = "Strict" if self.__strict else "Non-Strict"
         return f"<DfttTimecode>(Timecode:{self.timecode_output(self.__type)}, Type:{self.__type},FPS:{float(self.__fps):.02f} {drop_frame_flag}, {strict_flag})"
 
     def __str__(self):
@@ -831,7 +316,7 @@ class DfttTimecode:
     def __add__(self, other):  # 运算符重载，加号，加int则认为是帧，加float则认为是时间
         temp_sum = self.__precise_time
         if isinstance(other, DfttTimecode):
-            if self.__fps == other.__fps and self.__drop_frame == other.__drop_frame:
+            if self.__fps == other.__fps and self.__drop_frame == other.is_drop_frame:
                 temp_sum = self.__precise_time + other.__precise_time
                 self.__strict = self.__strict or other.__strict
             else:  # 帧率不同不允许相加，报错
@@ -860,7 +345,7 @@ class DfttTimecode:
     def __sub__(self, other):  # 运算符重载，减法，同理，int是帧，float是时间
         diff = self.__precise_time
         if isinstance(other, DfttTimecode):
-            if self.__fps == other.__fps and self.__drop_frame == other.__drop_frame:
+            if self.__fps == other.__fps and self.__drop_frame == other.is_drop_frame:
                 diff = self.__precise_time - other.__precise_time
                 self.__strict = self.__strict or other.__strict
             else:
@@ -1051,11 +536,14 @@ class DfttTimecode:
             logging.error("CANNOT compare with such data type.")
             raise dftt_errors.DFTTTimecodeTypeError
 
-    def __neg__(
-        self,
-    ):  # 取负操作 返回时间戳取负的Timecode对象（strict规则照常应用 例如01:00:00:00 strict的对象 取负后为23:00:00:00）
+    def __neg__(self):
+        # 取负操作 返回时间戳取负的Timecode对象（strict规则照常应用 例如01:00:00:00 strict的对象 取负后为23:00:00:00）
         temp_object = DfttTimecode(
-            -self.__precise_time, "time", self.__fps, self.__drop_frame, self.__strict
+            -self.__precise_time,
+            "time",
+            self.__fps,
+            self.__drop_frame,
+            self.__strict,
         )
         temp_object.set_type(self.type, rounding=False)
         return temp_object
