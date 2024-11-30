@@ -28,48 +28,52 @@ class TimecodeParser:
         drop_frame=False,
         strict=True,
     ):
-        if timecode_value[0] == "-":  # 判断首位是否为负，并为flag赋值
-            minus_flag = True
-        else:
-            minus_flag = False
-        self.fps = fps
-        # 读入帧率取整为名义帧率便于后续计算（包括判断时码是否合法，DF/NDF逻辑等) 用进一法是因为要判断ff值是否大于fps-1
-        self.nominal_fps = ceil(fps)
-        self.drop_frame = drop_frame
-        self.strict = strict
-        if (
-            round(self.fps, 2) % 29.97 != 0
-            and round(self.fps, 2) % 23.98 != 0
-            and self.drop_frame
-        ):  # 判断丢帧状态与时码输入是否匹配 不匹配则强制转换
-            self.drop_frame = False
-            logging.info(
-                "Timecode.__init__.str: This FPS is NOT Drop-Framable, force drop_frame to False"
-            )
-        else:
-            pass
-        if timecode_type == "auto":  # 自动判断类型逻辑
-            if tc_patterns.SMPTE_NDF_REGEX.match(
-                timecode_value
-            ):  # SMPTE NDF 强制DF为False
-                timecode_type = "smpte"
-                if self.drop_frame:
-                    # 判断丢帧状态与帧率是否匹配 不匹配则强制转换
-                    if (
-                        round(self.fps, 2) % 29.97 == 0
-                        or round(self.fps, 2) % 23.98 == 0
-                    ):
-                        self.drop_frame = True
-                    else:
-                        self.drop_frame = False
-                        logging.info(
-                            "Timecode.__init__.str.auto: This FPS is NOT Drop-Framable, force drop_frame to False"
-                        )
-                else:
-                    self.drop_frame = False
-            elif tc_patterns.SMPTE_DF_REGEX.match(timecode_value):
-                timecode_type = "smpte"
-                # 判断丢帧状态与帧率是否匹配 不匹配则强制转换
+        def check_minus_flag(value: str) -> bool:
+            """Check if the timecode is negative."""
+            return value.startswith("-")
+
+        def initialize_parameters(fps: float, drop_frame: bool, strict: bool):
+            """Initialize parser parameters."""
+            self.fps = fps
+            # 读入帧率取整为名义帧率便于后续计算（包括判断时码是否合法，DF/NDF逻辑等) 用进一法是因为要判断ff值是否大于fps-1
+            self.nominal_fps = ceil(fps)
+            self.drop_frame = drop_frame
+            self.strict = strict
+
+            if (
+                round(self.fps, 2) % 29.97 != 0
+                and round(self.fps, 2) % 23.98 != 0
+                and self.drop_frame
+            ):  # 判断丢帧状态与时码输入是否匹配 不匹配则强制转换
+                self.drop_frame = False
+                logging.info(
+                    "Timecode.__init__.str: This FPS is NOT Drop-Framable, force drop_frame to False"
+                )
+
+        def determine_timecode_type(value: str, current_type: str) -> str:
+            """Determine the type of the timecode based on regex patterns."""
+            if current_type == "auto":
+                if tc_patterns.SMPTE_NDF_REGEX.match(value):
+                    current_type = "smpte"
+                    enforce_drop_frame()
+                elif tc_patterns.SMPTE_DF_REGEX.match(value):
+                    current_type = "smpte"
+                    enforce_drop_frame()
+                elif tc_patterns.SRT_REGEX.match(value):
+                    current_type = "srt"
+                elif tc_patterns.FFMPEG_REGEX.match(value):
+                    current_type = "ffmpeg"
+                elif tc_patterns.FCPX_REGEX.match(value):
+                    current_type = "fcpx"
+                elif tc_patterns.FRAME_REGEX.match(value):
+                    current_type = "frame"
+                elif tc_patterns.TIME_REGEX.match(value):
+                    current_type = "time"
+            return current_type
+
+        def enforce_drop_frame():
+            """Enforce drop frame settings based on FPS."""
+            if self.drop_frame:
                 if round(self.fps, 2) % 29.97 == 0 or round(self.fps, 2) % 23.98 == 0:
                     self.drop_frame = True
                 else:
@@ -77,25 +81,31 @@ class TimecodeParser:
                     logging.info(
                         "Timecode.__init__.str.auto: This FPS is NOT Drop-Framable, force drop_frame to False"
                     )
-            elif tc_patterns.SRT_REGEX.match(timecode_value):
-                timecode_type = "srt"
-            elif tc_patterns.FFMPEG_REGEX.match(timecode_value):
-                timecode_type = "ffmpeg"
-            elif tc_patterns.FCPX_REGEX.match(timecode_value):
-                timecode_type = "fcpx"
-            elif tc_patterns.FRAME_REGEX.match(timecode_value):
-                timecode_type = "frame"
-            elif tc_patterns.TIME_REGEX.match(timecode_value):
-                timecode_type = "time"
+
+        def parse_timecode_based_on_type(type_: str, value: str, minus: bool):
+            """Parse the timecode based on its determined type."""
+            parse_functions = {
+                "smpte": parse_smpte,
+                "srt": parse_srt,
+                "dlp": parse_dlp,
+                "ffmpeg": parse_ffmpeg,
+                "fcpx": parse_fcpx,
+                "frame": parse_frame,
+                "time": parse_time,
+            }
+            parse_func = parse_functions.get(type_)
+            if parse_func:
+                parse_func(value, minus)
             else:
-                pass
-        else:
-            pass  # 这里不用elif是因为auto类型也需要利用下面的部分进行操作
-        if timecode_type == "smpte":  # smpte TC
-            match = tc_patterns.SMPTE_REGEX.match(timecode_value)
-            if match:  # 判断输入是否符合SMPTE类型
-                pass
-            else:
+                logging.error(
+                    "Timecode.__init__.str: Unknown type or type DONOT match input value! Check input."
+                )
+                raise dftt_errors.DFTTTimecodeValueError
+
+        def parse_smpte(value: str, minus: bool):
+            """Parse SMPTE timecode."""
+            match = tc_patterns.SMPTE_REGEX.match(value)
+            if not match:
                 logging.error(
                     "Timecode.__init__.smpte: Timecode type DONOT match input value! Check input."
                 )
@@ -143,26 +153,20 @@ class TimecodeParser:
                     frame_index % (self.fps * 86400)
                     if self.drop_frame
                     else frame_index % (self.nominal_fps * 86400)
-                )  # 对于DF时码来说，严格处理取真实FPS的模，对于NDF时码，则取名义FPS的模
-            else:
-                pass
-            if not minus_flag:
-                pass
-            else:
+                )
+            if minus:
                 frame_index = -frame_index
-            self.precise_time = Fraction(frame_index / self.fps)  # 时间戳=帧号/帧率
-        elif timecode_type == "srt":  # srt字幕
-            match = tc_patterns.SRT_REGEX.match(
-                timecode_value
-            )  # 判断输入是否符合SRT类型
-            if match:
-                pass
-            else:
+            self.precise_time = Fraction(frame_index / self.fps)
+
+        def parse_srt(value: str, minus: bool):
+            """Parse SRT subtitle timecode."""
+            match = tc_patterns.SRT_REGEX.match(value)
+            if not match:
                 logging.error(
                     "Timecode.__init__.srt: Timecode type DONOT match input value! Check input."
                 )
                 raise dftt_errors.DFTTTimecodeTypeError
-            self.tc_type = timecode_type
+            self.tc_type = "srt"
             temp_timecode_list = [int(x) if x else 0 for x in match.groups()]
             # 由于SRT格式本身不存在帧率，将为SRT赋予默认帧率和丢帧状态
             logging.info(
@@ -172,11 +176,8 @@ class TimecodeParser:
                 + str(self.drop_frame)
                 + " assigned"
             )
-            hh = temp_timecode_list[0]
-            mm = temp_timecode_list[1]
-            ss = temp_timecode_list[2]
-            sub_sec = temp_timecode_list[3]  # 取毫秒
-            if not minus_flag:
+            hh, mm, ss, sub_sec = temp_timecode_list
+            if not minus:
                 self.precise_time = Fraction(hh * 3600 + mm * 60 + ss + sub_sec / 1000)
             else:
                 self.precise_time = -(
@@ -184,56 +185,41 @@ class TimecodeParser:
                 )
             if self.strict:
                 self.precise_time = self.precise_time % 86400
-            else:
-                pass
-        elif timecode_type == "dlp":  # cinecanvas字幕
-            match = tc_patterns.DLP_REGEX.match(timecode_value)
-            if match:
-                pass
-            else:
+
+        def parse_dlp(value: str, minus: bool):
+            """Parse DLP CineCanvas subtitle timecode."""
+            match = tc_patterns.DLP_REGEX.match(value)
+            if not match:
                 logging.error(
                     "Timecode.__init__.dlp: Timecode type DONOT match input value! Check input."
                 )
                 raise dftt_errors.DFTTTimecodeTypeError
-            self.tc_type = timecode_type
+            self.tc_type = "dlp"
             temp_timecode_list = [int(x) if x else 0 for x in match.groups()]
             # 由于DLP不存在帧率，将为DLP赋予默认帧率和丢帧状态
             logging.info(
-                "Timecode.__init__.dlp: DLP timecode framerate "
-                + str(self.fps)
-                + ", DF="
-                + str(self.drop_frame)
-                + " assigned"
+                f"Timecode.__init__.dlp: DLP timecode framerate {self.fps}, DF={self.drop_frame} assigned"
             )
-            hh = temp_timecode_list[0]
-            mm = temp_timecode_list[1]
-            ss = temp_timecode_list[2]
-            sub_sec = temp_timecode_list[3]  # 取子帧戳 dlp每秒共250个子帧 即4ms一个
-            # 详见https://interop-docs.cinepedia.com/Reference_Documents/CineCanvas(tm)_RevC.pdf 第17页 “TimeIn”部分
-            if not minus_flag:
+            hh, mm, ss, sub_sec = temp_timecode_list
+            if not minus:
                 self.precise_time = Fraction(hh * 3600 + mm * 60 + ss + sub_sec / 250)
             else:
                 self.precise_time = -Fraction(hh * 3600 + mm * 60 + ss + sub_sec / 250)
-            if self.strict:  # strict逻辑 对于非帧相关值（时间戳） 直接取模
+            if self.strict:
                 self.precise_time = self.precise_time % 86400
-            else:
-                pass
-        elif timecode_type == "ffmpeg":  # ffmpeg时间
-            match = tc_patterns.FFMPEG_REGEX.match(timecode_value)
-            if match:
-                pass
-            else:
+
+        def parse_ffmpeg(value: str, minus: bool):
+            """Parse FFmpeg timecode."""
+            match = tc_patterns.FFMPEG_REGEX.match(value)
+            if not match:
                 logging.error(
                     "Timecode.__init__.ffmpeg: Timecode type DONOT match input value! Check input."
                 )
                 raise dftt_errors.DFTTTimecodeTypeError
-            self.tc_type = timecode_type
+            self.tc_type = "ffmpeg"
             temp_timecode_list = [int(x) if x else 0 for x in match.groups()]
-            hh = temp_timecode_list[0]
-            mm = temp_timecode_list[1]
-            ss = temp_timecode_list[2]
-            sub_sec = temp_timecode_list[3]
-            if not minus_flag:
+            hh, mm, ss, sub_sec = temp_timecode_list
+            if not minus:
                 self.precise_time = Fraction(
                     hh * 3600 + mm * 60 + ss + float(f"0.{sub_sec}")
                 )
@@ -241,23 +227,21 @@ class TimecodeParser:
                 self.precise_time = -Fraction(
                     hh * 3600 + mm * 60 + ss + float(f"0.{sub_sec}")
                 )
-            if self.strict:  # strict逻辑 对于非帧相关值（时间戳） 直接取模
+            if self.strict:
                 self.precise_time = self.precise_time % 86400
-            else:
-                pass
-        elif timecode_type == "fcpx":  # fcpx xml时间戳
-            match = tc_patterns.FCPX_REGEX.match(timecode_value)
-            if match:
-                pass
-            else:
+
+        def parse_fcpx(value: str, minus: bool):
+            """Parse FCPX XML timecode."""
+            match = tc_patterns.FCPX_REGEX.match(value)
+            if not match:
                 logging.error(
                     "Timecode.__init__.fcpx: Timecode type DONOT match input value! Check input."
                 )
                 raise dftt_errors.DFTTTimecodeTypeError
-            self.tc_type = timecode_type
+            self.tc_type = "fcpx"
             temp_timecode_list = [int(x) if x else 0 for x in match.groups()]
             print(temp_timecode_list[0])
-            if not minus_flag:
+            if not minus:
                 self.precise_time = Fraction(
                     temp_timecode_list[0], temp_timecode_list[1]
                 )
@@ -267,66 +251,59 @@ class TimecodeParser:
                 )
             if self.strict:  # strict逻辑 对于非帧相关值（时间戳） 直接取模
                 self.precise_time = self.precise_time % 86400
-            else:
-                pass
-        elif timecode_type == "frame":  # 帧计数
-            match = tc_patterns.FRAME_REGEX.match(timecode_value)
-            if match:
-                pass
-            else:
+
+        def parse_frame(value: str, minus: bool):
+            """Parse frame count timecode."""
+            match = tc_patterns.FRAME_REGEX.match(value)
+            if not match:
                 logging.error(
                     "Timecode.__init__.frame: Timecode type DONOT match input value! Check input."
                 )
                 raise dftt_errors.DFTTTimecodeTypeError
-            self.tc_type = timecode_type
+            self.tc_type = "frame"
             temp_frame_index = int(match.group(1))
-            if (
-                self.strict
-            ):  # 严格模式，对于丢帧时码而言 用实际FPS运算，对于不丢帧时码而言，使用名义FPS运算
+            if self.strict:
                 temp_frame_index = (
                     temp_frame_index % (self.fps * 86400)
                     if self.drop_frame
                     else temp_frame_index % (self.nominal_fps * 86400)
                 )
-            else:
-                pass
-            self.precise_time = Fraction(
-                temp_frame_index / self.fps
-            )  # 转换为内部精准时间戳
-        elif timecode_type == "time":  # 内部时间戳生成
-            match = tc_patterns.TIME_REGEX.match(timecode_value)
-            if match:
-                pass
-            else:
+            self.precise_time = Fraction(temp_frame_index / self.fps)
+
+        def parse_time(value: str, minus: bool):
+            """Parse internal timestamp."""
+            match = tc_patterns.TIME_REGEX.match(value)
+            if not match:
                 logging.error(
                     "Timecode.__init__.time: Timecode type DONOT match input value! Check input."
                 )
                 raise dftt_errors.DFTTTimecodeTypeError
-            self.tc_type = timecode_type
+            self.tc_type = "time"
             temp_timecode_value = match.group(1)
-            self.precise_time = Fraction(
-                temp_timecode_value
-            )  # 内部时间戳直接等于输入值
-            if self.strict:  # strict逻辑 对于非帧相关值（时间戳） 直接取模
+            self.precise_time = Fraction(temp_timecode_value)
+            if self.strict:
                 self.precise_time = self.precise_time % 86400
-            else:
-                pass
-        else:
-            logging.error(
-                "Timecode.__init__.str: Unknown type or type DONOT match input value! Check input."
+
+        def log_instance_success():
+            """Log successful instance creation."""
+            instance_success_log = (
+                "Timecode.__init__.str: Timecode instance, type="
+                + str(self.tc_type)
+                + ", fps="
+                + str(self.fps)
+                + ", dropframe="
+                + str(self.drop_frame)
+                + ", strict="
+                + str(self.strict)
             )
-            raise dftt_errors.DFTTTimecodeValueError
-        instance_success_log = (
-            "Timecode.__init__.str: Timecode instance, type="
-            + str(self.tc_type)
-            + ", fps="
-            + str(self.fps)
-            + ", dropframe="
-            + str(self.drop_frame)
-            + ", strict="
-            + str(self.strict)
-        )
-        logging.debug(instance_success_log)
+            logging.debug(instance_success_log)
+
+        minus_flag = check_minus_flag(timecode_value)
+        initialize_parameters(fps, drop_frame, strict)
+        if timecode_type == "auto":
+            timecode_type = determine_timecode_type(timecode_value, timecode_type)
+        parse_timecode_based_on_type(timecode_type, timecode_value, minus_flag)
+        log_instance_success()
 
     @parse_timecode.register  # 输入为Fraction类分数，此时认为输入是时间戳，若不是，则会报错
     def _(
