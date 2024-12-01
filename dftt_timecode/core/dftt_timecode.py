@@ -555,6 +555,11 @@ class DfttTimecode:
         return self.framecount
 
     def __deepcopy__(self, memo):
-        return DfttTimecode(
-            self.timestamp, self.type, self.fps, self.is_drop_frame, self.is_strict
+        to_copy = DfttTimecode(
+            self.timecode_output(),
+            self.type,
+            self.fps,
+            self.is_drop_frame,
+            self.is_strict,
         )
+        return to_copy

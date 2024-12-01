@@ -1,5 +1,7 @@
 from fractions import Fraction
 import pytest
+from copy import deepcopy
+
 import dftt_timecode.error as dftt_errors
 from dftt_timecode import DfttTimecode as TC
 
@@ -1109,3 +1111,26 @@ def test_int(tc_value, xvalue):
 def test_audio_sample_count(tc_value, sample_rate, xvalue):
     tc = TC(*tc_value)
     assert tc.get_audio_sample_count(sample_rate) == xvalue
+
+
+@pytest.fixture(
+    params=[
+        ("00:00:01:00", "auto", 24, False, True),
+        ("1000", "auto", 119.88, True, True),
+        ("1.0", "auto", Fraction(60000, 1001), True, True),
+        ("00:01:00;02", "auto", 29.97, True, True),
+        ("01:00:00,123", "auto", 24, False, True),
+    ],
+    ids=["smpte", "frame", "time", "smpte_df", "srt"],
+)
+def tc_to_copy(request):
+    return request.param
+
+
+def test_deepcopy(tc_data):
+    source_tc = TC(*tc_data)
+    destiny_tc = deepcopy(source_tc)
+    assert source_tc == destiny_tc
+    assert source_tc.fps == destiny_tc.fps
+    assert source_tc.is_drop_frame == destiny_tc.is_drop_frame
+    assert source_tc.is_strict == destiny_tc.is_strict
