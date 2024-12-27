@@ -7,8 +7,13 @@ import dftt_timecode.error as dftt_errors
 import dftt_timecode.pattern as tc_patterns
 
 
+TimecodeType: TypeAlias = Literal[
+    "auto", "smpte", "srt", "ffmpeg", "fcpx", "frame", "time"
+]
+
+
 class TimecodeParser:
-    tc_type = "time"
+    tc_type: TimecodeType = "time"
     fps = 24.0  # 帧率
     nominal_fps = 24  # 名义帧率（无小数,进一法取整）
     drop_frame = False  # 是否丢帧Dropframe（True为丢帧，False为不丢帧）

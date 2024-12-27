@@ -1,9 +1,14 @@
 import logging
 from fractions import Fraction
 from math import ceil, floor
+from typing import Literal, TypeAlias
 
 from dftt_timecode.core.timecode_parser import TimecodeParser
 import dftt_timecode.error as dftt_errors
+
+TimecodeType: TypeAlias = Literal[
+    "auto", "smpte", "srt", "ffmpeg", "fcpx", "frame", "time"
+]
 
 
 class DfttTimecode:
@@ -17,7 +22,7 @@ class DfttTimecode:
     def __new__(
         cls,
         timecode_value,
-        timecode_type="auto",
+        timecode_type: TimecodeType = "auto",
         fps=24.0,
         drop_frame=False,
         strict=True,
@@ -39,7 +44,7 @@ class DfttTimecode:
             timecode_value = 0
         tc = TimecodeParser()
         tc.parse_timecode(timecode_value, timecode_type, fps, drop_frame, strict)
-        self.__type = tc.tc_type
+        self.__type: TimecodeType = tc.tc_type
         self.__fps = tc.fps
         self.__nominal_fps = tc.nominal_fps
         self.__drop_frame = tc.drop_frame
@@ -47,7 +52,7 @@ class DfttTimecode:
         self.__precise_time = tc.precise_time
 
     @property
-    def type(self) -> str:
+    def type(self) -> TimecodeType:
         return self.__type
 
     @property
@@ -244,7 +249,7 @@ class DfttTimecode:
         output_time = round(float(self.__precise_time), 5)
         return str(output_time)
 
-    def timecode_output(self, dest_type="auto", output_part=0):
+    def timecode_output(self, dest_type: TimecodeType = "auto", output_part=0):
         if dest_type == "auto":
             func = getattr(self, f"_convert_to_output_{self.__type}")
         else:
@@ -267,7 +272,9 @@ class DfttTimecode:
             pass
         return self
 
-    def set_type(self, dest_type="smpte", rounding=True) -> "DfttTimecode":
+    def set_type(
+        self, dest_type: TimecodeType = "smpte", rounding=True
+    ) -> "DfttTimecode":
         if dest_type in ("smpte", "srt", "dlp", "ffmpeg", "fcpx", "frame", "time"):
             self.__type = dest_type
         else:
