@@ -1,5 +1,6 @@
 import logging
 from fractions import Fraction
+from typing import TypeAlias, Literal
 from functools import singledispatchmethod
 from math import ceil
 
@@ -8,7 +9,7 @@ import dftt_timecode.pattern as tc_patterns
 
 
 TimecodeType: TypeAlias = Literal[
-    "auto", "smpte", "srt", "ffmpeg", "fcpx", "frame", "time"
+    "auto", "smpte", "srt", "ffmpeg", "fcpx", "frame", "time", "dlp"
 ]
 
 
@@ -28,7 +29,7 @@ class TimecodeParser:
     def _(
         self,
         timecode_value: str,
-        timecode_type="auto",
+        timecode_type: TimecodeType = "auto",
         fps=24.0,
         drop_frame=False,
         strict=True,
@@ -55,7 +56,9 @@ class TimecodeParser:
                     "Timecode.__init__.str: This FPS is NOT Drop-Framable, force drop_frame to False"
                 )
 
-        def determine_timecode_type(value: str, current_type: str) -> str:
+        def determine_timecode_type(
+            value: str, current_type: TimecodeType
+        ) -> TimecodeType:
             """Determine the type of the timecode based on regex patterns."""
             if current_type == "auto":
                 if tc_patterns.SMPTE_NDF_REGEX.match(value):
