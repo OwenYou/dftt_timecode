@@ -27,17 +27,22 @@ class DfttTimecode:
             return timecode_value
         else:
             return super(DfttTimecode, cls).__new__(cls)
-
+    def __validate_drop_frame(self, drop_frame: bool, fps: float) -> bool:
+        if drop_frame and round(fps, 2) % 29.97 != 0 and round(fps, 2) % 23.98 != 0:
+            logging.info(f'FPS [{fps}] is NOT Drop-Framable, forcing drop_frame to False')
+            return False
+        return drop_frame #return drop_frame for 29.97 NDF
     @singledispatchmethod
     def __init__(self, timecode_value, timecode_type, fps, drop_frame, strict):  # 构造函数
         pass
 
     @__init__.register  # 若传入的TC值为字符串，则调用此函数
     def _(self, timecode_value: str, timecode_type='auto', fps=24.0, drop_frame=False, strict=True):
-        if timecode_value[0] == '-':  # 判断首位是否为负，并为flag赋值
-            minus_flag = True
-        else:
-            minus_flag = False
+        # if timecode_value[0] == '-':  # 判断首位是否为负，并为flag赋值
+        #     minus_flag = True
+        # else:
+        #     minus_flag = False
+        minus_flag= timecode_value.startswith('-')
         self.__fps = fps
         # 读入帧率取整为名义帧率便于后续计算（包括判断时码是否合法，DF/NDF逻辑等) 用进一法是因为要判断ff值是否大于fps-1
         self.__nominal_fps = ceil(fps)

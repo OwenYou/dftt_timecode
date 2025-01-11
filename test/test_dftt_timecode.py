@@ -151,7 +151,7 @@ def test_set_fps(set_fps_data):
 
 
 @pytest.fixture(params=[('00:00:01:101', 'auto', 120, False, True, 'frame', True, '221'),
-                        ('00:00:01,123', 'auto', 120, False, True, 'smpte', True, '00:00:01:015')],
+                        ('00:00:01,123', 'auto', 120, False, True, 'smpte', True, '00:00:01;015')],
                 ids=["smpte_frame", "srt_smpte_round"])
 def set_type_data(request):
     yield request.param
