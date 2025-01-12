@@ -12,16 +12,5 @@ class DFTTTimecodeTypeError(DFTTError):
 class DFTTTimecodeOperatorError(DFTTError):
     pass
 
-class DFTTTimeRangeMethodError(DFTTError):
+class DFTTTimecodeInitializationError(DFTTError):
     pass
-
-class DFTTTimeRangeValueError(DFTTError):
-    pass
-
-class DFTTTimeRangeTypeError(DFTTError):
-    pass
-
-class DFTTTimeRangeFPSError(DFTTError):
-    pass
-
-
