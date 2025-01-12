@@ -4,6 +4,8 @@ from functools import singledispatchmethod
 from math import ceil, floor
 from copy import deepcopy
 
+from typing import Literal, TypeAlias
+
 from dftt_timecode.error import *
 from dftt_timecode.pattern import *
 
@@ -13,6 +15,7 @@ from dftt_timecode.pattern import *
 #                     datefmt='%Y-%m-%d %a %H:%M:%S',
 #                     level=logging.DEBUG)
 
+TimecodeType : TypeAlias= Literal['smpte', 'srt', 'dlp', 'ffmpeg', 'fcpx', 'frame', 'time','auto']
 
 class DfttTimecode:
     __type = 'time'
@@ -27,17 +30,20 @@ class DfttTimecode:
             return timecode_value
         else:
             return super(DfttTimecode, cls).__new__(cls)
+        
     def __validate_drop_frame(self, drop_frame: bool, fps: float) -> bool:
-        if drop_frame and round(fps, 2) % 29.97 != 0 and round(fps, 2) % 23.98 != 0:
-            logging.info(f'FPS [{fps}] is NOT Drop-Framable, forcing drop_frame to False')
-            return False
-        return drop_frame #return drop_frame for 29.97 NDF
+        if round(fps, 2) % 29.97 == 0:
+            # FPS为29.97以及倍数时候，尊重drop_frame参数(for 29.97/59.94/119.88 NDF)
+            return False if drop_frame == False else True
+        else:
+            return round(self.fps, 2) % 23.98 == 0
+
     @singledispatchmethod
     def __init__(self, timecode_value, timecode_type, fps, drop_frame, strict):  # 构造函数
         pass
 
     @__init__.register  # 若传入的TC值为字符串，则调用此函数
-    def _(self, timecode_value: str, timecode_type='auto', fps=24.0, drop_frame=False, strict=True):
+    def _(self, timecode_value: str, timecode_type:TimecodeType='auto', fps=24.0, drop_frame=None, strict=True):
         # if timecode_value[0] == '-':  # 判断首位是否为负，并为flag赋值
         #     minus_flag = True
         # else:
@@ -46,14 +52,9 @@ class DfttTimecode:
         self.__fps = fps
         # 读入帧率取整为名义帧率便于后续计算（包括判断时码是否合法，DF/NDF逻辑等) 用进一法是因为要判断ff值是否大于fps-1
         self.__nominal_fps = ceil(fps)
-        self.__drop_frame = drop_frame
+        self.__drop_frame = self.__validate_drop_frame(drop_frame, fps)
         self.__strict = strict
-        if (round(self.__fps, 2) % 29.97 != 0 and round(self.__fps, 2) % 23.98 != 0 and self.is_drop_frame == True):  # 判断丢帧状态与时码输入是否匹配 不匹配则强制转换
-            self.__drop_frame = False
-            logging.info(
-                'Timecode.__init__.str: This FPS is NOT Drop-Framable, force drop_frame to False')
-        else:
-            pass
+        
         if timecode_type == 'auto':  # 自动判断类型逻辑
             if SMPTE_NDF_REGEX.match(timecode_value):  # SMPTE NDF 强制DF为False
                 timecode_type = 'smpte'
@@ -458,7 +459,7 @@ class DfttTimecode:
 
         output_hh, output_mm, output_ss, output_ff = _convert_framecount_to_smpte_parts(
             _nominal_framecount, self.__nominal_fps)
-        
+
         output_ff_format = '02d' if self.__fps < 100 else '03d'
         output_minus_flag = '' if minus_flag == False else '-'
         output_strs = (
