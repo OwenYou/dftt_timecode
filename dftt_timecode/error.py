@@ -12,4 +12,5 @@ class DFTTTimecodeTypeError(DFTTError):
 class DFTTTimecodeOperatorError(DFTTError):
     pass
 
-
+class DFTTTimecodeInitializationError(DFTTError):
+    pass

@@ -792,7 +792,7 @@ def test_div(div_num_data):
         ),
         (("00:00:01:00", "auto", 24, False, True), ("24", "auto", 24, False, True)),
         (
-            ("00:10:00:00", "auto", 29.97, True, True),
+            ("00:10:00;00", "auto", 29.97, True, True),
             ("600.0", "auto", 29.97, True, True),
         ),
         (

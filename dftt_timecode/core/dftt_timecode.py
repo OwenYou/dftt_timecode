@@ -59,24 +59,13 @@ class DfttTimecode:
             if SMPTE_NDF_REGEX.match(timecode_value):  # SMPTE NDF 强制DF为False
                 timecode_type = 'smpte'
                 if self.__drop_frame == True:
-                    # 判断丢帧状态与帧率是否匹配 不匹配则强制转换
-                    if round(self.__fps, 2) % 29.97 == 0 or round(self.__fps, 2) % 23.98 == 0:
-                        self.__drop_frame = True
-                    else:
-                        self.__drop_frame = False
-                        logging.info(
-                            'Timecode.__init__.str.auto: This FPS is NOT Drop-Framable, force drop_frame to False')
-                else:
-                    self.__drop_frame = False
+                    raise DFTTTimecodeInitializationError(f'Init Timecode Failed: Timecode value [{timecode_value}] DONOT match drop_frame status [{self.__drop_frame}]! Check input.')
+
             elif SMPTE_DF_REGEX.match(timecode_value):
                 timecode_type = 'smpte'
                 # 判断丢帧状态与帧率是否匹配 不匹配则强制转换
-                if round(self.__fps, 2) % 29.97 == 0 or round(self.__fps, 2) % 23.98 == 0:
-                    self.__drop_frame = True
-                else:
-                    self.__drop_frame = False
-                    logging.info(
-                        'Timecode.__init__.str.auto: This FPS is NOT Drop-Framable, force drop_frame to False')
+                if self.__drop_frame == False:
+                    raise DFTTTimecodeInitializationError(f'Init Timecode Failed: Timecode value [{timecode_value}] DONOT match drop_frame status [{self.__drop_frame}]! Check input.')
             elif SRT_REGEX.match(timecode_value):
                 timecode_type = 'srt'
             elif FFMPEG_REGEX.match(timecode_value):
@@ -91,6 +80,8 @@ class DfttTimecode:
                 pass
         else:
             pass  # 这里不用elif是因为auto类型也需要利用下面的部分进行操作
+        
+        #TODO separate the following logic to a new function
         if timecode_type == 'smpte':  # smpte TC
             if SMPTE_REGEX.match(timecode_value):  # 判断输入是否符合SMPTE类型
                 pass
