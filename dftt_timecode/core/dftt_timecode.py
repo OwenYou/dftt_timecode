@@ -38,6 +38,30 @@ class DfttTimecode:
         else:
             return round(self.fps, 2) % 23.98 == 0
 
+    def __detect_timecode_type(self,timecode_value)->TimecodeType:
+        if SMPTE_NDF_REGEX.match(timecode_value):  # SMPTE NDF 强制DF为False
+            if self.__drop_frame == True:
+                raise DFTTTimecodeInitializationError(f'Init Timecode Failed: Timecode value [{timecode_value}] DONOT match drop_frame status [{self.__drop_frame}]! Check input.')
+            return 'smpte'
+
+        elif SMPTE_DF_REGEX.match(timecode_value):
+            
+            # 判断丢帧状态与帧率是否匹配 不匹配则强制转换
+            if self.__drop_frame == False:
+                raise DFTTTimecodeInitializationError(f'Init Timecode Failed: Timecode value [{timecode_value}] DONOT match drop_frame status [{self.__drop_frame}]! Check input.')
+            return 'smpte'
+        elif SRT_REGEX.match(timecode_value):
+            return 'srt'
+        elif FFMPEG_REGEX.match(timecode_value):
+            return 'ffmpeg'
+        elif FCPX_REGEX.match(timecode_value):
+            return  'fcpx'
+        elif FRAME_REGEX.match(timecode_value):
+            return  'frame'
+        elif TIME_REGEX.match(timecode_value):
+            return  'time'
+
+    
     @singledispatchmethod
     def __init__(self, timecode_value, timecode_type, fps, drop_frame, strict):  # 构造函数
         pass
@@ -55,37 +79,11 @@ class DfttTimecode:
         self.__drop_frame = self.__validate_drop_frame(drop_frame, fps)
         self.__strict = strict
         
-        if timecode_type == 'auto':  # 自动判断类型逻辑
-            if SMPTE_NDF_REGEX.match(timecode_value):  # SMPTE NDF 强制DF为False
-                timecode_type = 'smpte'
-                if self.__drop_frame == True:
-                    raise DFTTTimecodeInitializationError(f'Init Timecode Failed: Timecode value [{timecode_value}] DONOT match drop_frame status [{self.__drop_frame}]! Check input.')
-
-            elif SMPTE_DF_REGEX.match(timecode_value):
-                timecode_type = 'smpte'
-                # 判断丢帧状态与帧率是否匹配 不匹配则强制转换
-                if self.__drop_frame == False:
-                    raise DFTTTimecodeInitializationError(f'Init Timecode Failed: Timecode value [{timecode_value}] DONOT match drop_frame status [{self.__drop_frame}]! Check input.')
-            elif SRT_REGEX.match(timecode_value):
-                timecode_type = 'srt'
-            elif FFMPEG_REGEX.match(timecode_value):
-                timecode_type = 'ffmpeg'
-            elif FCPX_REGEX.match(timecode_value):
-                timecode_type = 'fcpx'
-            elif FRAME_REGEX.match(timecode_value):
-                timecode_type = 'frame'
-            elif TIME_REGEX.match(timecode_value):
-                timecode_type = 'time'
-            else:
-                pass
-        else:
-            pass  # 这里不用elif是因为auto类型也需要利用下面的部分进行操作
+        timecode_type= timecode_type if timecode_type != 'auto' else self.__detect_timecode_type(timecode_value)
         
-        #TODO separate the following logic to a new function
-        if timecode_type == 'smpte':  # smpte TC
-            if SMPTE_REGEX.match(timecode_value):  # 判断输入是否符合SMPTE类型
-                pass
-            else:
+            
+        def _init_smpte():
+            if not SMPTE_REGEX.match(timecode_value):  # 判断输入是否符合
                 logging.error(
                     'Timecode.__init__.smpte: Timecode type DONOT match input value! Check input.')
                 raise DFTTTimecodeTypeError
@@ -129,6 +127,12 @@ class DfttTimecode:
                 frame_index = -frame_index
             self.__precise_time = Fraction(
                 frame_index / self.__fps)  # 时间戳=帧号/帧率
+            
+        #TODO separate the following logic to a new function        
+    
+        
+        if timecode_type == 'smpte':  # smpte TC
+            _init_smpte()
         elif timecode_type == 'srt':  # srt字幕
             if SRT_REGEX.match(timecode_value):  # 判断输入是否符合SRT类型
                 pass
