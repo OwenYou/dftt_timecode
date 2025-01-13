@@ -61,7 +61,7 @@ class DfttTimecode:
         elif TIME_REGEX.match(timecode_value):
             return  'time'
         
-    def __apply_strict_time(self) -> None:
+    def __apply_strict(self) -> None:
         """Apply 24h wraparound if strict mode enabled"""
         if self.__strict:
             self.__precise_time %= 86400
@@ -122,7 +122,7 @@ class DfttTimecode:
         if minus_flag:
             self.__precise_time = -self.__precise_time
             
-        self.__apply_strict_time()
+        self.__apply_strict()
         
     
     def __init_dlp(self, timecode_value: str,minus_flag:bool):
@@ -142,7 +142,7 @@ class DfttTimecode:
         self.__precise_time = Fraction(hh * 3600 + mm * 60 + ss + sub_sec / 250)
         if minus_flag:
             self.__precise_time = -self.__precise_time
-        self.__apply_strict_time()
+        self.__apply_strict()
 
         
     def __init_ffmpeg(self, timecode_value: str,minus_flag:bool):
@@ -157,7 +157,7 @@ class DfttTimecode:
         if minus_flag:
             self.__precise_time = -self.__precise_time
             
-        self.__apply_strict_time()
+        self.__apply_strict()
 
     def __init_fcpx(self, timecode_value: str,minus_flag:bool):
         if not FCPX_REGEX.match(timecode_value):
@@ -170,7 +170,7 @@ class DfttTimecode:
         if minus_flag:
             self.__precise_time = -self.__precise_time
             
-        self.__apply_strict_time()
+        self.__apply_strict()
     
     def __init_frame(self, timecode_value: str,minus_flag:bool):
         if not FRAME_REGEX.match(timecode_value):
@@ -195,11 +195,18 @@ class DfttTimecode:
         temp_timecode_value = TIME_REGEX.match(timecode_value).group(1)
         self.__precise_time = Fraction(temp_timecode_value)  # 内部时间戳直接等于输入值
         
-        self.__apply_strict_time()
+        self.__apply_strict()
     
+    def __init_common(self, timecode_type,fps,drop_frame,strict):
+        self.__type = timecode_type
+        self.__fps = fps
+        self.__nominal_fps = ceil(fps)
+        self.__drop_frame = self.__validate_drop_frame(drop_frame, fps)
+        self.__strict = strict
+        
     @singledispatchmethod
     def __init__(self, timecode_value, timecode_type, fps, drop_frame, strict):  # 构造函数
-        pass
+        raise TypeError(f"Unsupported timecode value type: {type(timecode_value)}")
 
     @__init__.register  # 若传入的TC值为字符串，则调用此函数
     def _(self, timecode_value: str, timecode_type:TimecodeType='auto', fps=24.0, drop_frame=None, strict=True):
@@ -239,16 +246,9 @@ class DfttTimecode:
     @__init__.register  # 输入为Fraction类分数，此时认为输入是时间戳，若不是，则会报错
     def _(self, timecode_value: Fraction, timecode_type='time', fps=24.0, drop_frame=False, strict=True):
         if timecode_type in ('time', 'auto'):
-            self.__type = 'time'
-            self.__fps = fps
-            self.__nominal_fps = ceil(fps)
-            self.__drop_frame = drop_frame
-            self.__strict = strict
+            self.__init_common(timecode_type,fps,drop_frame,strict)
             self.__precise_time = timecode_value  # 内部时间戳直接等于输入值
-            if self.__strict == True:  # strict逻辑 对于非帧相关值（时间戳） 直接取模
-                self.__precise_time = self.__precise_time % 86400
-            else:
-                pass
+            self.__apply_strict()
         else:
             logging.error(
                 'Timecode.__init__.Fraction: Timecode type DONOT match input value! Check input.')
@@ -261,30 +261,18 @@ class DfttTimecode:
     @__init__.register
     def _(self, timecode_value: int, timecode_type='frame', fps=24.0, drop_frame=False, strict=True):
         if timecode_type in ('frame', 'auto'):
-            self.__type = 'frame'
-            self.__fps = fps
-            self.__nominal_fps = ceil(fps)
-            self.__drop_frame = drop_frame
-            self.__strict = strict
+            self.__init_common(timecode_type,fps,drop_frame,strict)
             temp_frame_index = timecode_value
             if self.__strict == True:
                 temp_frame_index = temp_frame_index % (
                     self.__fps * 86400) if self.__drop_frame == True else temp_frame_index % (
                     self.__nominal_fps * 86400)
-            else:
-                pass
             self.__precise_time = Fraction(temp_frame_index / self.__fps)
+            
         elif timecode_type == 'time':
-            self.__type = 'time'
-            self.__fps = fps
-            self.__nominal_fps = ceil(fps)
-            self.__drop_frame = drop_frame
-            self.__strict = strict
+            self.__init_common(timecode_type,fps,drop_frame,strict)
             self.__precise_time = timecode_value  # 内部时间戳直接等于输入值
-            if self.__strict == True:  # strict逻辑 对于非帧相关值（时间戳） 直接取模
-                self.__precise_time = self.__precise_time % 86400
-            else:
-                pass
+            self.__apply_strict()
         else:
             logging.error(
                 'Timecode.__init__.int: Timecode type DONOT match input value! Check input.')
@@ -297,16 +285,9 @@ class DfttTimecode:
     @__init__.register
     def _(self, timecode_value: float, timecode_type='time', fps=24.0, drop_frame=False, strict=True):
         if timecode_type in ('time', 'auto'):
-            self.__type = 'time'
-            self.__fps = fps
-            self.__nominal_fps = ceil(fps)
-            self.__drop_frame = drop_frame
-            self.__strict = strict
+            self.__init_common(timecode_type,fps,drop_frame,strict)
             self.__precise_time = Fraction(timecode_value)  # 内部时间戳直接等于输入值
-            if self.__strict == True:
-                self.__precise_time = self.__precise_time % 86400
-            else:
-                pass
+            self.__apply_strict()
         else:
             logging.error(
                 'Timecode.__init__.float: Timecode type DONOT match input value! Check input.')
@@ -318,17 +299,10 @@ class DfttTimecode:
     @__init__.register
     def _(self, timecode_value: tuple, timecode_type='time', fps=24.0, drop_frame=False, strict=True):
         if timecode_type in ('time', 'auto'):
-            self.__type = 'time'
-            self.__fps = fps
-            self.__nominal_fps = ceil(fps)
-            self.__drop_frame = drop_frame
-            self.__strict = strict
+            self.__init_common(timecode_type,fps,drop_frame,strict)
             self.__precise_time = Fraction(
                 int(timecode_value[0]), int(timecode_value[1]))  # 将tuple输入视为分数
-            if self.__strict == True:
-                self.__precise_time = self.__precise_time % 86400
-            else:
-                pass
+            self.__apply_strict()
         else:
             logging.error(
                 'Timecode.__init__.tuple: Timecode type DONOT match input value! Check input.')
@@ -340,17 +314,10 @@ class DfttTimecode:
     @__init__.register
     def _(self, timecode_value: list, timecode_type='time', fps=24.0, drop_frame=False, strict=True):
         if timecode_type in ('time', 'auto'):
-            self.__type = timecode_type
-            self.__fps = fps
-            self.__nominal_fps = ceil(fps)
-            self.__drop_frame = drop_frame
-            self.__strict = strict
+            self.__init_common(timecode_type,fps,drop_frame,strict)
             self.__precise_time = Fraction(
                 int(timecode_value[0]), int(timecode_value[1]))  # 将list输入视为分数
-            if self.__strict == True:
-                self.__precise_time = self.__precise_time % 86400
-            else:
-                pass
+            self.__apply_strict()
         else:
             logging.error(
                 'Timecode.__init__.list: Timecode type DONOT match input value! Check input.')
