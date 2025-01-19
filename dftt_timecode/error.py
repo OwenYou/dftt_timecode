@@ -6,6 +6,9 @@ class DFTTTimecodeValueError(DFTTError):
     pass
 
 
+class DFTTTimecodeInitializationError(DFTTError):
+    pass
+
 class DFTTTimecodeTypeError(DFTTError):
     pass
 
@@ -23,5 +26,4 @@ class DFTTTimeRangeTypeError(DFTTError):
 
 class DFTTTimeRangeFPSError(DFTTError):
     pass
-
 
