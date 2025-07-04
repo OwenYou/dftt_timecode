@@ -419,10 +419,26 @@ class DfttTimecode:
         _mm, r_2 = divmod(r_1, 60)
         _ss, r_3 = divmod(r_2, 1)
         _sub_sec = round(r_3*sub_sec_multiplier)
+        
+        # Handle sub-second overflow
+        if _sub_sec >= sub_sec_multiplier:
+            _ss += _sub_sec // sub_sec_multiplier
+            _sub_sec = _sub_sec % sub_sec_multiplier
+            
+            # Handle seconds overflow
+            if _ss >= 60:
+                _mm += _ss // 60
+                _ss = _ss % 60
+                
+                # Handle minutes overflow
+                if _mm >= 60:
+                    _hh += _mm // 60
+                    _mm = _mm % 60
+        
         output_minus_flag = '' if minus_flag == False else '-'
-        output_hh = f'{output_minus_flag}{_hh:02d}'
-        outpur_mm = f'{_mm:02d}'
-        output_ss = f'{_ss:02d}'
+        output_hh = f'{output_minus_flag}{int(_hh):02d}'
+        outpur_mm = f'{int(_mm):02d}'
+        output_ss = f'{int(_ss):02d}'
         output_ff = f'{_sub_sec:{sub_sec_format}}'
 
         output_full_str = f'{output_hh}:{outpur_mm}:{output_ss}{frame_seperator}{output_ff}'
