@@ -9,3 +9,5 @@ dftt_timecode.egg-info
 .DS_Store
 playground.ipynb
 CLAUDE.md
+dist
+build

@@ -13,7 +13,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/OwenYou/dftt_timecode",
     packages=['dftt_timecode','dftt_timecode.core'],
-    python_requires=">=3.10",
+    python_requires=">=3.11",
     classifiers=[
         "Programming Language :: Python :: 3",
         "Development Status :: 2 - Pre-Alpha",
