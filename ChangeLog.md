@@ -71,7 +71,6 @@ First Public Release.
   This bug will cause error when using strings like `'00:00:27:183'` to initilize a dlp timecode object.
  
   
-V0.0.13 changelog   
 ## V0.0.13
 重构 Refactor:
 - 使用`f-string`处理字符串格式输出
@@ -93,7 +92,55 @@ V0.0.13 changelog
   Use`functools.singledispatchmethod` instead of `dispatch.InstanceMethodDispatch`
 
 ## V0.0.14
- 修复 BugFix:
+修复 BugFix:
 - 修复v0.0.13打包后不包含core，导致库无法使用的问题。
 
   Fix v0.0.13 import failure. Caused by missing dftt_timecode.core while packing.
+
+## V0.0.15a1
+重构 Refactor:
+
+- 重构时码类型检测逻辑。
+
+  Refactor timecode type detection logic
+
+- 重构时码对象初始化时的错误处理。
+
+  Refactor error handling during timecode initialization
+
+- 修改报错信息，增强可读性。
+
+  Modify error message to give more detail.
+
+修改 Modify:
+
+- 修改丢帧逻辑适应更多帧率。
+  
+  Change drop frame implementation to fit more frame rates.
+
+添加 Add:
+
+- 增加`DfttTimecodeInitializationError`
+  
+  Add `DfttTimecodeInitializationError`
+
+- Github Action自动打包上传PyPi。
+
+  Using Github Action to automatically upload releases to PyPi.
+
+弃用 Deprecate:
+- 完全移除`InstanceMethodDispatch`
+
+  Remove `InstanceMethodDispatch` at all.
+
+修复 BugFix:
+- 修复特定时码在SMPTE转SRT时毫秒会溢出的问题 Issue [#19](https://github.com/OwenYou/dftt_timecode/issues/19)。
+
+  Fix certain timecode value will cause ValueError (sub-second overflow) when setting type from SMPTE to SRT.
+
+## V0.0.15a2
+修复 BugFix:
+
+- 修复遗漏的错误信息格式化 Issue [#26](https://github.com/OwenYou/dftt_timecode/issues/26)。
+
+  Fix several error string missing user input logging during format.
