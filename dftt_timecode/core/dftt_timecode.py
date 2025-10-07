@@ -95,14 +95,14 @@ class DfttTimecode:
     def __init_smpte(self, timecode_value: str,minus_flag:bool):
         if not SMPTE_REGEX.match(timecode_value):  # 判断输入是否符合
                 logger.error(
-                    'Timecode type DONOT match input value! Check input.')
+                    f'Timecode type [smpte] DONOT match input value [{timecode_value}]! Check input.')
                 raise DFTTTimecodeTypeError
         temp_timecode_list = [int(x) if x else 0 for x in SMPTE_REGEX.match(
             timecode_value).groups()]  # 正则取值
         hh,mm,ss,ff = temp_timecode_list
         if ff > self.__nominal_fps - 1:  # 判断输入帧号在当前帧率下是否合法
             logger.error(
-                'This timecode is illegal under given params, check your input!')
+                f'This timecode: [{timecode_value}] is illegal under given params, check your input!')
             raise DFTTTimecodeValueError
 
         if not self.__drop_frame:  # 时码丢帧处理逻辑
@@ -113,7 +113,7 @@ class DfttTimecode:
             # 检查是否有DF下不合法的帧号
             if mm % 10 != 0 and ss == 0 and ff in (0, drop_per_min - 1):
                 logger.error(
-                    'This timecode is illegal under given params, check your input!')
+                    f'This timecode: [{timecode_value}] is illegal under given params, check your input!')
                 raise DFTTTimecodeValueError
             else:
                 total_minutes = 60 * hh + mm
@@ -509,7 +509,7 @@ class DfttTimecode:
             pass
         else:
             logger.warning(
-                'This timecode type has only one part.')
+                'This timecode type [frame] has only one part.')
         return str(round(self.__precise_time * self.__fps))
 
     def _convert_to_output_time(self, output_part=0) -> str:
@@ -517,7 +517,7 @@ class DfttTimecode:
             pass
         else:
             logger.warning(
-                'This timecode type has only one part.')
+                'This timecode type [time] has only one part.')
         output_time = round(float(self.__precise_time), 5)
         return str(output_time)
 
@@ -530,7 +530,7 @@ class DfttTimecode:
             return func(output_part)
         else:
             logger.warning(
-                'CANNOT find such destination type, will return SMPTE type')
+                f'CANNOT find such destination type [{dest_type}], will return SMPTE type')
             func = getattr(self, '_convert_to_output_smpte', None)
             return func(output_part)
 
@@ -548,7 +548,7 @@ class DfttTimecode:
         if dest_type in ('smpte', 'srt', 'dlp', 'ffmpeg', 'fcpx', 'frame', 'time'):
             self.__type = dest_type
         else:
-            logger.warning('No such type, will remain current type.')
+            logger.warning(f'No such type [{dest_type}], will remain current type.')
         if rounding:
             temp_str = self.timecode_output(dest_type)
             temp_timecode_object = DfttTimecode(
@@ -597,7 +597,7 @@ class DfttTimecode:
         elif isinstance(other, Fraction):  # 时间
             temp_sum = self.__precise_time + other
         else:
-            logger.error('Undefined addition.')
+            logger.error(f'Undefined addition with [{type(other)}].')
             raise DFTTTimecodeOperatorError
         temp_object = DfttTimecode(
             temp_sum, 'time', self.__fps, self.__drop_frame, self.__strict)
@@ -624,7 +624,7 @@ class DfttTimecode:
         elif isinstance(other, Fraction):  # 时间
             diff = self.__precise_time - other
         else:
-            logger.error(30, 'Undefined subtraction.')
+            logger.error(f'Undefined subtraction with [{type(other)}].')
             raise DFTTTimecodeOperatorError
         temp_object = DfttTimecode(
             diff, 'time', self.__fps, self.__drop_frame, self.__strict)
@@ -640,7 +640,7 @@ class DfttTimecode:
         elif isinstance(other, Fraction):  # 时间
             diff = other - self.__precise_time
         else:
-            logger.error('Undefined subtraction.')
+            logger.error(f'Undefined subtraction with [{type(other)}].')
             raise DFTTTimecodeOperatorError
         temp_object = DfttTimecode(
             diff, 'time', self.__fps, self.__drop_frame, self.__strict)
@@ -660,7 +660,7 @@ class DfttTimecode:
         elif isinstance(other, Fraction):
             prod = self.__precise_time * other
         else:
-            logger.error('Undefined multiplication.')
+            logger.error(f'Undefined multiplication with [{type(other)}].')
             raise DFTTTimecodeOperatorError
         temp_object = DfttTimecode(
             prod, 'time', self.__fps, self.__drop_frame, self.__strict)
@@ -683,7 +683,7 @@ class DfttTimecode:
         elif isinstance(other, Fraction):  # timecode与数相除，得到结果是timecode
             quo_time = self.__precise_time / other
         else:
-            logger.error('Undefined division.')
+            logger.error(f'Undefined division with [{type(other)}].')
             raise DFTTTimecodeOperatorError
         temp_object = DfttTimecode(
             quo_time, 'time', self.__fps, self.__drop_frame, self.__strict)
@@ -696,7 +696,7 @@ class DfttTimecode:
                 'Number CANNOT be devided by a Timecode.')
             raise DFTTTimecodeOperatorError
         else:
-            logger.error('Undefined division.')
+            logger.error(f'Undefined division with [{type(other)}].')
             raise DFTTTimecodeOperatorError
 
     def __eq__(self, other):  # 判断相等
@@ -713,7 +713,7 @@ class DfttTimecode:
         elif isinstance(other, Fraction):
             return round(self.__precise_time, 5) == round(other, 5)
         else:
-            logger.error('CANNOT compare with such data type.')
+            logger.error(f'CANNOT compare with data type [{type(other)}].')
             raise DFTTTimecodeTypeError
 
     def __ne__(self, other):
@@ -732,7 +732,7 @@ class DfttTimecode:
         elif isinstance(other, Fraction):
             return round(self.__precise_time, 5) < round(other, 5)
         else:
-            logger.error('CANNOT compare with such data type.')
+            logger.error(f'CANNOT compare with data type [{type(other)}].')
             raise DFTTTimecodeTypeError
 
     def __le__(self, other):  # 详见__eq__
@@ -748,7 +748,7 @@ class DfttTimecode:
         elif isinstance(other, Fraction):
             return round(self.__precise_time, 5) <= round(other, 5)
         else:
-            logger.error('CANNOT compare with such data type.')
+            logger.error(f'CANNOT compare with data type [{type(other)}].')
             raise DFTTTimecodeTypeError
 
     def __gt__(self, other):  # 详见__eq__
@@ -764,7 +764,7 @@ class DfttTimecode:
         elif isinstance(other, Fraction):
             return round(self.__precise_time, 5) > round(other, 5)
         else:
-            logger.error('CANNOT compare with such data type.')
+            logger.error(f'CANNOT compare with data type [{type(other)}].')
             raise DFTTTimecodeTypeError
 
     def __ge__(self, other):  # 详见__eq__
@@ -780,7 +780,7 @@ class DfttTimecode:
         elif isinstance(other, Fraction):
             return round(self.__precise_time, 5) >= round(other, 5)
         else:
-            logger.error('CANNOT compare with such data type.')
+            logger.error(f'CANNOT compare with data type [{type(other)}].')
             raise DFTTTimecodeTypeError
 
     def __neg__(self):  # 取负操作 返回时间戳取负的Timecode对象（strict规则照常应用 例如01:00:00:00 strict的对象 取负后为23:00:00:00）
