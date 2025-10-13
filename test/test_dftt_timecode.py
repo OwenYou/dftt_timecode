@@ -1,7 +1,9 @@
 from fractions import Fraction
 import pytest
-from dftt_timecode.error import *
 from dftt_timecode import DfttTimecode as TC
+from dftt_timecode.error import DFTTTimecodeOperatorError
+
+
 
 
 @pytest.fixture(
