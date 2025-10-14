@@ -1,5 +1,12 @@
+"""
+Timerange class for representing time intervals in DFTT Timecode library.
+
+This module provides the DfttTimeRange class for working with time intervals,
+supporting operations like offset, extend, intersection, union, and iteration.
+"""
+
 from fractions import Fraction
-from typing import Optional, List, Iterator
+from typing import Optional, List, Iterator, Union
 
 from dftt_timecode.core.dftt_timecode import DfttTimecode
 from dftt_timecode.error import (
@@ -12,7 +19,110 @@ from dftt_timecode.error import (
 
 
 class DfttTimeRange:
+    """High-precision timerange class for representing time intervals.
+
+    DfttTimeRange represents a time interval with a start point, duration, and direction.
+    It provides comprehensive operations for manipulating time ranges including offset,
+    extend, shorten, reverse, retime, intersection, and union operations.
+
+    The class uses :class:`fractions.Fraction` internally for precise calculations,
+    ensuring frame-accurate operations even with complex interval manipulations.
+
+    Args:
+        start_tc: Start timecode. Can be a DfttTimecode object or any value
+            that can construct a DfttTimecode. Required if not using precise parameters.
+        end_tc: End timecode. Can be a DfttTimecode object or any value
+            that can construct a DfttTimecode. Required if not using precise parameters.
+        forward: Direction of the timerange. True for forward (start < end),
+            False for backward (start > end). Defaults to True.
+        fps: Frame rate in frames per second. Used when constructing timecodes
+            from non-timecode values. Defaults to 24.0.
+        start_precise_time: Internal construction parameter - precise start time
+            as Fraction. Use with precise_duration for direct construction.
+        precise_duration: Internal construction parameter - precise duration
+            as Fraction. Use with start_precise_time for direct construction.
+        strict_24h: Enable 24-hour constraint mode. When True, the timerange
+            duration cannot exceed 24 hours and midnight-crossing ranges are
+            handled specially. Defaults to False.
+
+    Attributes:
+        fps (float): Frame rate of the timerange
+        forward (bool): Direction of the timerange
+        strict_24h (bool): Whether 24-hour constraint is enabled
+        precise_duration (Fraction): Duration as high-precision Fraction
+        start_precise_time (Fraction): Start time as high-precision Fraction
+        end_precise_time (Fraction): End time as high-precision Fraction
+        duration (float): Duration in seconds (absolute value)
+        framecount (int): Duration in frames (absolute value)
+        start (DfttTimecode): Start timecode object
+        end (DfttTimecode): End timecode object
+
+    Raises:
+        DFTTTimeRangeValueError: When creating zero-length or invalid timeranges
+        DFTTTimeRangeFPSError: When start and end timecodes have mismatched fps
+        ValueError: When neither (start_tc, end_tc) nor (start_precise_time, precise_duration) are provided
+
+    Examples:
+        Create from two timecodes::
+
+            >>> tr = DfttTimeRange('01:00:00:00', '02:00:00:00', fps=24)
+            >>> print(tr.duration)
+            3600.0
+            >>> print(tr.framecount)
+            86400
+
+        Create backward timerange::
+
+            >>> tr = DfttTimeRange('02:00:00:00', '01:00:00:00', forward=False, fps=24)
+            >>> print(tr.start)
+            02:00:00:00
+            >>> print(tr.end)
+            01:00:00:00
+
+        Operations::
+
+            >>> tr = DfttTimeRange('01:00:00:00', '01:10:00:00', fps=24)
+            >>> tr2 = tr.offset(600)  # Move forward 600 seconds (10 minutes)
+            >>> print(tr2.start)
+            01:10:00:00
+            >>> tr3 = tr.extend(300)  # Add 5 minutes to duration
+            >>> print(tr3.duration)
+            900.0
+
+        Iteration::
+
+            >>> tr = DfttTimeRange('01:00:00:00', '01:00:00:10', fps=24)
+            >>> for tc in tr:
+            ...     print(tc)
+            01:00:00:00
+            01:00:00:01
+            ...
+            01:00:00:09
+
+        Set operations::
+
+            >>> tr1 = DfttTimeRange('01:00:00:00', '02:00:00:00', fps=24)
+            >>> tr2 = DfttTimeRange('01:30:00:00', '02:30:00:00', fps=24)
+            >>> intersection = tr1 & tr2  # Intersection operator
+            >>> print(intersection.start)
+            01:30:00:00
+            >>> union = tr1 | tr2  # Union operator
+            >>> print(union.duration)
+            5400.0
+
+    Note:
+        - Timerange objects are immutable. All operations return new instances.
+        - The internal representation uses :class:`fractions.Fraction` for precision.
+        - Forward and backward timeranges behave differently in some operations.
+        - Zero-length timeranges are not allowed.
+
+    See Also:
+        - :class:`DfttTimecode`: For working with individual timecodes
+        - :mod:`dftt_timecode.error`: Custom exception classes
+    """
+
     TIME_24H_SECONDS = 86400
+    """Constant representing 24 hours in seconds (86400)."""
 
     def __init__(
         self,
@@ -153,8 +263,36 @@ class DfttTimeRange:
         return DfttTimecode(float(self.end_precise_time), fps=self.__fps)
 
     # Core timerange operations
-    def offset(self, offset_value) -> "DfttTimeRange":
-        """Move timerange in time while preserving duration"""
+    def offset(self, offset_value: Union[float, DfttTimecode, str, int]) -> "DfttTimeRange":
+        """Move timerange in time while preserving duration.
+
+        Shifts the entire timerange by the specified offset amount without
+        changing the duration. Both start and end points move by the same amount.
+
+        Args:
+            offset_value: Amount to offset the timerange. Can be:
+                - float: Seconds to shift
+                - int: Frames to shift (converted using current fps)
+                - DfttTimecode: Uses the timecode's timestamp
+                - str: Timecode string to parse
+
+        Returns:
+            DfttTimeRange: New timerange with shifted start/end points
+
+        Raises:
+            DFTTTimeRangeMethodError: If offset_value cannot be parsed
+
+        Examples:
+            >>> tr = DfttTimeRange('01:00:00:00', '01:10:00:00', fps=24)
+            >>> tr2 = tr.offset(600)  # Offset by 10 minutes (600 seconds)
+            >>> print(tr2.start)
+            01:10:00:00
+            >>> print(tr2.end)
+            01:20:00:00
+
+        Note:
+            In strict_24h mode, the new start time wraps around at 24 hours.
+        """
         try:
             if isinstance(offset_value, float):
                 offset_precise = Fraction(offset_value)
@@ -180,8 +318,39 @@ class DfttTimeRange:
         except Exception:
             raise DFTTTimeRangeMethodError(f"Invalid offset value {offset_value}")
 
-    def extend(self, extend_value) -> "DfttTimeRange":
-        """Extend duration (positive value increases duration)"""
+    def extend(self, extend_value: Union[int, float, DfttTimecode, str]) -> "DfttTimeRange":
+        """Extend duration (positive value increases duration).
+
+        Extends or shortens the timerange by modifying the end point while
+        keeping the start point fixed. Positive values increase duration,
+        negative values decrease it.
+
+        Args:
+            extend_value: Amount to extend the duration. Can be:
+                - int or float: Seconds to extend (positive) or shorten (negative)
+                - DfttTimecode: Uses the timecode's timestamp
+                - str: Timecode string to parse
+
+        Returns:
+            DfttTimeRange: New timerange with modified duration
+
+        Raises:
+            DFTTTimeRangeValueError: If extension results in zero-length timerange
+                or exceeds 24 hours in strict mode
+            DFTTTimeRangeMethodError: If extend_value cannot be parsed
+
+        Examples:
+            >>> tr = DfttTimeRange('01:00:00:00', '01:10:00:00', fps=24)
+            >>> tr2 = tr.extend(300)  # Add 5 minutes
+            >>> print(tr2.duration)
+            900.0
+            >>> tr3 = tr.extend(-300)  # Subtract 5 minutes
+            >>> print(tr3.duration)
+            300.0
+
+        Note:
+            The direction (forward/backward) affects how extension is applied.
+        """
         try:
             if isinstance(extend_value, (int, float)):
                 extend_precise = Fraction(extend_value)
@@ -216,14 +385,67 @@ class DfttTimeRange:
                 raise
             raise DFTTTimeRangeMethodError("Invalid extend value")
 
-    def shorten(self, shorten_value) -> "DfttTimeRange":
-        """Shorten duration (positive value decreases duration)"""
+    def shorten(self, shorten_value: Union[int, float, DfttTimecode, str]) -> "DfttTimeRange":
+        """Shorten duration (positive value decreases duration).
+
+        This is a convenience method that calls :meth:`extend` with a negated value.
+        Shortens the timerange by modifying the end point while keeping the start fixed.
+
+        Args:
+            shorten_value: Amount to shorten the duration. Can be:
+                - int or float: Seconds to shorten (positive decreases duration)
+                - DfttTimecode: Uses the timecode's timestamp
+                - str: Timecode string to parse
+
+        Returns:
+            DfttTimeRange: New timerange with shortened duration
+
+        Raises:
+            DFTTTimeRangeValueError: If shortening results in zero-length timerange
+            DFTTTimeRangeMethodError: If shorten_value cannot be parsed
+
+        Examples:
+            >>> tr = DfttTimeRange('01:00:00:00', '01:10:00:00', fps=24)
+            >>> tr2 = tr.shorten(300)  # Shorten by 5 minutes
+            >>> print(tr2.duration)
+            300.0
+            >>> print(tr2.end)
+            01:05:00:00
+
+        Note:
+            Internally calls ``extend(-shorten_value)`` for numeric values.
+        """
         return self.extend(
             -shorten_value if isinstance(shorten_value, (int, float)) else shorten_value
         )
 
     def reverse(self) -> "DfttTimeRange":
-        """Reverse direction of timerange"""
+        """Reverse direction of timerange.
+
+        Creates a new timerange with swapped start/end points and inverted direction.
+        The duration magnitude remains the same, but the direction is flipped.
+
+        Returns:
+            DfttTimeRange: New timerange with reversed direction
+
+        Examples:
+            >>> tr = DfttTimeRange('01:00:00:00', '02:00:00:00', fps=24, forward=True)
+            >>> print(tr.start, '->', tr.end)
+            01:00:00:00 -> 02:00:00:00
+            >>> tr_rev = tr.reverse()
+            >>> print(tr_rev.start, '->', tr_rev.end)
+            02:00:00:00 -> 01:00:00:00
+            >>> print(tr_rev.forward)
+            False
+            >>> print(tr.duration == tr_rev.duration)
+            True
+
+        Note:
+            - The new start becomes the old end
+            - The forward flag is flipped
+            - Duration magnitude is preserved
+            - This is useful for working with timeranges that play backward
+        """
         return DfttTimeRange(
             start_precise_time=self.end_precise_time,
             precise_duration=self.__precise_duration,
@@ -232,8 +454,50 @@ class DfttTimeRange:
             strict_24h=self.__strict_24h,
         )
 
-    def retime(self, retime_factor) -> "DfttTimeRange":
-        """Change duration by multiplication factor"""
+    def retime(self, retime_factor: Union[int, float, Fraction]) -> "DfttTimeRange":
+        """Change duration by multiplication factor.
+
+        Scales the timerange duration by the given factor while keeping the start
+        point fixed. This is useful for time-stretching or speed-change operations.
+
+        Args:
+            retime_factor: Multiplication factor for the duration. Can be:
+                - int or float: Factor to multiply duration by
+                - Fraction: Precise rational factor
+                Examples: 2.0 doubles duration, 0.5 halves it, 1.5 extends by 50%
+
+        Returns:
+            DfttTimeRange: New timerange with scaled duration
+
+        Raises:
+            DFTTTimeRangeTypeError: If retime_factor is not numeric
+            DFTTTimeRangeValueError: If retime_factor is 0, or if result exceeds
+                24 hours in strict_24h mode
+
+        Examples:
+            >>> tr = DfttTimeRange('01:00:00:00', '01:10:00:00', fps=24)
+            >>> print(tr.duration)
+            600.0
+            >>> tr2 = tr.retime(2.0)  # Double the duration
+            >>> print(tr2.duration)
+            1200.0
+            >>> print(tr2.end)
+            01:20:00:00
+            >>> tr3 = tr.retime(0.5)  # Half the duration (speed up)
+            >>> print(tr3.duration)
+            300.0
+            >>> # Can also use * operator
+            >>> tr4 = tr * 2
+            >>> print(tr4.duration)
+            1200.0
+
+        Note:
+            - Start point remains unchanged
+            - Commonly used for speed ramping or time-stretching effects
+            - Factor > 1 increases duration (slow down)
+            - Factor < 1 decreases duration (speed up)
+            - Can also use the ``*`` operator for the same effect
+        """
         if not isinstance(retime_factor, (int, float, Fraction)):
             raise DFTTTimeRangeTypeError("Retime factor must be numeric")
 
@@ -254,7 +518,42 @@ class DfttTimeRange:
         )
 
     def separate(self, num_parts: int) -> List["DfttTimeRange"]:
-        """Separate timerange into multiple equal parts"""
+        """Separate timerange into multiple equal parts.
+
+        Divides the timerange into a specified number of equal-duration sub-ranges.
+        All parts have the same duration and are contiguous (adjacent with no gaps).
+
+        Args:
+            num_parts: Number of parts to divide the timerange into (must be >= 2)
+
+        Returns:
+            List[DfttTimeRange]: List of timerange parts, ordered from start to end
+
+        Raises:
+            DFTTTimeRangeValueError: If num_parts is less than 2
+
+        Examples:
+            >>> tr = DfttTimeRange('01:00:00:00', '01:01:00:00', fps=24)
+            >>> parts = tr.separate(4)  # Split into 4 equal parts
+            >>> len(parts)
+            4
+            >>> for i, part in enumerate(parts):
+            ...     print(f"Part {i+1}: {part.start} - {part.end}, duration={part.duration}")
+            Part 1: 01:00:00:00 - 01:00:15:00, duration=15.0
+            Part 2: 01:00:15:00 - 01:00:30:00, duration=15.0
+            Part 3: 01:00:30:00 - 01:00:45:00, duration=15.0
+            Part 4: 01:00:45:00 - 01:01:00:00, duration=15.0
+            >>> # Each part has equal duration
+            >>> all(part.duration == tr.duration / 4 for part in parts)
+            True
+
+        Note:
+            - Each part has duration = original_duration / num_parts
+            - Parts are contiguous (no gaps or overlaps)
+            - All parts inherit the same fps, forward direction, and strict_24h mode
+            - For backward timeranges, parts are still ordered from start to end
+            - Useful for splitting work into parallel chunks or creating segments
+        """
         if num_parts < 2:
             raise DFTTTimeRangeValueError("Must separate into at least 2 parts")
 
@@ -278,8 +577,37 @@ class DfttTimeRange:
         return parts
 
     # Operations with other timeranges
-    def contains(self, item, strict_forward: bool = False) -> bool:
-        """Check if timerange contains another timerange or timecode"""
+    def contains(self, item: Union[DfttTimecode, 'DfttTimeRange', str, int, float], strict_forward: bool = False) -> bool:
+        """Check if timerange contains another timerange or timecode.
+
+        Args:
+            item: Item to check for containment. Can be:
+                - DfttTimecode: Checks if timecode is within range
+                - DfttTimeRange: Checks if entire timerange is contained
+                - str, int, float: Converted to timecode for checking
+            strict_forward: If True, requires contained timerange to have same
+                direction. Only applies when item is a DfttTimeRange. Defaults to False.
+
+        Returns:
+            bool: True if item is contained within this timerange, False otherwise
+
+        Raises:
+            DFTTTimeRangeTypeError: If item cannot be converted to timecode
+
+        Examples:
+            >>> tr = DfttTimeRange('01:00:00:00', '02:00:00:00', fps=24)
+            >>> tc = DfttTimecode('01:30:00:00', fps=24)
+            >>> tr.contains(tc)
+            True
+            >>> tr.contains('00:30:00:00')
+            False
+            >>> tr2 = DfttTimeRange('01:10:00:00', '01:50:00:00', fps=24)
+            >>> tr.contains(tr2)
+            True
+
+        Note:
+            For backward timeranges, containment is checked accordingly.
+        """
         if isinstance(item, DfttTimecode):
             item_time = item.precise_timestamp
             start_time = self.__start_precise_time
@@ -308,7 +636,37 @@ class DfttTimeRange:
                 raise DFTTTimeRangeTypeError("Invalid item type for contains check")
 
     def intersect(self, other: "DfttTimeRange") -> Optional["DfttTimeRange"]:
-        """Intersection operation (AND) - requires same direction"""
+        """Calculate intersection of two timeranges (AND operation).
+
+        Returns the overlapping portion of two timeranges. Both timeranges must
+        have the same direction and frame rate.
+
+        Args:
+            other: Another DfttTimeRange to intersect with
+
+        Returns:
+            DfttTimeRange: New timerange representing the intersection, or None if no overlap
+
+        Raises:
+            DFTTTimeRangeTypeError: If other is not a DfttTimeRange
+            DFTTTimeRangeMethodError: If timeranges have different directions
+            DFTTTimeRangeFPSError: If timeranges have different frame rates
+
+        Examples:
+            >>> tr1 = DfttTimeRange('01:00:00:00', '02:00:00:00', fps=24)
+            >>> tr2 = DfttTimeRange('01:30:00:00', '02:30:00:00', fps=24)
+            >>> intersection = tr1.intersect(tr2)
+            >>> print(intersection.start)
+            01:30:00:00
+            >>> print(intersection.end)
+            02:00:00:00
+            >>> # Can also use & operator
+            >>> intersection = tr1 & tr2
+
+        Note:
+            - Returns None if timeranges don't overlap
+            - Strict_24h is True only if both input timeranges have it enabled
+        """
         if not isinstance(other, DfttTimeRange):
             raise DFTTTimeRangeTypeError(
                 "Can only intersect with another DfttTimeRange"
@@ -346,7 +704,76 @@ class DfttTimeRange:
         )
 
     def union(self, other: "DfttTimeRange") -> "DfttTimeRange":
-        """Union operation (OR) - requires same direction and no gap"""
+        """Calculate union of two timeranges (OR operation).
+
+        Combines two overlapping or adjacent timeranges into a single continuous
+        timerange that spans from the earliest start to the latest end. Both
+        timeranges must have the same direction and frame rate, and must either
+        overlap or be adjacent (touching) with no gap between them.
+
+        Args:
+            other: Another DfttTimeRange to union with
+
+        Returns:
+            DfttTimeRange: New timerange spanning both input ranges
+
+        Raises:
+            DFTTTimeRangeTypeError: If other is not a DfttTimeRange
+            DFTTTimeRangeMethodError: If timeranges have different directions,
+                or if they are non-overlapping and non-adjacent (have a gap)
+            DFTTTimeRangeFPSError: If timeranges have different frame rates
+
+        Examples:
+            Overlapping timeranges::
+
+                >>> tr1 = DfttTimeRange('01:00:00:00', '01:30:00:00', fps=24)
+                >>> tr2 = DfttTimeRange('01:20:00:00', '02:00:00:00', fps=24)
+                >>> union = tr1.union(tr2)
+                >>> print(union.start)
+                01:00:00:00
+                >>> print(union.end)
+                02:00:00:00
+                >>> print(union.duration)
+                3600.0
+
+            Adjacent (touching) timeranges::
+
+                >>> tr1 = DfttTimeRange('01:00:00:00', '01:30:00:00', fps=24)
+                >>> tr2 = DfttTimeRange('01:30:00:00', '02:00:00:00', fps=24)
+                >>> union = tr1.union(tr2)  # No gap, they touch
+                >>> print(union.start)
+                01:00:00:00
+                >>> print(union.end)
+                02:00:00:00
+
+            Using the | operator::
+
+                >>> tr1 = DfttTimeRange('01:00:00:00', '01:30:00:00', fps=24)
+                >>> tr2 = DfttTimeRange('01:20:00:00', '02:00:00:00', fps=24)
+                >>> union = tr1 | tr2  # Shorthand for union
+                >>> print(union.duration)
+                3600.0
+
+            Non-adjacent timeranges (will fail)::
+
+                >>> tr1 = DfttTimeRange('01:00:00:00', '01:30:00:00', fps=24)
+                >>> tr2 = DfttTimeRange('02:00:00:00', '02:30:00:00', fps=24)
+                >>> union = tr1.union(tr2)  # Gap of 30 minutes
+                DFTTTimeRangeMethodError: Cannot union non-overlapping, non-adjacent timeranges
+
+        Note:
+            - Timeranges must overlap or be adjacent (no gap allowed)
+            - The result spans from earliest start to latest end
+            - Direction must be the same for both timeranges
+            - Strict_24h is True only if both input timeranges have it enabled
+            - This is a set operation, different from :meth:`add` which combines durations
+            - Can also use the ``|`` operator as a shorthand
+            - For checking overlap, use :meth:`intersect` first
+
+        See Also:
+            - :meth:`intersect`: Get the overlapping portion (AND operation)
+            - :meth:`add`: Add durations (different from union)
+        """
         if not isinstance(other, DfttTimeRange):
             raise DFTTTimeRangeTypeError("Can only union with another DfttTimeRange")
 
@@ -397,7 +824,41 @@ class DfttTimeRange:
         )
 
     def add(self, other: "DfttTimeRange") -> "DfttTimeRange":
-        """Add durations - direction sensitive"""
+        """Add durations of two timeranges (direction-sensitive).
+
+        Combines the durations of two timeranges to create a new timerange with
+        extended duration. The behavior depends on whether the timeranges have
+        the same or opposite directions.
+
+        Args:
+            other: Another DfttTimeRange to add
+
+        Returns:
+            DfttTimeRange: New timerange with combined duration, same start point
+                and direction as the original
+
+        Raises:
+            DFTTTimeRangeTypeError: If other is not a DfttTimeRange
+            DFTTTimeRangeFPSError: If timeranges have different frame rates
+            DFTTTimeRangeValueError: If result is zero-length
+
+        Examples:
+            >>> tr1 = DfttTimeRange('01:00:00:00', '01:10:00:00', fps=24)  # 10 min
+            >>> tr2 = DfttTimeRange('01:00:00:00', '01:05:00:00', fps=24)  # 5 min
+            >>> tr3 = tr1.add(tr2)
+            >>> print(tr3.duration)  # Same direction: 10 + 5 = 15 min
+            900.0
+            >>> tr4 = DfttTimeRange('01:10:00:00', '01:00:00:00', forward=False, fps=24)
+            >>> tr5 = tr1.add(tr4)
+            >>> print(tr5.duration)  # Opposite direction: 10 - 10 = 0 (error)
+            DFTTTimeRangeValueError
+
+        Note:
+            - Same direction: durations are added (extend)
+            - Opposite direction: durations are subtracted (shorten)
+            - Start point remains unchanged
+            - This is different from :meth:`union` which combines overlapping ranges
+        """
         if not isinstance(other, DfttTimeRange):
             raise DFTTTimeRangeTypeError("Can only add another DfttTimeRange")
 
@@ -422,7 +883,45 @@ class DfttTimeRange:
         )
 
     def subtract(self, other: "DfttTimeRange") -> "DfttTimeRange":
-        """Subtract durations - direction sensitive"""
+        """Subtract durations of two timeranges (direction-sensitive).
+
+        Subtracts the duration of another timerange from this one to create a new
+        timerange with reduced duration. The behavior depends on whether the
+        timeranges have the same or opposite directions.
+
+        Args:
+            other: Another DfttTimeRange to subtract
+
+        Returns:
+            DfttTimeRange: New timerange with reduced duration, same start point
+                and direction as the original
+
+        Raises:
+            DFTTTimeRangeTypeError: If other is not a DfttTimeRange
+            DFTTTimeRangeFPSError: If timeranges have different frame rates
+            DFTTTimeRangeValueError: If result is zero-length
+
+        Examples:
+            >>> tr1 = DfttTimeRange('01:00:00:00', '01:10:00:00', fps=24)  # 10 min
+            >>> tr2 = DfttTimeRange('01:00:00:00', '01:03:00:00', fps=24)  # 3 min
+            >>> tr3 = tr1.subtract(tr2)
+            >>> print(tr3.duration)  # Same direction: 10 - 3 = 7 min
+            420.0
+            >>> print(tr3.end)
+            01:07:00:00
+            >>> # With opposite directions
+            >>> tr4 = DfttTimeRange('01:10:00:00', '01:08:00:00', forward=False, fps=24)
+            >>> tr5 = tr1.subtract(tr4)  # 10 - (-2) = 12 min
+            >>> print(tr5.duration)
+            720.0
+
+        Note:
+            - Same direction: durations are subtracted (shorten)
+            - Opposite direction: durations are added (extend)
+            - Start point remains unchanged
+            - This is the inverse operation of :meth:`add`
+            - Can result in zero-length error if durations are equal
+        """
         if not isinstance(other, DfttTimeRange):
             raise DFTTTimeRangeTypeError("Can only subtract another DfttTimeRange")
 
