@@ -1,8 +1,15 @@
+"""
+Core timecode class implementation for DFTT Timecode library.
+
+This module contains the main DfttTimecode class which provides comprehensive
+timecode functionality for film and television production workflows.
+"""
+
 import logging
 from fractions import Fraction
 from functools import singledispatchmethod
 from math import ceil, floor
-from typing import Literal, TypeAlias
+from typing import Literal, TypeAlias, Union
 
 from dftt_timecode.error import (
     DFTTTimecodeInitializationError,
@@ -40,9 +47,115 @@ stream_handler.setFormatter(formatter)
 
 logger.addHandler(stream_handler)
 
-TimecodeType : TypeAlias= Literal['smpte', 'srt', 'dlp', 'ffmpeg', 'fcpx', 'frame', 'time','auto']
+TimecodeType: TypeAlias = Literal['smpte', 'srt', 'dlp', 'ffmpeg', 'fcpx', 'frame', 'time', 'auto']
+"""Type alias for supported timecode format types.
+
+Available formats:
+    - ``'smpte'``: SMPTE format (01:23:45:12 or 01:23:45;12 for drop-frame)
+    - ``'srt'``: SubRip subtitle format (01:23:45,678)
+    - ``'dlp'``: DLP Cinema format (01:23:45:102)
+    - ``'ffmpeg'``: FFmpeg format (01:23:45.67)
+    - ``'fcpx'``: Final Cut Pro X format (1/24s)
+    - ``'frame'``: Frame count format (1234f)
+    - ``'time'``: Timestamp in seconds (1234.5s)
+    - ``'auto'``: Automatic format detection based on input pattern
+"""
+
 
 class DfttTimecode:
+    """High-precision timecode class for film and television production.
+
+    DfttTimecode provides frame-accurate timecode representation with support for multiple
+    professional formats, high frame rates (0.01-999.99 fps), drop-frame compensation,
+    and comprehensive arithmetic operations.
+
+    The class uses :class:`fractions.Fraction` internally for precise timestamp calculations,
+    ensuring accuracy even with complex operations and format conversions.
+
+    Args:
+        timecode_value: The timecode value in various supported formats:
+            - str: Timecode string (e.g., '01:00:00:00', '01:00:00,000')
+            - int: Frame count (with timecode_type='frame') or seconds (with timecode_type='time')
+            - float: Timestamp in seconds
+            - Fraction: Precise timestamp as rational number
+            - tuple/list: Two-element [numerator, denominator] for rational time
+            - DfttTimecode: Returns the same instance (no copy)
+        timecode_type: Format type of the timecode value. Use 'auto' for automatic detection.
+            See :data:`TimecodeType` for available formats. Defaults to 'auto'.
+        fps: Frame rate in frames per second. Supports 0.01-999.99 fps. Defaults to 24.0.
+        drop_frame: Enable drop-frame compensation for NTSC-compatible frame rates
+            (29.97, 59.94, 119.88 fps and their multiples). Defaults to False.
+        strict: Enable 24-hour wraparound mode. When True, timecodes automatically cycle
+            within 0-24 hour range (e.g., 25:00:00:00 becomes 01:00:00:00). Defaults to True.
+
+    Attributes:
+        type (str): Current timecode format type
+        fps (float): Frame rate in frames per second
+        is_drop_frame (bool): Whether drop-frame compensation is enabled
+        is_strict (bool): Whether 24-hour strict mode is enabled
+        framecount (int): Total frame count from zero
+        timestamp (float): Total seconds from zero
+        precise_timestamp (Fraction): High-precision timestamp as Fraction
+
+    Raises:
+        DFTTTimecodeInitializationError: When initialization parameters are incompatible
+        DFTTTimecodeTypeError: When timecode type doesn't match the value format
+        DFTTTimecodeValueError: When timecode value is invalid for the given parameters
+
+    Examples:
+        Create from SMPTE timecode string::
+
+            >>> tc = DfttTimecode('01:00:00:00', fps=24)
+            >>> print(tc)
+            01:00:00:00
+
+        Create with automatic format detection::
+
+            >>> tc = DfttTimecode('01:00:00,000', 'auto', fps=25)
+            >>> print(tc.type)
+            srt
+
+        Create from frame count::
+
+            >>> tc = DfttTimecode(1000, 'frame', fps=24)
+            >>> print(tc.timecode_output('smpte'))
+            00:00:41:16
+
+        Create with drop-frame compensation::
+
+            >>> tc = DfttTimecode('01:00:00;00', fps=29.97, drop_frame=True)
+            >>> print(tc.is_drop_frame)
+            True
+
+        Arithmetic operations::
+
+            >>> tc1 = DfttTimecode('01:00:00:00', fps=24)
+            >>> tc2 = tc1 + 100  # Add 100 frames
+            >>> print(tc2)
+            01:00:04:04
+            >>> tc3 = tc1 + 3.5  # Add 3.5 seconds
+            >>> print(tc3)
+            01:00:03:12
+
+        Format conversion::
+
+            >>> tc = DfttTimecode('01:00:00:00', fps=24)
+            >>> print(tc.timecode_output('srt'))
+            01:00:00,000
+            >>> print(tc.timecode_output('ffmpeg'))
+            01:00:00.00
+
+    Note:
+        - Timecode objects are immutable. All operations return new instances.
+        - The internal timestamp uses :class:`fractions.Fraction` for maximum precision.
+        - Drop-frame compensation is automatically validated against frame rate.
+        - Negative timecodes are supported with a leading minus sign.
+
+    See Also:
+        - :class:`DfttTimeRange`: For working with time intervals
+        - :mod:`dftt_timecode.pattern`: Regex patterns for format validation
+        - :mod:`dftt_timecode.error`: Custom exception classes
+    """
     __type = 'time'
     __fps = 24.0  # 帧率
     __nominal_fps = 24  # 名义帧率（无小数,进一法取整）
@@ -340,30 +453,111 @@ class DfttTimecode:
 
     @property
     def type(self) -> str:
+        """Get the current timecode format type.
+
+        Returns:
+            str: The timecode format type (e.g., 'smpte', 'srt', 'ffmpeg')
+
+        Example:
+            >>> tc = DfttTimecode('01:00:00:00', fps=24)
+            >>> tc.type
+            'smpte'
+        """
         return self.__type
 
     @property
-    def fps(self):
+    def fps(self) -> float:
+        """Get the frame rate in frames per second.
+
+        Returns:
+            float: The frame rate
+
+        Example:
+            >>> tc = DfttTimecode('01:00:00:00', fps=29.97)
+            >>> tc.fps
+            29.97
+        """
         return self.__fps
 
     @property
     def is_drop_frame(self) -> bool:
+        """Check if drop-frame compensation is enabled.
+
+        Returns:
+            bool: True if drop-frame mode is enabled, False otherwise
+
+        Note:
+            Drop-frame is automatically enabled for NTSC-compatible frame rates
+            (29.97, 59.94, 119.88 and their multiples) when drop_frame=True.
+
+        Example:
+            >>> tc = DfttTimecode('01:00:00;00', fps=29.97, drop_frame=True)
+            >>> tc.is_drop_frame
+            True
+        """
         return self.__drop_frame
 
     @property
     def is_strict(self) -> bool:
+        """Check if 24-hour strict mode is enabled.
+
+        Returns:
+            bool: True if strict mode is enabled, False otherwise
+
+        Note:
+            In strict mode, timecodes automatically wrap around at 24 hours.
+
+        Example:
+            >>> tc = DfttTimecode('25:00:00:00', fps=24, strict=True)
+            >>> print(tc)
+            01:00:00:00
+        """
         return self.__strict
 
     @property
     def framecount(self) -> int:
+        """Get the total frame count from zero.
+
+        Returns:
+            int: The frame number (zero-indexed)
+
+        Example:
+            >>> tc = DfttTimecode('00:00:01:00', fps=24)
+            >>> tc.framecount
+            24
+        """
         return int(self._convert_to_output_frame())
 
     @property
     def timestamp(self) -> float:
+        """Get the timestamp in seconds from zero.
+
+        Returns:
+            float: The timestamp in seconds (rounded to 5 decimal places)
+
+        Example:
+            >>> tc = DfttTimecode('00:00:01:00', fps=24)
+            >>> tc.timestamp
+            1.0
+        """
         return float(self._convert_to_output_time())
 
     @property
-    def precise_timestamp(self):
+    def precise_timestamp(self) -> Fraction:
+        """Get the high-precision timestamp as a Fraction.
+
+        Returns:
+            Fraction: The precise timestamp for exact calculations
+
+        Note:
+            This is the internal representation used for all calculations
+            to maintain maximum precision.
+
+        Example:
+            >>> tc = DfttTimecode('00:00:01:00', fps=24)
+            >>> tc.precise_timestamp
+            Fraction(1, 1)
+        """
         return self.__precise_time
 
     def _convert_to_output_smpte(self, output_part=0) -> str:
@@ -521,7 +715,38 @@ class DfttTimecode:
         output_time = round(float(self.__precise_time), 5)
         return str(output_time)
 
-    def timecode_output(self, dest_type='auto', output_part=0):
+    def timecode_output(self, dest_type: TimecodeType = 'auto', output_part: int = 0) -> str:
+        """Convert timecode to specified format and return as string.
+
+        Args:
+            dest_type: Target timecode format. Use 'auto' to output in current format.
+                Available formats: 'smpte', 'srt', 'dlp', 'ffmpeg', 'fcpx', 'frame', 'time'.
+                Defaults to 'auto'.
+            output_part: For multi-part formats (SMPTE, SRT, DLP, FFMPEG), specify which
+                part to return. 0 returns the complete timecode string, 1-4 return individual
+                parts (hours, minutes, seconds, frames/subseconds). Defaults to 0.
+
+        Returns:
+            str: The formatted timecode string
+
+        Raises:
+            AttributeError: If dest_type is not a valid timecode format
+
+        Examples:
+            >>> tc = DfttTimecode('01:00:00:00', fps=24)
+            >>> tc.timecode_output('srt')
+            '01:00:00,000'
+            >>> tc.timecode_output('ffmpeg')
+            '01:00:00.00'
+            >>> tc.timecode_output('frame')
+            '86400'
+            >>> tc.timecode_output('smpte', output_part=1)  # Get hours only
+            '01'
+
+        Note:
+            - For 'auto', outputs in the current timecode type
+            - Falls back to SMPTE format if dest_type is invalid
+        """
         if dest_type == 'auto':
             func = getattr(self, f'_convert_to_output_{self.__type}')
         else:
@@ -534,7 +759,29 @@ class DfttTimecode:
             func = getattr(self, '_convert_to_output_smpte', None)
             return func(output_part)
 
-    def set_fps(self, dest_fps, rounding=True) -> 'DfttTimecode':
+    def set_fps(self, dest_fps: float, rounding: bool = True) -> 'DfttTimecode':
+        """Change the frame rate of the timecode.
+
+        Args:
+            dest_fps: Target frame rate in frames per second (0.01-999.99)
+            rounding: If True, rounds the internal timestamp to the nearest frame
+                at the new frame rate. If False, preserves exact timestamp.
+                Defaults to True.
+
+        Returns:
+            DfttTimecode: Self reference for method chaining
+
+        Examples:
+            >>> tc = DfttTimecode('01:00:00:00', fps=24)
+            >>> tc.set_fps(30)
+            >>> print(tc.fps)
+            30.0
+            >>> print(tc)  # Same time, different frame count
+            01:00:00:00
+
+        Note:
+            This method modifies the object in place and returns self for chaining.
+        """
         self.__fps = dest_fps
         self.__nominal_fps = ceil(self.__fps)
         if rounding:
@@ -544,7 +791,32 @@ class DfttTimecode:
             pass
         return self
 
-    def set_type(self, dest_type='smpte', rounding=True) -> 'DfttTimecode':
+    def set_type(self, dest_type: TimecodeType = 'smpte', rounding: bool = True) -> 'DfttTimecode':
+        """Change the internal timecode format type.
+
+        Args:
+            dest_type: Target timecode format type. Available formats:
+                'smpte', 'srt', 'dlp', 'ffmpeg', 'fcpx', 'frame', 'time'.
+                Defaults to 'smpte'.
+            rounding: If True, rounds the timestamp to match the precision of the
+                new format. If False, preserves exact timestamp. Defaults to True.
+
+        Returns:
+            DfttTimecode: Self reference for method chaining
+
+        Examples:
+            >>> tc = DfttTimecode('01:00:00:00', fps=24)
+            >>> tc.set_type('srt')
+            >>> print(tc.type)
+            'srt'
+            >>> print(tc)
+            01:00:00,000
+
+        Note:
+            - This changes the internal type, affecting :meth:`__str__` output
+            - Rounding adjusts precision to match format (e.g., SRT has millisecond precision)
+            - Invalid types are ignored with a warning
+        """
         if dest_type in ('smpte', 'srt', 'dlp', 'ffmpeg', 'fcpx', 'frame', 'time'):
             self.__type = dest_type
         else:
@@ -558,7 +830,27 @@ class DfttTimecode:
             pass
         return self
 
-    def set_strict(self, strict=True) -> 'DfttTimecode':
+    def set_strict(self, strict: bool = True) -> 'DfttTimecode':
+        """Change the 24-hour strict mode setting.
+
+        Args:
+            strict: If True, enables 24-hour wraparound (timecodes cycle within 0-24 hours).
+                If False, allows timecodes beyond 24 hours. Defaults to True.
+
+        Returns:
+            DfttTimecode: Self reference for method chaining
+
+        Examples:
+            >>> tc = DfttTimecode('25:00:00:00', fps=24, strict=False)
+            >>> print(tc)
+            25:00:00:00
+            >>> tc.set_strict(True)
+            >>> print(tc)
+            01:00:00:00
+
+        Note:
+            Changing strict mode recalculates the internal timestamp with the new mode.
+        """
         if strict == self.__strict:
             pass
         else:
@@ -569,18 +861,93 @@ class DfttTimecode:
         return self
 
     def get_audio_sample_count(self, sample_rate: int) -> int:
+        """Calculate the number of audio samples at the given sample rate.
+
+        Converts the timecode to audio sample count for audio synchronization.
+        Uses high-precision rational arithmetic to avoid rounding errors.
+
+        Args:
+            sample_rate: Audio sample rate in Hz (e.g., 44100, 48000, 96000)
+
+        Returns:
+            int: The number of audio samples (floored to nearest integer)
+
+        Examples:
+            >>> tc = DfttTimecode('00:00:01:00', fps=24)
+            >>> tc.get_audio_sample_count(48000)
+            48000
+            >>> tc = DfttTimecode('00:00:00:01', fps=24)
+            >>> tc.get_audio_sample_count(48000)  # 1 frame at 24fps
+            2000
+
+        Note:
+            Uses floor division to ensure sample count doesn't exceed the timecode position.
+        """
         numerator,denominator=self.__precise_time.as_integer_ratio()
         return floor(numerator * sample_rate/denominator)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
+        """Return detailed string representation of the timecode object.
+
+        Returns:
+            str: Detailed representation including timecode, type, fps, and mode flags
+
+        Example:
+            >>> tc = DfttTimecode('01:00:00:00', fps=24, drop_frame=False)
+            >>> repr(tc)
+            '<DfttTimecode>(Timecode:01:00:00:00, Type:smpte,FPS:24.00 NDF, Strict)'
+        """
         drop_frame_flag = 'DF' if self.__drop_frame else 'NDF'
         strict_flag = 'Strict' if self.__strict else 'Non-Strict'
         return f'<DfttTimecode>(Timecode:{self.timecode_output(self.__type)}, Type:{self.__type},FPS:{float(self.__fps):.02f} {drop_frame_flag}, {strict_flag})'
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """Return timecode as formatted string in current type.
+
+        Returns:
+            str: Timecode string in the current format type
+
+        Example:
+            >>> tc = DfttTimecode('01:00:00:00', fps=24)
+            >>> str(tc)
+            '01:00:00:00'
+        """
         return self.timecode_output()
 
-    def __add__(self, other):  # 运算符重载，加号，加int则认为是帧，加float则认为是时间
+    def __add__(self, other: Union['DfttTimecode', int, float, Fraction]) -> 'DfttTimecode':
+        """Add timecode with another timecode, frame count, or timestamp.
+
+        Args:
+            other: Value to add. Can be:
+                - DfttTimecode: Adds timestamps (must have same fps and drop_frame)
+                - int: Treats as frame count to add
+                - float: Treats as seconds to add
+                - Fraction: Treats as precise seconds to add
+
+        Returns:
+            DfttTimecode: New timecode object with the sum
+
+        Raises:
+            DFTTTimecodeOperatorError: If fps or drop_frame don't match between timecodes,
+                or if other is an unsupported type
+
+        Examples:
+            >>> tc = DfttTimecode('01:00:00:00', fps=24)
+            >>> result = tc + 100  # Add 100 frames
+            >>> print(result)
+            01:00:04:04
+            >>> result = tc + 3.5  # Add 3.5 seconds
+            >>> print(result)
+            01:00:03:12
+            >>> tc2 = DfttTimecode('00:10:00:00', fps=24)
+            >>> result = tc + tc2
+            >>> print(result)
+            01:10:00:00
+
+        Note:
+            - Result inherits the format type of the left operand
+            - If either operand has strict=True, result will have strict=True
+        """
         temp_sum = self.__precise_time
         if isinstance(other, DfttTimecode):
             if self.__fps == other.__fps and self.__drop_frame == other.__drop_frame:
@@ -604,10 +971,54 @@ class DfttTimecode:
         temp_object.set_type(self.type, rounding=False)
         return temp_object
 
-    def __radd__(self, other):  # 加法交换律
+    def __radd__(self, other: Union[int, float, Fraction]) -> 'DfttTimecode':
+        """Reflected addition (called when left operand doesn't support +).
+
+        Implements commutative property: other + timecode == timecode + other
+
+        Args:
+            other: Value to add (int, float, or Fraction)
+
+        Returns:
+            DfttTimecode: New timecode object with the sum
+
+        Example:
+            >>> tc = DfttTimecode('01:00:00:00', fps=24)
+            >>> result = 100 + tc  # Same as tc + 100
+            >>> print(result)
+            01:00:04:04
+        """
         return self.__add__(other)
 
-    def __sub__(self, other):  # 运算符重载，减法，同理，int是帧，float是时间
+    def __sub__(self, other: Union['DfttTimecode', int, float, Fraction]) -> 'DfttTimecode':
+        """Subtract timecode, frame count, or timestamp from this timecode.
+
+        Args:
+            other: Value to subtract. Can be:
+                - DfttTimecode: Subtracts timestamps (must have same fps and drop_frame)
+                - int: Treats as frame count to subtract
+                - float: Treats as seconds to subtract
+                - Fraction: Treats as precise seconds to subtract
+
+        Returns:
+            DfttTimecode: New timecode object with the difference
+
+        Raises:
+            DFTTTimecodeOperatorError: If fps or drop_frame don't match between timecodes,
+                or if other is an unsupported type
+
+        Examples:
+            >>> tc = DfttTimecode('01:00:00:00', fps=24)
+            >>> result = tc - 100  # Subtract 100 frames
+            >>> print(result)
+            00:59:55:20
+            >>> result = tc - 3.5  # Subtract 3.5 seconds
+            >>> print(result)
+            00:59:56:12
+
+        Note:
+            Result can be negative, which will be displayed with a leading minus sign.
+        """
         diff = self.__precise_time
         if isinstance(other, DfttTimecode):
             if self.__fps == other.__fps and self.__drop_frame == other.__drop_frame:
@@ -647,7 +1058,31 @@ class DfttTimecode:
         temp_object.set_type(self.type, rounding=False)
         return temp_object
 
-    def __mul__(self, other):  # 运算符重载，乘法，int和float都是倍数
+    def __mul__(self, other: Union[int, float, Fraction]) -> 'DfttTimecode':
+        """Multiply timecode by a numeric factor.
+
+        Args:
+            other: Multiplication factor (int, float, or Fraction)
+
+        Returns:
+            DfttTimecode: New timecode with timestamp multiplied by factor
+
+        Raises:
+            DFTTTimecodeOperatorError: If attempting to multiply two timecodes or
+                if other is an unsupported type
+
+        Examples:
+            >>> tc = DfttTimecode('00:00:10:00', fps=24)
+            >>> result = tc * 2  # Double the timecode
+            >>> print(result)
+            00:00:20:00
+            >>> result = tc * 0.5  # Half the timecode
+            >>> print(result)
+            00:00:05:00
+
+        Note:
+            Multiplying two timecode objects together is not allowed and will raise an error.
+        """
         prod = self.__precise_time
         if isinstance(other, DfttTimecode):
             logger.error(
@@ -667,10 +1102,45 @@ class DfttTimecode:
         temp_object.set_type(self.type, rounding=False)
         return temp_object
 
-    def __rmul__(self, other):  # 乘法交换律
+    def __rmul__(self, other: Union[int, float, Fraction]) -> 'DfttTimecode':
+        """Reflected multiplication (implements commutative property).
+
+        Args:
+            other: Multiplication factor (int, float, or Fraction)
+
+        Returns:
+            DfttTimecode: New timecode with timestamp multiplied by factor
+
+        Example:
+            >>> tc = DfttTimecode('00:00:10:00', fps=24)
+            >>> result = 2 * tc  # Same as tc * 2
+            >>> print(result)
+            00:00:20:00
+        """
         return self.__mul__(other)
 
-    def __truediv__(self, other):
+    def __truediv__(self, other: Union[int, float, Fraction]) -> 'DfttTimecode':
+        """Divide timecode by a numeric factor.
+
+        Args:
+            other: Division factor (int, float, or Fraction)
+
+        Returns:
+            DfttTimecode: New timecode with timestamp divided by factor
+
+        Raises:
+            DFTTTimecodeOperatorError: If attempting to divide timecodes or
+                if other is an unsupported type
+
+        Examples:
+            >>> tc = DfttTimecode('00:00:10:00', fps=24)
+            >>> result = tc / 2  # Half the timecode
+            >>> print(result)
+            00:00:05:00
+
+        Note:
+            Dividing two timecode objects is not allowed and will raise an error.
+        """
         quo_time = self.__precise_time  # quo_time是商（时间戳）
         if isinstance(other, DfttTimecode):
             logger.error(
@@ -699,7 +1169,33 @@ class DfttTimecode:
             logger.error(f'Undefined division with [{type(other)}].')
             raise DFTTTimecodeOperatorError
 
-    def __eq__(self, other):  # 判断相等
+    def __eq__(self, other: Union['DfttTimecode', int, float, Fraction]) -> bool:
+        """Check equality with another timecode or numeric value.
+
+        Args:
+            other: Value to compare. Can be:
+                - DfttTimecode: Compares timestamps (must have same fps)
+                - int: Compares as frame count
+                - float: Compares as seconds
+                - Fraction: Compares as precise seconds
+
+        Returns:
+            bool: True if values are equal (within 5 decimal places), False otherwise
+
+        Raises:
+            DFTTTimecodeOperatorError: If comparing timecodes with different fps
+            DFTTTimecodeTypeError: If other is an unsupported type
+
+        Examples:
+            >>> tc1 = DfttTimecode('01:00:00:00', fps=24)
+            >>> tc2 = DfttTimecode('01:00:00:00', fps=24)
+            >>> tc1 == tc2
+            True
+            >>> tc1 == 86400  # Compare with frame count
+            True
+            >>> tc1 == 3600.0  # Compare with seconds
+            True
+        """
         if isinstance(other, DfttTimecode):  # 与另一个Timecode对象比较 比双方的时间戳 精确到5位小数
             if self.fps != other.fps:
                 raise DFTTTimecodeOperatorError
@@ -716,10 +1212,46 @@ class DfttTimecode:
             logger.error(f'CANNOT compare with data type [{type(other)}].')
             raise DFTTTimecodeTypeError
 
-    def __ne__(self, other):
+    def __ne__(self, other: Union['DfttTimecode', int, float, Fraction]) -> bool:
+        """Check inequality with another timecode or numeric value.
+
+        Args:
+            other: Value to compare (DfttTimecode, int, float, or Fraction)
+
+        Returns:
+            bool: True if values are not equal, False otherwise
+
+        Example:
+            >>> tc1 = DfttTimecode('01:00:00:00', fps=24)
+            >>> tc2 = DfttTimecode('01:00:00:01', fps=24)
+            >>> tc1 != tc2
+            True
+        """
         return not self.__eq__(other)
 
-    def __lt__(self, other):  # 详见__eq__
+    def __lt__(self, other: Union['DfttTimecode', int, float, Fraction]) -> bool:
+        """Check if this timecode is less than another value.
+
+        Args:
+            other: Value to compare. Can be:
+                - DfttTimecode: Compares timestamps (must have same fps)
+                - int: Compares as frame count
+                - float: Compares as seconds
+                - Fraction: Compares as precise seconds
+
+        Returns:
+            bool: True if this timecode is less than other, False otherwise
+
+        Raises:
+            DFTTTimecodeOperatorError: If comparing timecodes with different fps
+            DFTTTimecodeTypeError: If other is an unsupported type
+
+        Example:
+            >>> tc1 = DfttTimecode('01:00:00:00', fps=24)
+            >>> tc2 = DfttTimecode('02:00:00:00', fps=24)
+            >>> tc1 < tc2
+            True
+        """
         if isinstance(other, DfttTimecode):
             if self.fps != other.fps:
                 raise DFTTTimecodeOperatorError
@@ -783,14 +1315,53 @@ class DfttTimecode:
             logger.error(f'CANNOT compare with data type [{type(other)}].')
             raise DFTTTimecodeTypeError
 
-    def __neg__(self):  # 取负操作 返回时间戳取负的Timecode对象（strict规则照常应用 例如01:00:00:00 strict的对象 取负后为23:00:00:00）
+    def __neg__(self) -> 'DfttTimecode':
+        """Return the negation of this timecode.
+
+        Returns:
+            DfttTimecode: New timecode with negated timestamp
+
+        Note:
+            In strict mode, negative timecodes wrap around within 24 hours.
+            For example, -01:00:00:00 becomes 23:00:00:00 in strict mode.
+
+        Examples:
+            >>> tc = DfttTimecode('01:00:00:00', fps=24, strict=False)
+            >>> neg_tc = -tc
+            >>> print(neg_tc)
+            -01:00:00:00
+            >>> tc_strict = DfttTimecode('01:00:00:00', fps=24, strict=True)
+            >>> neg_tc_strict = -tc_strict
+            >>> print(neg_tc_strict)
+            23:00:00:00
+        """
         temp_object = DfttTimecode(-self.__precise_time, 'time',
                                    self.__fps, self.__drop_frame, self.__strict)
         temp_object.set_type(self.type, rounding=False)
         return temp_object
 
-    def __float__(self):
+    def __float__(self) -> float:
+        """Convert timecode to float (seconds).
+
+        Returns:
+            float: The timestamp in seconds
+
+        Example:
+            >>> tc = DfttTimecode('00:00:10:00', fps=24)
+            >>> float(tc)
+            10.0
+        """
         return self.timestamp
 
-    def __int__(self):
+    def __int__(self) -> int:
+        """Convert timecode to integer (frame count).
+
+        Returns:
+            int: The frame count
+
+        Example:
+            >>> tc = DfttTimecode('00:00:01:00', fps=24)
+            >>> int(tc)
+            24
+        """
         return self.framecount

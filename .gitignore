@@ -11,3 +11,4 @@ playground.ipynb
 CLAUDE.md
 dist
 build
+.claude/settings.local.json
