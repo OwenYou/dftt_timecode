@@ -1,0 +1,10 @@
+# Sphinx build outputs
+_build/
+_static/
+_templates/
+
+# Generated files
+*.pyc
+__pycache__/
+.DS_Store
+Thumbs.db
