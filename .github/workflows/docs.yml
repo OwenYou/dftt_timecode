@@ -146,8 +146,8 @@ jobs:
           path: docs/_build/pages
 
   deploy:
-    # Only deploy on pushes to main, dev, or tags
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev' || startsWith(github.ref, 'refs/tags/'))
+    # Only deploy on pushes to main or tags (dev builds but doesn't deploy)
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/'))
 
     environment:
       name: github-pages
