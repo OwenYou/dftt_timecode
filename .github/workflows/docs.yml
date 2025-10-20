@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - main
-      - dev
-    tags:
-      - '*'
   pull_request:
     branches:
       - main
@@ -28,8 +25,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Fetch all history for all tags and branches
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -44,110 +39,19 @@ jobs:
       - name: Install dependencies
         run: uv sync
 
-      - name: Determine version
-        id: version
-        run: |
-          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
-            # Tag push - use tag name as version
-            VERSION=${GITHUB_REF#refs/tags/}
-            echo "version=$VERSION" >> $GITHUB_OUTPUT
-            echo "is_tag=true" >> $GITHUB_OUTPUT
-          elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            # Main branch - use "stable" or latest tag
-            LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "stable")
-            echo "version=stable" >> $GITHUB_OUTPUT
-            echo "is_tag=false" >> $GITHUB_OUTPUT
-          elif [[ "${{ github.ref }}" == "refs/heads/dev" ]]; then
-            # Dev branch - use "dev"
-            echo "version=dev" >> $GITHUB_OUTPUT
-            echo "is_tag=false" >> $GITHUB_OUTPUT
-          else
-            # Other branches
-            echo "version=preview" >> $GITHUB_OUTPUT
-            echo "is_tag=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Prepare switcher.json before build
-        run: |
-          # Ensure _static directory exists
-          mkdir -p docs/_static
-
-          # Create or update switcher.json
-          cat > docs/_static/switcher.json << 'EOF'
-          [
-            {
-              "name": "dev (latest)",
-              "version": "dev",
-              "url": "https://owenyou.github.io/dftt_timecode/dev/"
-            },
-            {
-              "name": "stable",
-              "version": "stable",
-              "url": "https://owenyou.github.io/dftt_timecode/stable/"
-            },
-            {
-              "name": "0.0.15a2",
-              "version": "0.0.15a2",
-              "url": "https://owenyou.github.io/dftt_timecode/0.0.15a2/"
-            },
-            {
-              "name": "0.0.15a1",
-              "version": "0.0.15a1",
-              "url": "https://owenyou.github.io/dftt_timecode/0.0.15a1/"
-            },
-            {
-              "name": "0.0.14",
-              "version": "0.0.14",
-              "url": "https://owenyou.github.io/dftt_timecode/0.0.14/"
-            }
-          ]
-          EOF
-
       - name: Build documentation with make
         run: |
           cd docs
           uv run make html
 
-      - name: Debug - Check build output
-        run: |
-          echo "=== Checking _build/html structure ==="
-          ls -la docs/_build/html/
-          echo "=== Checking for _static ==="
-          ls -la docs/_build/html/_static/ || echo "No _static directory"
-          echo "=== Checking index.html ==="
-          if [ -f docs/_build/html/index.html ]; then
-            echo "index.html exists"
-            head -50 docs/_build/html/index.html
-          fi
-
-      - name: Prepare multi-version structure
-        run: |
-          VERSION="${{ steps.version.outputs.version }}"
-          mkdir -p docs/_build/pages/$VERSION
-          cp -r docs/_build/html/* docs/_build/pages/$VERSION/
-
-          # If this is main branch, also copy to root and create stable link
-          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            cp -r docs/_build/html/* docs/_build/pages/
-            mkdir -p docs/_build/pages/stable
-            cp -r docs/_build/html/* docs/_build/pages/stable/
-          fi
-
-      - name: Ensure switcher.json in all version directories
-        run: |
-          # Copy switcher.json to the root _static if it exists
-          if [ -f docs/_static/switcher.json ]; then
-            find docs/_build/pages -type d -name "_static" -exec cp docs/_static/switcher.json {} \;
-          fi
-
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: docs/_build/pages
+          path: docs/_build/html
 
   deploy:
-    # Only deploy on pushes to main or tags (dev builds but doesn't deploy)
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/'))
+    # Only deploy on pushes to main
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     environment:
       name: github-pages
@@ -160,3 +64,4 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+

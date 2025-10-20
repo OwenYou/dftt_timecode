@@ -72,11 +72,7 @@ html_theme_options = {
     "logo": {
         "text": "DFTT Timecode",
     },
-    "navbar_end": ["version-switcher", "navbar-icon-links"],
-    "switcher": {
-        "json_url": "https://owenyou.github.io/dftt_timecode/_static/switcher.json",
-        "version_match": release,
-    },
+    "navbar_end": ["navbar-icon-links"],
     "primary_sidebar_end": [],  # Remove primary sidebar content
     "show_nav_level": 0,  # Hide navigation levels
 }
