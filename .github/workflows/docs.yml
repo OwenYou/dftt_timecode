@@ -23,7 +23,7 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
       - name: Checkout repository
@@ -40,7 +40,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install sphinx pydata-sphinx-theme
+          pip install -r requirements.txt
           pip install -e .
 
       - name: Determine version
@@ -53,8 +53,8 @@ jobs:
             echo "is_tag=true" >> $GITHUB_OUTPUT
           elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
             # Main branch - use "stable" or latest tag
-            LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "dev")
-            echo "version=$LATEST_TAG" >> $GITHUB_OUTPUT
+            LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "stable")
+            echo "version=stable" >> $GITHUB_OUTPUT
             echo "is_tag=false" >> $GITHUB_OUTPUT
           elif [[ "${{ github.ref }}" == "refs/heads/dev" ]]; then
             # Dev branch - use "dev"
@@ -102,10 +102,22 @@ jobs:
           ]
           EOF
 
-      - name: Build documentation
+      - name: Build documentation with make
         run: |
           cd docs
-          sphinx-build -b html . _build/html
+          make html
+
+      - name: Debug - Check build output
+        run: |
+          echo "=== Checking _build/html structure ==="
+          ls -la docs/_build/html/
+          echo "=== Checking for _static ==="
+          ls -la docs/_build/html/_static/ || echo "No _static directory"
+          echo "=== Checking index.html ==="
+          if [ -f docs/_build/html/index.html ]; then
+            echo "index.html exists"
+            head -50 docs/_build/html/index.html
+          fi
 
       - name: Prepare multi-version structure
         run: |
