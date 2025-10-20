@@ -66,31 +66,13 @@ jobs:
             echo "is_tag=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Build documentation
+      - name: Prepare switcher.json before build
         run: |
-          cd docs
-          sphinx-build -b html . _build/html
-
-      - name: Prepare multi-version structure
-        run: |
-          VERSION="${{ steps.version.outputs.version }}"
-          mkdir -p docs/_build/pages/$VERSION
-          cp -r docs/_build/html/* docs/_build/pages/$VERSION/
-
-          # If this is main branch, also copy to root and create stable link
-          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            cp -r docs/_build/html/* docs/_build/pages/
-            mkdir -p docs/_build/pages/stable
-            cp -r docs/_build/html/* docs/_build/pages/stable/
-          fi
-
-      - name: Update version switcher
-        run: |
-          VERSION="${{ steps.version.outputs.version }}"
-          mkdir -p docs/_build/pages/_static
+          # Ensure _static directory exists
+          mkdir -p docs/_static
 
           # Create or update switcher.json
-          cat > docs/_build/pages/_static/switcher.json << 'EOF'
+          cat > docs/_static/switcher.json << 'EOF'
           [
             {
               "name": "dev (latest)",
@@ -120,8 +102,30 @@ jobs:
           ]
           EOF
 
-          # Copy switcher.json to each version directory
-          find docs/_build/pages -type d -name "_static" -exec cp docs/_build/pages/_static/switcher.json {} \;
+      - name: Build documentation
+        run: |
+          cd docs
+          sphinx-build -b html . _build/html
+
+      - name: Prepare multi-version structure
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          mkdir -p docs/_build/pages/$VERSION
+          cp -r docs/_build/html/* docs/_build/pages/$VERSION/
+
+          # If this is main branch, also copy to root and create stable link
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            cp -r docs/_build/html/* docs/_build/pages/
+            mkdir -p docs/_build/pages/stable
+            cp -r docs/_build/html/* docs/_build/pages/stable/
+          fi
+
+      - name: Ensure switcher.json in all version directories
+        run: |
+          # Copy switcher.json to the root _static if it exists
+          if [ -f docs/_static/switcher.json ]; then
+            find docs/_build/pages -type d -name "_static" -exec cp docs/_static/switcher.json {} \;
+          fi
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
