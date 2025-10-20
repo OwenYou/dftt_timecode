@@ -8,50 +8,86 @@ Exception Classes
 
 The dftt_timecode library defines custom exception classes for different error conditions.
 
-DfttTimecodeError
-~~~~~~~~~~~~~~~~~
+DFTTError
+~~~~~~~~~
 
-.. autoclass:: DfttTimecodeError
+.. autoclass:: DFTTError
    :members:
    :show-inheritance:
 
 Base exception class for all dftt_timecode errors.
 
-DfttTimecodeValueError
+DFTTTimecodeValueError
 ~~~~~~~~~~~~~~~~~~~~~~
 
-.. autoclass:: DfttTimecodeValueError
+.. autoclass:: DFTTTimecodeValueError
    :members:
    :show-inheritance:
 
 Raised when an invalid timecode value is provided.
 
-DfttTimecodeTypeError
+DFTTTimecodeInitializationError
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: DFTTTimecodeInitializationError
+   :members:
+   :show-inheritance:
+
+Raised when timecode initialization fails due to incompatible parameters.
+
+DFTTTimecodeTypeError
 ~~~~~~~~~~~~~~~~~~~~~
 
-.. autoclass:: DfttTimecodeTypeError
+.. autoclass:: DFTTTimecodeTypeError
    :members:
    :show-inheritance:
 
 Raised when an invalid timecode type is specified or type mismatch occurs.
 
-DfttTimecodeFPSError
-~~~~~~~~~~~~~~~~~~~~
-
-.. autoclass:: DfttTimecodeFPSError
-   :members:
-   :show-inheritance:
-
-Raised when an invalid frame rate is provided.
-
-DfttTimecodeDropFrameError
+DFTTTimecodeOperatorError
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autoclass:: DfttTimecodeDropFrameError
+.. autoclass:: DFTTTimecodeOperatorError
    :members:
    :show-inheritance:
 
-Raised when there's an issue with drop-frame timecode handling.
+Raised when an arithmetic or comparison operation on timecode objects fails.
+
+DFTTTimeRangeMethodError
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: DFTTTimeRangeMethodError
+   :members:
+   :show-inheritance:
+
+Raised when a timerange method is called with invalid parameters or conditions.
+
+DFTTTimeRangeValueError
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: DFTTTimeRangeValueError
+   :members:
+   :show-inheritance:
+
+Raised when a timerange value is invalid or out of acceptable range.
+
+DFTTTimeRangeTypeError
+~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: DFTTTimeRangeTypeError
+   :members:
+   :show-inheritance:
+
+Raised when a timerange type or operand type is invalid.
+
+DFTTTimeRangeFPSError
+~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: DFTTTimeRangeFPSError
+   :members:
+   :show-inheritance:
+
+Raised when timerange operations fail due to frame rate mismatches.
 
 Error Examples
 --------------
@@ -62,52 +98,52 @@ Invalid Timecode Value
 .. code-block:: python
 
    from dftt_timecode import DfttTimecode
-   from dftt_timecode.error import DfttTimecodeValueError
+   from dftt_timecode.error import DFTTTimecodeValueError
 
    try:
        tc = DfttTimecode('99:99:99:99', 'smpte', fps=24)
-   except DfttTimecodeValueError as e:
+   except DFTTTimecodeValueError as e:
        print(f"Invalid timecode: {e}")
 
-Invalid Frame Rate
-~~~~~~~~~~~~~~~~~~
+Timecode Initialization Error
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
    from dftt_timecode import DfttTimecode
-   from dftt_timecode.error import DfttTimecodeFPSError
+   from dftt_timecode.error import DFTTTimecodeInitializationError
 
    try:
-       tc = DfttTimecode('01:00:00:00', 'auto', fps=-24)
-   except DfttTimecodeFPSError as e:
-       print(f"Invalid FPS: {e}")
+       # Drop-frame status mismatch with timecode format
+       tc = DfttTimecode('01:00:00:00', 'smpte', fps=29.97, drop_frame=False)
+   except DFTTTimecodeInitializationError as e:
+       print(f"Initialization error: {e}")
 
-Drop-Frame Error
-~~~~~~~~~~~~~~~~
+Type Error
+~~~~~~~~~~
 
 .. code-block:: python
 
    from dftt_timecode import DfttTimecode
-   from dftt_timecode.error import DfttTimecodeDropFrameError
+   from dftt_timecode.error import DFTTTimecodeTypeError
 
    try:
-       # Invalid drop-frame timecode (frames 00 and 01 should be dropped at minute boundaries)
-       tc = DfttTimecode('00:01:00:00', 'smpte', fps=29.97, drop_frame=True)
-   except DfttTimecodeDropFrameError as e:
-       print(f"Drop-frame error: {e}")
+       tc = DfttTimecode('invalid_format', 'unknown_type', fps=24)
+   except DFTTTimecodeTypeError as e:
+       print(f"Type error: {e}")
 
-Type Mismatch
-~~~~~~~~~~~~~
+Operator Error
+~~~~~~~~~~~~~~
 
 .. code-block:: python
 
    from dftt_timecode import DfttTimecode
-   from dftt_timecode.error import DfttTimecodeTypeError
+   from dftt_timecode.error import DFTTTimecodeOperatorError
 
    try:
        tc1 = DfttTimecode('01:00:00:00', 'auto', fps=24)
        tc2 = DfttTimecode('01:00:00:00', 'auto', fps=30)
        # Cannot add timecodes with different frame rates
        result = tc1 + tc2
-   except DfttTimecodeTypeError as e:
-       print(f"Type error: {e}")
+   except DFTTTimecodeOperatorError as e:
+       print(f"Operator error: {e}")
