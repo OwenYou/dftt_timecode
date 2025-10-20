@@ -5,6 +5,8 @@ on:
     branches:
       - main
       - dev
+    tags:
+      - '*'
   pull_request:
     branches:
       - main
@@ -26,6 +28,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for all tags and branches
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -39,19 +43,94 @@ jobs:
           pip install sphinx pydata-sphinx-theme
           pip install -e .
 
+      - name: Determine version
+        id: version
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            # Tag push - use tag name as version
+            VERSION=${GITHUB_REF#refs/tags/}
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+            echo "is_tag=true" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            # Main branch - use "stable" or latest tag
+            LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "dev")
+            echo "version=$LATEST_TAG" >> $GITHUB_OUTPUT
+            echo "is_tag=false" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref }}" == "refs/heads/dev" ]]; then
+            # Dev branch - use "dev"
+            echo "version=dev" >> $GITHUB_OUTPUT
+            echo "is_tag=false" >> $GITHUB_OUTPUT
+          else
+            # Other branches
+            echo "version=preview" >> $GITHUB_OUTPUT
+            echo "is_tag=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Build documentation
         run: |
           cd docs
           sphinx-build -b html . _build/html
 
+      - name: Prepare multi-version structure
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          mkdir -p docs/_build/pages/$VERSION
+          cp -r docs/_build/html/* docs/_build/pages/$VERSION/
+
+          # If this is main branch, also copy to root and create stable link
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            cp -r docs/_build/html/* docs/_build/pages/
+            mkdir -p docs/_build/pages/stable
+            cp -r docs/_build/html/* docs/_build/pages/stable/
+          fi
+
+      - name: Update version switcher
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          mkdir -p docs/_build/pages/_static
+
+          # Create or update switcher.json
+          cat > docs/_build/pages/_static/switcher.json << 'EOF'
+          [
+            {
+              "name": "dev (latest)",
+              "version": "dev",
+              "url": "https://owenyou.github.io/dftt_timecode/dev/"
+            },
+            {
+              "name": "stable",
+              "version": "stable",
+              "url": "https://owenyou.github.io/dftt_timecode/stable/"
+            },
+            {
+              "name": "0.0.15a2",
+              "version": "0.0.15a2",
+              "url": "https://owenyou.github.io/dftt_timecode/0.0.15a2/"
+            },
+            {
+              "name": "0.0.15a1",
+              "version": "0.0.15a1",
+              "url": "https://owenyou.github.io/dftt_timecode/0.0.15a1/"
+            },
+            {
+              "name": "0.0.14",
+              "version": "0.0.14",
+              "url": "https://owenyou.github.io/dftt_timecode/0.0.14/"
+            }
+          ]
+          EOF
+
+          # Copy switcher.json to each version directory
+          find docs/_build/pages -type d -name "_static" -exec cp docs/_build/pages/_static/switcher.json {} \;
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: docs/_build/html
+          path: docs/_build/pages
 
   deploy:
-    # Only deploy on pushes to main branch
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    # Only deploy on pushes to main, dev, or tags
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev' || startsWith(github.ref, 'refs/tags/'))
 
     environment:
       name: github-pages

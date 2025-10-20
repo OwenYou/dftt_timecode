@@ -53,20 +53,23 @@ html_theme_options = {
     "show_toc_level": 2,
     "navbar_align": "left",
     "navigation_with_keys": False,
-    "show_nav_level": 1,  # Show from top level
+    "show_nav_level": 2,  # Show navigation levels in sidebar
     "navigation_depth": 4,
-    "collapse_navigation": True,
-    "sidebar_includehidden": True,  # Include hidden toctree items in sidebar
+    "collapse_navigation": False,  # Keep navigation expanded
     "logo": {
         "text": "DFTT Timecode",
     },
-    "navbar_end": ["navbar-icon-links"],
-    "primary_sidebar_end": ["sidebar-ethical-ads"],
+    "navbar_end": ["version-switcher", "navbar-icon-links"],
+    "switcher": {
+        "json_url": "https://owenyou.github.io/dftt_timecode/_static/switcher.json",
+        "version_match": release,
+    },
 }
 
 # Enable the global table of contents in sidebar
+# Removed "search-button" from sidebar to hide search
 html_sidebars = {
-    "**": ["search-field", "sidebar-nav-bs"]
+    "**": ["sidebar-nav-bs"]
 }
 
 html_context = {
@@ -84,6 +87,14 @@ autodoc_default_options = {
     'undoc-members': True,
     'exclude-members': '__weakref__'
 }
+
+# Avoid documenting imports as duplicates
+autodoc_typehints = 'description'
+autodoc_class_signature = 'separated'
+
+# Control which module path to use for imported members
+# This prevents duplicate documentation when a class is imported into __init__.py
+add_module_names = False
 
 # Napoleon settings for Google/NumPy style docstrings
 napoleon_google_docstring = True
@@ -107,4 +118,5 @@ intersphinx_mapping = {
 }
 
 # -- Options for autosummary ------------------------------------------------
-autosummary_generate = True
+# Disable autosummary generation to avoid duplicate documentation
+autosummary_generate = False

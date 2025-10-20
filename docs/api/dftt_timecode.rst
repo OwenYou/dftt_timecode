@@ -1,7 +1,7 @@
 DfttTimecode API
 ================
 
-.. currentmodule:: dftt_timecode
+.. currentmodule:: dftt_timecode.core.dftt_timecode
 
 .. autoclass:: DfttTimecode
    :members:

@@ -1,7 +1,7 @@
 DfttTimeRange API
 =================
 
-.. currentmodule:: dftt_timecode
+.. currentmodule:: dftt_timecode.core.dftt_timerange
 
 .. autoclass:: DfttTimeRange
    :members:
