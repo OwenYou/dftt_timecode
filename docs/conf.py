@@ -5,19 +5,32 @@
 
 import os
 import sys
+import tomllib
 
 # -- Path setup --------------------------------------------------------------
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here.
 sys.path.insert(0, os.path.abspath('..'))
 
+# -- Read project metadata from pyproject.toml -------------------------------
+# Get the path to pyproject.toml (one level up from docs/)
+docs_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(docs_dir)
+pyproject_path = os.path.join(project_root, 'pyproject.toml')
+
+with open(pyproject_path, 'rb') as f:
+    pyproject_data = tomllib.load(f)
+
+project_info = pyproject_data['project']
+
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'DFTT Timecode'
 copyright = '2025, You Ziyuan'
-author = 'You Ziyuan'
-release = '0.0.15a1'
+author = ', '.join(a['name'] for a in project_info['authors'])
+release = project_info['version']
+version = release  # Short version
 
 # HTML title
 html_title = 'DFTT Timecode'

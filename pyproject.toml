@@ -10,7 +10,8 @@ readme = "README.md"
 requires-python = ">=3.11"
 license = "LGPL-2.1"
 authors = [
-    {name = "You Ziyuan", email = "hikaridragon0216@gmail.com"}
+    {name = "You Ziyuan", email = "hikaridragon0216@gmail.com"},
+    {name = "Wheheo Hu", email = "wheheohu@outlook.com"}
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
@@ -23,20 +24,6 @@ classifiers = [
 keywords = ["timecode", "video", "film", "television", "smpte", "hfr"]
 
 dependencies = []
-
-[project.optional-dependencies]
-dev = [
-    "pytest>=8.3.4",
-]
-docs = [
-    "sphinx>=7.0.0",
-    "pydata-sphinx-theme>=0.15.0",
-]
-all = [
-    "pytest>=8.3.4",
-    "sphinx>=7.0.0",
-    "pydata-sphinx-theme>=0.15.0",
-]
 
 [project.urls]
 Homepage = "https://github.com/OwenYou/dftt_timecode"

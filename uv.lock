@@ -141,20 +141,6 @@ name = "dftt-timecode"
 version = "0.0.15a2"
 source = { editable = "." }
 
-[package.optional-dependencies]
-all = [
-    { name = "pydata-sphinx-theme" },
-    { name = "pytest" },
-    { name = "sphinx" },
-]
-dev = [
-    { name = "pytest" },
-]
-docs = [
-    { name = "pydata-sphinx-theme" },
-    { name = "sphinx" },
-]
-
 [package.dev-dependencies]
 dev = [
     { name = "pydata-sphinx-theme" },
@@ -163,15 +149,6 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [
-    { name = "pydata-sphinx-theme", marker = "extra == 'all'", specifier = ">=0.15.0" },
-    { name = "pydata-sphinx-theme", marker = "extra == 'docs'", specifier = ">=0.15.0" },
-    { name = "pytest", marker = "extra == 'all'", specifier = ">=8.3.4" },
-    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.3.4" },
-    { name = "sphinx", marker = "extra == 'all'", specifier = ">=7.0.0" },
-    { name = "sphinx", marker = "extra == 'docs'", specifier = ">=7.0.0" },
-]
-provides-extras = ["dev", "docs", "all"]
 
 [package.metadata.requires-dev]
 dev = [
