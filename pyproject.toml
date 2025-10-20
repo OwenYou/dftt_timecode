@@ -1,0 +1,59 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dftt-timecode"
+version = "0.0.15a2"
+description = "Timecode library for film and TV industry, supports HFR and a bunch of cool features"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "LGPL-2.1"
+authors = [
+    {name = "You Ziyuan", email = "hikaridragon0216@gmail.com"}
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Development Status :: 2 - Pre-Alpha",
+    "Natural Language :: Chinese (Simplified)",
+    "Operating System :: OS Independent",
+]
+keywords = ["timecode", "video", "film", "television", "smpte", "hfr"]
+
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3.4",
+]
+docs = [
+    "sphinx>=7.0.0",
+    "pydata-sphinx-theme>=0.15.0",
+]
+all = [
+    "pytest>=8.3.4",
+    "sphinx>=7.0.0",
+    "pydata-sphinx-theme>=0.15.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/OwenYou/dftt_timecode"
+Documentation = "https://owenyou.github.io/dftt_timecode/"
+Repository = "https://github.com/OwenYou/dftt_timecode"
+Issues = "https://github.com/OwenYou/dftt_timecode/issues"
+
+[tool.setuptools.packages.find]
+include = ["dftt_timecode*"]
+
+[tool.pytest.ini_options]
+addopts = "-v -s"
+testpaths = ["test"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.4",
+    "sphinx>=7.0.0",
+    "pydata-sphinx-theme>=0.15.0",
+]
