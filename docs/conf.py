@@ -77,12 +77,13 @@ html_theme_options = {
         "json_url": "https://owenyou.github.io/dftt_timecode/_static/switcher.json",
         "version_match": release,
     },
+    "primary_sidebar_end": [],  # Remove primary sidebar content
+    "show_nav_level": 0,  # Hide navigation levels
 }
 
-# Enable the global table of contents in sidebar
-# Removed "search-button" from sidebar to hide search
+# Disable the left sidebar navigation
 html_sidebars = {
-    "**": ["sidebar-nav-bs"]
+    "**": []
 }
 
 html_context = {
