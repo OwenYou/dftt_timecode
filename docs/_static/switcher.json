@@ -1,0 +1,12 @@
+[
+  {
+    "name": "English",
+    "version": "en",
+    "url": "https://owenyou.github.io/dftt_timecode/"
+  },
+  {
+    "name": "中文 (简体)",
+    "version": "zh_CN",
+    "url": "https://owenyou.github.io/dftt_timecode/zh_CN/"
+  }
+]
