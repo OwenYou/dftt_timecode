@@ -48,6 +48,7 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.intersphinx',
     'sphinx.ext.autosummary',
+    'myst_parser',
 ]
 
 templates_path = ['_templates']
@@ -129,3 +130,12 @@ intersphinx_mapping = {
 # -- Options for autosummary ------------------------------------------------
 # Disable autosummary generation to avoid duplicate documentation
 autosummary_generate = False
+
+# -- Options for MyST-Parser ------------------------------------------------
+# Enable markdown files to be parsed by Sphinx
+myst_enable_extensions = [
+    "colon_fence",  # ::: syntax for directives
+    "deflist",      # Definition lists
+    "html_image",   # HTML image syntax
+]
+myst_heading_anchors = 3  # Auto-generate anchors for headings up to level 3
