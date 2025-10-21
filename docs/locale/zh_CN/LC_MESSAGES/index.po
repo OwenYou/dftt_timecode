@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: DFTT Timecode 0.0.15a2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-21 11:37+0800\n"
+"POT-Creation-Date: 2025-10-21 13:28+0800\n"
 "PO-Revision-Date: 2025-10-21 11:40+0800\n"
 "Last-Translator: You Ziyuan <hikaridragon0216@gmail.com>\n"
 "Language: zh_CN\n"
@@ -19,15 +19,15 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: ../../index.rst:70
+#: ../../index.rst:68
 msgid "User Guide"
 msgstr "用户指南"
 
-#: ../../index.rst:78
+#: ../../index.rst:76
 msgid "API Reference"
 msgstr "API 参考"
 
-#: ../../index.rst:86
+#: ../../index.rst:84
 msgid "Development"
 msgstr "开发"
 
@@ -51,85 +51,84 @@ msgstr "许可证"
 msgid ""
 "Python timecode library for film and TV industry, with high frame rate "
 "support and comprehensive features."
-msgstr "为影视行业设计的 Python 时码库，支持高帧率和丰富的功能。"
+msgstr "为影视行业设计的Python时码库，支持HFR高帧率以及其他丰富的功能。"
 
 #: ../../index.rst:17
-msgid "为影视行业设计的Python时码库，支持HFR高帧率以及其他丰富的功能。"
-msgstr "为影视行业设计的 Python 时码库，支持 HFR 高帧率以及其他丰富的功能。"
-
-#: ../../index.rst:19
 msgid ""
 "DFTT stands for the Department of Film and TV Technology of Beijing Film "
 "Academy."
 msgstr "DFTT 代表北京电影学院电影电视技术系。"
 
-#: ../../index.rst:22
+#: ../../index.rst:20
 msgid "Features"
 msgstr "特性"
 
-#: ../../index.rst:24
+#: ../../index.rst:22
 msgid ""
 "**Multiple Timecode Format Support**: SMPTE (DF/NDF), SRT, DLP (Cine "
 "Canvas), FFMPEG, FCPX, frame count, timestamp"
 msgstr "**多种时码格式支持**：SMPTE (DF/NDF)、SRT、DLP (Cine Canvas)、FFMPEG、FCPX、帧计数、时间戳"
 
-#: ../../index.rst:25
+#: ../../index.rst:23
 msgid "**High Frame Rate Support**: Supports frame rates from 0.01 to 999.99 fps"
 msgstr "**高帧率支持**：支持 0.01 到 999.99 fps 的帧率"
 
-#: ../../index.rst:26
+#: ../../index.rst:24
 msgid "**Drop-Frame/Non-Drop-Frame**: Strictly supports SMPTE DF/NDF formats"
 msgstr "**跳帧/非跳帧**：严格支持 SMPTE DF/NDF 格式"
 
-#: ../../index.rst:27
+#: ../../index.rst:25
 msgid ""
 "**Extended Time Range**: Currently supports time range from -99 to 99 "
 "hours"
 msgstr "**扩展时间范围**：目前支持 -99 到 99 小时的时间范围"
 
-#: ../../index.rst:28
+#: ../../index.rst:26
 msgid ""
 "**Strict Mode**: 24-hour cycling mode that automatically converts "
 "timecodes outside the 0-24 hour range"
 msgstr "**严格模式**：24 小时循环模式，自动转换 0-24 小时范围外的时码"
 
-#: ../../index.rst:29
+#: ../../index.rst:27
 msgid ""
 "**High Precision**: Internal storage using high-precision Fraction "
 "timestamps for accurate conversions"
 msgstr "**高精度**：内部使用高精度分数时间戳进行精确转换"
 
-#: ../../index.rst:30
+#: ../../index.rst:28
 msgid ""
 "**Rich Operators**: Comprehensive support for arithmetic and comparison "
 "operations between timecodes and numbers"
 msgstr "**丰富的运算符**：全面支持时码与数字之间的算术和比较运算"
 
-#: ../../index.rst:33
+#: ../../index.rst:31
 msgid "Installation"
 msgstr "安装"
 
-#: ../../index.rst:40
+#: ../../index.rst:38
 msgid "Quick Start"
 msgstr "快速开始"
 
-#: ../../index.rst:68
+#: ../../index.rst:66
 msgid "Contents"
 msgstr "目录"
 
-#: ../../index.rst:94
+#: ../../index.rst:92
 msgid "Indices and tables"
 msgstr "索引和表格"
 
-#: ../../index.rst:96
+#: ../../index.rst:94
 msgid ":ref:`genindex`"
 msgstr ":ref:`genindex`"
 
-#: ../../index.rst:97
+#: ../../index.rst:95
 msgid ":ref:`modindex`"
 msgstr ":ref:`modindex`"
 
-#: ../../index.rst:98
+#: ../../index.rst:96
 msgid ":ref:`search`"
 msgstr ":ref:`search`"
+
+#~ msgid "为影视行业设计的Python时码库，支持HFR高帧率以及其他丰富的功能。"
+#~ msgstr "为影视行业设计的 Python 时码库，支持 HFR 高帧率以及其他丰富的功能。"
 

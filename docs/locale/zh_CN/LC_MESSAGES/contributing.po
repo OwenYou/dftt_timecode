@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: DFTT Timecode 0.0.15a2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-21 12:07+0800\n"
+"POT-Creation-Date: 2025-10-21 13:18+0800\n"
 "PO-Revision-Date: 2025-10-21 12:00+0800\n"
 "Last-Translator: You Ziyuan <hikaridragon0216@gmail.com>\n"
 "Language: zh_CN\n"
@@ -219,7 +219,7 @@ msgstr "**翻译指南：**"
 msgid ""
 "**User documentation** (installation, quickstart, user guide): Translate "
 "everything"
-msgstr "**用户文档**（安装、快速开始、用户指南）：翻译所有内容"
+msgstr "**用户文档** （安装、快速开始、用户指南）：翻译所有内容"
 
 #: ../../contributing.rst:160
 msgid ""
@@ -254,126 +254,390 @@ msgid ""
 msgstr "当文档源文件更新时，需要更新翻译："
 
 #: ../../contributing.rst:177
-msgid ""
-"For detailed information about the translation system, see "
-"``docs/I18N_README.md``."
-msgstr "有关翻译系统的详细信息，请参阅 ``docs/I18N_README.md``。"
+msgid "**Translation System Overview**"
+msgstr "**翻译系统概述**"
 
-#: ../../contributing.rst:180
+#: ../../contributing.rst:179
+msgid ""
+"The project uses Sphinx with ``sphinx-intl`` for internationalization. "
+"The system uses gettext ``.po`` (Portable Object) files for translations,"
+" which is the industry standard for software localization."
+msgstr ""
+"本项目使用 Sphinx 和 ``sphinx-intl`` 进行国际化。"
+"系统使用 gettext ``.po`` （Portable Object）文件进行翻译，"
+"这是软件本地化的行业标准。"
+
+#: ../../contributing.rst:181
+msgid "**File Structure:**"
+msgstr "**文件结构：**"
+
+#: ../../contributing.rst:201
+msgid "**Detailed Translation Workflow:**"
+msgstr "**详细翻译工作流：**"
+
+#: ../../contributing.rst:203
+msgid "**Generate translation templates** (when source docs change):"
+msgstr "**生成翻译模板** （当源文档更改时）："
+
+#: ../../contributing.rst:210
+msgid ""
+"This creates ``.pot`` files in ``_build/gettext/`` containing all "
+"translatable strings."
+msgstr ""
+"这将在 ``_build/gettext/`` 中创建 ``.pot`` 文件，包含所有可翻译的字符串。"
+
+#: ../../contributing.rst:212
+msgid "**Update translation files**:"
+msgstr "**更新翻译文件：**"
+
+#: ../../contributing.rst:219
+msgid ""
+"This updates ``.po`` files in ``locale/zh_CN/LC_MESSAGES/`` with new "
+"strings while preserving existing translations."
+msgstr ""
+"这将使用新字符串更新 ``locale/zh_CN/LC_MESSAGES/`` 中的 ``.po`` 文件，"
+"同时保留现有翻译。"
+
+#: ../../contributing.rst:221
+msgid "**Translate the strings**:"
+msgstr "**翻译字符串：**"
+
+#: ../../contributing.rst:223
+msgid "Open ``.po`` files and add translations:"
+msgstr "打开 ``.po`` 文件并添加翻译："
+
+#: ../../contributing.rst:235
+msgid "**Translation Tips:**"
+msgstr "**翻译提示：**"
+
+#: ../../contributing.rst:237
+msgid "Each ``msgid`` contains the original English text"
+msgstr "每个 ``msgid`` 包含原始英文文本"
+
+#: ../../contributing.rst:238
+msgid "Add your translation in the corresponding ``msgstr`` field"
+msgstr "在相应的 ``msgstr`` 字段中添加您的翻译"
+
+#: ../../contributing.rst:239
+#, python-brace-format, python-format
+msgid "Preserve formatting codes like ``{0}``, ``%s``, etc."
+msgstr "保留格式化代码，如 ``{0}``、``%s`` 等"
+
+#: ../../contributing.rst:240
+msgid "Keep technical terms (class/function names) untranslated"
+msgstr "保持技术术语（类名/函数名）不翻译"
+
+#: ../../contributing.rst:241
+msgid "Use tools like `Poedit <https://poedit.net/>`_ for easier editing"
+msgstr "使用 `Poedit <https://poedit.net/>`_ 等工具进行更轻松的编辑"
+
+#: ../../contributing.rst:243
+msgid "**Build and test**:"
+msgstr "**构建和测试：**"
+
+#: ../../contributing.rst:251
+msgid "Preview the result:"
+msgstr "预览结果："
+
+#: ../../contributing.rst:259
+msgid "**Commit your changes**:"
+msgstr "**提交您的更改：**"
+
+#: ../../contributing.rst:266
+msgid "**Important Makefile Commands:**"
+msgstr "**重要的 Makefile 命令：**"
+
+#: ../../contributing.rst:268
+msgid ""
+"``make gettext``: Generate ``.pot`` template files from source ``.rst`` "
+"files"
+msgstr "``make gettext``：从源 ``.rst`` 文件生成 ``.pot`` 模板文件"
+
+#: ../../contributing.rst:269
+msgid "``make update-po``: Update ``.po`` files from ``.pot`` templates"
+msgstr "``make update-po``：从 ``.pot`` 模板更新 ``.po`` 文件"
+
+#: ../../contributing.rst:270
+msgid "``make html``: Build English documentation only"
+msgstr "``make html``：仅构建英文文档"
+
+#: ../../contributing.rst:271
+msgid "``make html-zh``: Build Chinese documentation only"
+msgstr "``make html-zh``：仅构建中文文档"
+
+#: ../../contributing.rst:272
+msgid "``make html-all``: Build all language versions"
+msgstr "``make html-all``：构建所有语言版本"
+
+#: ../../contributing.rst:274
+msgid "**Common Issues and Solutions:**"
+msgstr "**常见问题和解决方案：**"
+
+#: ../../contributing.rst:276
+msgid "**Translations not showing:**"
+msgstr "**翻译未显示：**"
+
+#: ../../contributing.rst:278
+msgid "Ensure ``.po`` files have non-empty ``msgstr`` values"
+msgstr "确保 ``.po`` 文件具有非空的 ``msgstr`` 值"
+
+#: ../../contributing.rst:279
+msgid "Rebuild with ``uv run make html-all``"
+msgstr "使用 ``uv run make html-all`` 重新构建"
+
+#: ../../contributing.rst:280
+msgid "Clear browser cache or use incognito mode"
+msgstr "清除浏览器缓存或使用隐身模式"
+
+#: ../../contributing.rst:282
+msgid "**New strings not appearing in .po files:**"
+msgstr "**新字符串未出现在 .po 文件中：**"
+
+#: ../../contributing.rst:284
+msgid "Run ``uv run make gettext`` to regenerate ``.pot`` files"
+msgstr "运行 ``uv run make gettext`` 重新生成 ``.pot`` 文件"
+
+#: ../../contributing.rst:285
+msgid "Run ``uv run make update-po`` to update ``.po`` files"
+msgstr "运行 ``uv run make update-po`` 更新 ``.po`` 文件"
+
+#: ../../contributing.rst:286
+msgid "Check that your source ``.rst`` files are included in the build"
+msgstr "检查您的源 ``.rst`` 文件是否包含在构建中"
+
+#: ../../contributing.rst:288
+msgid "**Language switcher not working:**"
+msgstr "**语言切换器不工作：**"
+
+#: ../../contributing.rst:290
+msgid "Verify ``_templates/language-switcher.html`` exists"
+msgstr "验证 ``_templates/language-switcher.html`` 存在"
+
+#: ../../contributing.rst:291
+msgid ""
+"Ensure target language HTML was built in correct subdirectory "
+"(``_build/html/zh_CN/``)"
+msgstr ""
+"确保目标语言 HTML 已构建在正确的子目录中 "
+"(``_build/html/zh_CN/``)"
+
+#: ../../contributing.rst:293
+msgid "**Best Practices:**"
+msgstr "**最佳实践：**"
+
+#: ../../contributing.rst:295
+msgid ""
+"**Commit ``.po`` files**: Always commit updated ``.po`` files to version "
+"control"
+msgstr "**提交 ``.po`` 文件**：始终将更新的 ``.po`` 文件提交到版本控制"
+
+#: ../../contributing.rst:296
+msgid ""
+"**Don't commit ``.pot`` files**: These are generated artifacts in "
+"``_build/gettext/``"
+msgstr ""
+"**不要提交 ``.pot`` 文件**：这些是 ``_build/gettext/`` 中生成的构建产物"
+
+#: ../../contributing.rst:297
+msgid ""
+"**Incremental translation**: It's okay to commit partially translated "
+"``.po`` files; untranslated strings display in English"
+msgstr ""
+"**增量翻译**：可以提交部分翻译的 ``.po`` 文件；未翻译的字符串将显示为英文"
+
+#: ../../contributing.rst:298
+msgid ""
+"**Review before push**: Build and preview locally before pushing "
+"translations"
+msgstr "**推送前审查**：推送翻译前在本地构建和预览"
+
+#: ../../contributing.rst:299
+msgid ""
+"**Consistent terminology**: Use consistent translations for technical "
+"terms across all pages"
+msgstr "**一致的术语**：在所有页面上对技术术语使用一致的翻译"
+
+#: ../../contributing.rst:300
+msgid ""
+"**Keep source in sync**: Run ``make update-po`` regularly to sync with "
+"source changes"
+msgstr "**保持源同步**：定期运行 ``make update-po`` 以与源更改同步"
+
+#: ../../contributing.rst:302
+msgid "**Automated Deployment:**"
+msgstr "**自动化部署：**"
+
+#: ../../contributing.rst:304
+msgid ""
+"Documentation is automatically built and deployed via GitHub Actions when"
+" pushed to ``main``:"
+msgstr "当推送到 ``main`` 分支时，文档将通过 GitHub Actions 自动构建和部署："
+
+#: ../../contributing.rst:306
+msgid "Workflow: ``.github/workflows/docs.yml``"
+msgstr "工作流：``.github/workflows/docs.yml``"
+
+#: ../../contributing.rst:307
+msgid "Build command: ``uv run make html-all``"
+msgstr "构建命令：``uv run make html-all``"
+
+#: ../../contributing.rst:308
+msgid "Deployment: GitHub Pages at https://owenyou.github.io/dftt_timecode/"
+msgstr "部署：GitHub Pages 位于 https://owenyou.github.io/dftt_timecode/"
+
+#: ../../contributing.rst:310
+msgid ""
+"When you push translated ``.po`` files to the ``main`` branch (via "
+"``dev`` merge), the multilingual documentation is automatically rebuilt "
+"and deployed."
+msgstr ""
+"当您将翻译的 ``.po`` 文件推送到 ``main`` 分支时（通过 ``dev`` 合并），"
+"多语言文档将自动重新构建和部署。"
+
+#: ../../contributing.rst:312
+msgid "**Additional Resources:**"
+msgstr "**附加资源：**"
+
+#: ../../contributing.rst:314
+msgid ""
+"`Sphinx Internationalization <https://www.sphinx-"
+"doc.org/en/master/usage/advanced/intl.html>`_"
+msgstr ""
+"`Sphinx 国际化 <https://www.sphinx-"
+"doc.org/en/master/usage/advanced/intl.html>`_"
+
+#: ../../contributing.rst:315
+msgid "`sphinx-intl Documentation <https://sphinx-intl.readthedocs.io/>`_"
+msgstr "`sphinx-intl 文档 <https://sphinx-intl.readthedocs.io/>`_"
+
+#: ../../contributing.rst:316
+msgid ""
+"`GNU gettext Documentation "
+"<https://www.gnu.org/software/gettext/manual/>`_"
+msgstr ""
+"`GNU gettext 文档 "
+"<https://www.gnu.org/software/gettext/manual/>`_"
+
+#: ../../contributing.rst:319
 msgid "Submitting Changes"
 msgstr "提交更改"
 
-#: ../../contributing.rst:182
+#: ../../contributing.rst:321
 msgid "Create a new branch for your changes:"
 msgstr "为您的更改创建新分支："
 
-#: ../../contributing.rst:188
+#: ../../contributing.rst:327
 msgid "Make your changes and commit:"
 msgstr "进行更改并提交："
 
-#: ../../contributing.rst:195
+#: ../../contributing.rst:334
 msgid "Push to your fork:"
 msgstr "推送到您的 Fork："
 
-#: ../../contributing.rst:201
+#: ../../contributing.rst:340
 msgid "Open a Pull Request on GitHub"
 msgstr "在 GitHub 上打开 Pull Request"
 
-#: ../../contributing.rst:204
+#: ../../contributing.rst:343
 msgid "Pull Request Guidelines"
 msgstr "Pull Request 指南"
 
-#: ../../contributing.rst:206
+#: ../../contributing.rst:345
 msgid "Provide a clear description of the changes"
 msgstr "提供更改的清晰描述"
 
-#: ../../contributing.rst:207
+#: ../../contributing.rst:346
 msgid "Reference any related issues"
 msgstr "引用任何相关问题"
 
-#: ../../contributing.rst:208
+#: ../../contributing.rst:347
 msgid "Ensure all tests pass"
 msgstr "确保所有测试通过"
 
-#: ../../contributing.rst:209
+#: ../../contributing.rst:348
 msgid "Update documentation as needed"
 msgstr "根据需要更新文档"
 
-#: ../../contributing.rst:210
+#: ../../contributing.rst:349
 msgid "Keep changes focused and atomic"
 msgstr "保持更改集中且原子化"
 
-#: ../../contributing.rst:213
+#: ../../contributing.rst:352
 msgid "Reporting Bugs"
 msgstr "报告错误"
 
-#: ../../contributing.rst:215
+#: ../../contributing.rst:354
 msgid "When reporting bugs, please include:"
 msgstr "报告错误时，请包含："
 
-#: ../../contributing.rst:217
+#: ../../contributing.rst:356
 msgid "Python version"
 msgstr "Python 版本"
 
-#: ../../contributing.rst:218
+#: ../../contributing.rst:357
 msgid "dftt_timecode version"
 msgstr "dftt_timecode 版本"
 
-#: ../../contributing.rst:219
+#: ../../contributing.rst:358
 msgid "Minimal code example that reproduces the issue"
 msgstr "能重现问题的最小代码示例"
 
-#: ../../contributing.rst:220
+#: ../../contributing.rst:359
 msgid "Expected vs actual behavior"
 msgstr "预期行为与实际行为"
 
-#: ../../contributing.rst:221
+#: ../../contributing.rst:360
 msgid "Any error messages or stack traces"
 msgstr "任何错误消息或堆栈跟踪"
 
-#: ../../contributing.rst:224
+#: ../../contributing.rst:363
 msgid "Feature Requests"
 msgstr "功能请求"
 
-#: ../../contributing.rst:226
+#: ../../contributing.rst:365
 msgid "Feature requests are welcome! Please provide:"
 msgstr "欢迎功能请求！请提供："
 
-#: ../../contributing.rst:228
+#: ../../contributing.rst:367
 msgid "Clear description of the feature"
 msgstr "功能的清晰描述"
 
-#: ../../contributing.rst:229
+#: ../../contributing.rst:368
 msgid "Use cases and examples"
 msgstr "使用场景和示例"
 
-#: ../../contributing.rst:230
+#: ../../contributing.rst:369
 msgid "Why this would be valuable to other users"
 msgstr "为什么这对其他用户有价值"
 
-#: ../../contributing.rst:233
+#: ../../contributing.rst:372
 msgid "Code of Conduct"
 msgstr "行为准则"
 
-#: ../../contributing.rst:235
+#: ../../contributing.rst:374
 msgid "Be respectful and inclusive"
 msgstr "保持尊重和包容"
 
-#: ../../contributing.rst:236
+#: ../../contributing.rst:375
 msgid "Focus on constructive feedback"
 msgstr "专注于建设性反馈"
 
-#: ../../contributing.rst:237
+#: ../../contributing.rst:376
 msgid "Help create a welcoming environment for all contributors"
 msgstr "帮助为所有贡献者创建一个友好的环境"
 
-#: ../../contributing.rst:240
+#: ../../contributing.rst:379
 msgid "License"
 msgstr "许可证"
 
-#: ../../contributing.rst:242
+#: ../../contributing.rst:381
 msgid ""
 "By contributing, you agree that your contributions will be licensed under"
 " the GNU Lesser General Public License v2 (LGPLv2)."
 msgstr "通过贡献，您同意您的贡献将按照 GNU Lesser General Public License v2 (LGPLv2) 授权。"
+
+#~ msgid ""
+#~ "For detailed information about the "
+#~ "translation system, see ``docs/I18N_README.md``."
+#~ msgstr "有关翻译系统的详细信息，请参阅 ``docs/I18N_README.md``。"
 
