@@ -28,6 +28,18 @@ Example:
 from dftt_timecode.core.dftt_timecode import DfttTimecode
 from dftt_timecode.core.dftt_timerange import DfttTimeRange
 
+# Read version from package metadata (populated from pyproject.toml)
+try:
+    from importlib.metadata import version, PackageNotFoundError
+    try:
+        __version__ = version("dftt-timecode")
+    except PackageNotFoundError:
+        # Package is not installed, use a fallback version
+        __version__ = "0.0.0+dev"
+except ImportError:
+    # Python < 3.8 fallback (though we require 3.11+)
+    __version__ = "0.0.0+dev"
+
 
 # Aliases for easier importing
 def timecode(*args, **kwargs) -> DfttTimecode:
@@ -101,9 +113,7 @@ def dtr(*args, **kwargs) -> DfttTimeRange:
     """
     return DfttTimeRange(*args, **kwargs)
 
-
 name = "dftt_timecode"
 __author__ = "You Ziyuan"
-__version__ = "0.0.15a2"
 
 __all__ = ["DfttTimecode", "DfttTimeRange", "timecode", "timerange", "dtc", "dtr"]

@@ -5,19 +5,32 @@
 
 import os
 import sys
+import tomllib
 
 # -- Path setup --------------------------------------------------------------
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here.
 sys.path.insert(0, os.path.abspath('..'))
 
+# -- Read project metadata from pyproject.toml -------------------------------
+# Get the path to pyproject.toml (one level up from docs/)
+docs_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(docs_dir)
+pyproject_path = os.path.join(project_root, 'pyproject.toml')
+
+with open(pyproject_path, 'rb') as f:
+    pyproject_data = tomllib.load(f)
+
+project_info = pyproject_data['project']
+
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'DFTT Timecode'
 copyright = '2025, You Ziyuan'
-author = 'You Ziyuan'
-release = '0.0.15a1'
+author = ', '.join(a['name'] for a in project_info['authors'])
+release = project_info['version']
+version = release  # Short version
 
 # HTML title
 html_title = 'DFTT Timecode'
@@ -53,20 +66,20 @@ html_theme_options = {
     "show_toc_level": 2,
     "navbar_align": "left",
     "navigation_with_keys": False,
-    "show_nav_level": 1,  # Show from top level
+    "show_nav_level": 2,  # Show navigation levels in sidebar
     "navigation_depth": 4,
-    "collapse_navigation": True,
-    "sidebar_includehidden": True,  # Include hidden toctree items in sidebar
+    "collapse_navigation": False,  # Keep navigation expanded
     "logo": {
         "text": "DFTT Timecode",
     },
     "navbar_end": ["navbar-icon-links"],
-    "primary_sidebar_end": ["sidebar-ethical-ads"],
+    "primary_sidebar_end": [],  # Remove primary sidebar content
+    "show_nav_level": 0,  # Hide navigation levels
 }
 
-# Enable the global table of contents in sidebar
+# Disable the left sidebar navigation
 html_sidebars = {
-    "**": ["search-field", "sidebar-nav-bs"]
+    "**": []
 }
 
 html_context = {
@@ -84,6 +97,14 @@ autodoc_default_options = {
     'undoc-members': True,
     'exclude-members': '__weakref__'
 }
+
+# Avoid documenting imports as duplicates
+autodoc_typehints = 'description'
+autodoc_class_signature = 'separated'
+
+# Control which module path to use for imported members
+# This prevents duplicate documentation when a class is imported into __init__.py
+add_module_names = False
 
 # Napoleon settings for Google/NumPy style docstrings
 napoleon_google_docstring = True
@@ -107,4 +128,5 @@ intersphinx_mapping = {
 }
 
 # -- Options for autosummary ------------------------------------------------
-autosummary_generate = True
+# Disable autosummary generation to avoid duplicate documentation
+autosummary_generate = False

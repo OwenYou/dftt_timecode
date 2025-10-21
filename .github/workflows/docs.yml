@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - dev
   pull_request:
     branches:
       - main
@@ -21,7 +20,7 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
       - name: Checkout repository
@@ -31,18 +30,19 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-          cache: 'pip'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
 
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install sphinx pydata-sphinx-theme
-          pip install -e .
+        run: uv sync
 
-      - name: Build documentation
+      - name: Build documentation with make
         run: |
           cd docs
-          sphinx-build -b html . _build/html
+          uv run make html
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
@@ -50,7 +50,7 @@ jobs:
           path: docs/_build/html
 
   deploy:
-    # Only deploy on pushes to main branch
+    # Only deploy on pushes to main
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     environment:
@@ -64,3 +64,4 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+

@@ -70,7 +70,6 @@ Contents
 .. toctree::
    :maxdepth: 2
    :caption: User Guide
-   :titlesonly:
 
    installation
    quickstart
@@ -79,7 +78,6 @@ Contents
 .. toctree::
    :maxdepth: 2
    :caption: API Reference
-   :titlesonly:
 
    api/dftt_timecode
    api/dftt_timerange
@@ -88,7 +86,6 @@ Contents
 .. toctree::
    :maxdepth: 1
    :caption: Development
-   :titlesonly:
 
    contributing
    changelog
