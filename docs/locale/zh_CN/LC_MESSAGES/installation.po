@@ -1,0 +1,136 @@
+# DFTT Timecode Documentation Chinese Translation
+# Copyright (C) 2025, You Ziyuan
+# This file is distributed under the same license as the DFTT Timecode
+# package.
+# You Ziyuan <hikaridragon0216@gmail.com>, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: DFTT Timecode 0.0.15a2\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-10-21 11:37+0800\n"
+"PO-Revision-Date: 2025-10-21 11:40+0800\n"
+"Last-Translator: You Ziyuan <hikaridragon0216@gmail.com>\n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN <hikaridragon0216@gmail.com>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../installation.rst:2
+msgid "Installation"
+msgstr "安装"
+
+#: ../../installation.rst:5
+msgid "Requirements"
+msgstr "系统要求"
+
+#: ../../installation.rst:7
+msgid "Python >= 3.11"
+msgstr "Python >= 3.11"
+
+#: ../../installation.rst:8
+msgid "Standard library dependencies only (no external dependencies required)"
+msgstr "仅依赖标准库（无需外部依赖）"
+
+#: ../../installation.rst:10
+msgid "fractions"
+msgstr "fractions"
+
+#: ../../installation.rst:11
+msgid "logging"
+msgstr "logging"
+
+#: ../../installation.rst:12
+msgid "math"
+msgstr "math"
+
+#: ../../installation.rst:13
+msgid "functools"
+msgstr "functools"
+
+#: ../../installation.rst:14
+msgid "re"
+msgstr "re"
+
+#: ../../installation.rst:17
+msgid "Installation from PyPI"
+msgstr "从 PyPI 安装"
+
+#: ../../installation.rst:19
+msgid "The easiest way to install dftt_timecode is using pip or uv:"
+msgstr "安装 dftt_timecode 最简单的方法是使用 pip 或 uv："
+
+#: ../../installation.rst:30
+msgid "Installation from Source"
+msgstr "从源码安装"
+
+#: ../../installation.rst:32
+msgid ""
+"For development, we recommend using **uv** for faster and more reliable "
+"dependency management:"
+msgstr "对于开发，我们建议使用 **uv** 以获得更快速和可靠的依赖管理："
+
+#: ../../installation.rst:46
+msgid "This will:"
+msgstr "这将："
+
+#: ../../installation.rst:48
+msgid "Create a virtual environment in ``.venv``"
+msgstr "在 ``.venv`` 中创建虚拟环境"
+
+#: ../../installation.rst:49
+msgid "Install all development dependencies (pytest, sphinx, etc.)"
+msgstr "安装所有开发依赖（pytest、sphinx 等）"
+
+#: ../../installation.rst:50
+msgid "Install the package in editable mode"
+msgstr "以可编辑模式安装包"
+
+#: ../../installation.rst:52
+msgid "Alternatively, using pip:"
+msgstr "或者，使用 pip："
+
+#: ../../installation.rst:61
+msgid "Verifying Installation"
+msgstr "验证安装"
+
+#: ../../installation.rst:63
+msgid "You can verify the installation by importing the package:"
+msgstr "您可以通过导入包来验证安装："
+
+#: ../../installation.rst:71
+msgid "Development Dependencies"
+msgstr "开发依赖"
+
+#: ../../installation.rst:73
+msgid ""
+"The project uses **uv** for dependency management. All dependencies are "
+"defined in ``pyproject.toml``:"
+msgstr "项目使用 **uv** 进行依赖管理。所有依赖都定义在 ``pyproject.toml`` 中："
+
+#: ../../installation.rst:75
+msgid "**pytest** - Testing framework"
+msgstr "**pytest** - 测试框架"
+
+#: ../../installation.rst:76
+msgid "**sphinx** - Documentation generator"
+msgstr "**sphinx** - 文档生成器"
+
+#: ../../installation.rst:77
+msgid "**pydata-sphinx-theme** - Documentation theme"
+msgstr "**pydata-sphinx-theme** - 文档主题"
+
+#: ../../installation.rst:79
+msgid "To install development dependencies with uv:"
+msgstr "使用 uv 安装开发依赖："
+
+#: ../../installation.rst:89
+msgid "To run tests:"
+msgstr "运行测试："
+
+#: ../../installation.rst:95
+msgid "To build documentation:"
+msgstr "构建文档："

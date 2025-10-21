@@ -1,0 +1,379 @@
+# DFTT Timecode Documentation Chinese Translation
+# Copyright (C) 2025, You Ziyuan
+# This file is distributed under the same license as the DFTT Timecode
+# package.
+# You Ziyuan <hikaridragon0216@gmail.com>, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: DFTT Timecode 0.0.15a2\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-10-21 12:07+0800\n"
+"PO-Revision-Date: 2025-10-21 12:00+0800\n"
+"Last-Translator: You Ziyuan <hikaridragon0216@gmail.com>\n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN <hikaridragon0216@gmail.com>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../contributing.rst:2
+msgid "Contributing"
+msgstr "贡献指南"
+
+#: ../../contributing.rst:4
+msgid ""
+"We welcome contributions to dftt_timecode! This guide will help you get "
+"started."
+msgstr "我们欢迎对 dftt_timecode 的贡献！本指南将帮助您开始贡献。"
+
+#: ../../contributing.rst:7
+msgid "Getting Started"
+msgstr "开始"
+
+#: ../../contributing.rst:9
+msgid "Fork the repository on GitHub"
+msgstr "在 GitHub 上 Fork 仓库"
+
+#: ../../contributing.rst:10
+msgid "Clone your fork locally:"
+msgstr "在本地克隆您的 Fork："
+
+#: ../../contributing.rst:18
+msgid "Development Workflow"
+msgstr "开发工作流"
+
+#: ../../contributing.rst:21
+msgid "Setting Up Your Environment"
+msgstr "设置开发环境"
+
+#: ../../contributing.rst:23
+msgid "Create a virtual environment and install dependencies:"
+msgstr "创建虚拟环境并安装依赖："
+
+#: ../../contributing.rst:29
+msgid "This command will:"
+msgstr "此命令将："
+
+#: ../../contributing.rst:31
+msgid "Create a virtual environment (if not already present)"
+msgstr "创建虚拟环境（如果尚不存在）"
+
+#: ../../contributing.rst:32
+msgid "Install all dependencies from ``pyproject.toml``"
+msgstr "从 ``pyproject.toml`` 安装所有依赖"
+
+#: ../../contributing.rst:33
+msgid "Install the package in editable mode"
+msgstr "以可编辑模式安装包"
+
+#: ../../contributing.rst:34
+msgid "Generate/update ``uv.lock`` for reproducible builds"
+msgstr "生成/更新 ``uv.lock`` 以实现可重现构建"
+
+#: ../../contributing.rst:37
+msgid "Running Tests"
+msgstr "运行测试"
+
+#: ../../contributing.rst:39
+msgid "Run all tests:"
+msgstr "运行所有测试："
+
+#: ../../contributing.rst:45
+msgid "Run tests with verbose output:"
+msgstr "以详细输出运行测试："
+
+#: ../../contributing.rst:51
+msgid "Run specific test file:"
+msgstr "运行特定测试文件："
+
+#: ../../contributing.rst:58
+msgid "Code Style"
+msgstr "代码风格"
+
+#: ../../contributing.rst:60
+msgid "Follow PEP 8 guidelines"
+msgstr "遵循 PEP 8 规范"
+
+#: ../../contributing.rst:61
+msgid "Use meaningful variable and function names"
+msgstr "使用有意义的变量和函数名"
+
+#: ../../contributing.rst:62
+msgid "Add docstrings to all public functions and classes"
+msgstr "为所有公共函数和类添加文档字符串"
+
+#: ../../contributing.rst:63
+msgid "Keep functions focused and concise"
+msgstr "保持函数专注和简洁"
+
+#: ../../contributing.rst:66
+msgid "Writing Tests"
+msgstr "编写测试"
+
+#: ../../contributing.rst:68
+msgid "All new features and bug fixes should include tests:"
+msgstr "所有新功能和错误修复都应包含测试："
+
+#: ../../contributing.rst:81
+msgid "Documentation"
+msgstr "文档"
+
+#: ../../contributing.rst:83
+msgid "Update documentation when adding new features:"
+msgstr "添加新功能时更新文档："
+
+#: ../../contributing.rst:85
+msgid "Add docstrings to your code"
+msgstr "为代码添加文档字符串"
+
+#: ../../contributing.rst:86
+msgid "Update relevant .rst files in the docs/ directory"
+msgstr "更新 docs/ 目录中的相关 .rst 文件"
+
+#: ../../contributing.rst:87
+msgid "Build documentation locally to verify:"
+msgstr "本地构建文档以验证："
+
+#: ../../contributing.rst:95
+msgid "Contributing Translations"
+msgstr "贡献翻译"
+
+#: ../../contributing.rst:97
+msgid ""
+"We welcome contributions to documentation translations! Currently we "
+"support:"
+msgstr "我们欢迎为文档翻译做出贡献！目前我们支持："
+
+#: ../../contributing.rst:99
+msgid "**English** (primary language)"
+msgstr "英文（主要语言）"
+
+#: ../../contributing.rst:100
+msgid "**中文 (Simplified Chinese)**"
+msgstr "中文（简体）"
+
+#: ../../contributing.rst:103
+msgid "How to Contribute Translations"
+msgstr "如何贡献翻译"
+
+#: ../../contributing.rst:105
+msgid "**Adding new translations to existing languages:**"
+msgstr "**向现有语言添加新翻译：**"
+
+#: ../../contributing.rst:107
+msgid "Navigate to the translation files:"
+msgstr "进入翻译文件目录："
+
+#: ../../contributing.rst:113
+msgid "Edit the ``.po`` files to add or improve translations:"
+msgstr "编辑 ``.po`` 文件以添加或改进翻译："
+
+#: ../../contributing.rst:121
+msgid "Build and preview your translations:"
+msgstr "构建并预览您的翻译："
+
+#: ../../contributing.rst:129
+msgid "Preview locally:"
+msgstr "本地预览："
+
+#: ../../contributing.rst:137
+msgid "**Adding a new language:**"
+msgstr "**添加新语言：**"
+
+#: ../../contributing.rst:139
+msgid "Generate translation files for your language:"
+msgstr "为您的语言生成翻译文件："
+
+#: ../../contributing.rst:147
+msgid ""
+"Update ``docs/Makefile`` to include the new language in the ``LANGUAGES``"
+" variable"
+msgstr "更新 ``docs/Makefile``，在 ``LANGUAGES`` 变量中添加新语言"
+
+#: ../../contributing.rst:149
+msgid "Update ``docs/_static/switcher.json`` to add your language option"
+msgstr "更新 ``docs/_static/switcher.json`` 以添加您的语言选项"
+
+#: ../../contributing.rst:151
+msgid ""
+"Update the language switcher template in ``docs/_templates/language-"
+"switcher.html``"
+msgstr "更新 ``docs/_templates/language-switcher.html`` 中的语言切换器模板"
+
+#: ../../contributing.rst:153
+msgid "Translate the ``.po`` files in ``locale/<LANG_CODE>/LC_MESSAGES/``"
+msgstr "翻译 ``locale/<LANG_CODE>/LC_MESSAGES/`` 中的 ``.po`` 文件"
+
+#: ../../contributing.rst:155
+msgid "Build and test your translation"
+msgstr "构建并测试您的翻译"
+
+#: ../../contributing.rst:157
+msgid "**Translation Guidelines:**"
+msgstr "**翻译指南：**"
+
+#: ../../contributing.rst:159
+msgid ""
+"**User documentation** (installation, quickstart, user guide): Translate "
+"everything"
+msgstr "**用户文档**（安装、快速开始、用户指南）：翻译所有内容"
+
+#: ../../contributing.rst:160
+msgid ""
+"**API documentation**: Translate page titles and main descriptions, but "
+"keep technical details (class names, method names, parameters) in English"
+msgstr "**API 文档**：翻译页面标题和主要描述，但保持技术细节（类名、方法名、参数）为英文"
+
+#: ../../contributing.rst:161
+msgid ""
+"**Changelog**: Translate section headers, but keep technical change "
+"entries in English"
+msgstr "**更新日志**：翻译章节标题，但保持技术变更条目为英文"
+
+#: ../../contributing.rst:162
+msgid "**Code examples**: Keep code and variable names in English"
+msgstr "**代码示例**：保持代码和变量名为英文"
+
+#: ../../contributing.rst:163
+msgid ""
+"**Technical terms**: Use consistent translations (see the translation "
+"guide in ``docs/I18N_README.md``)"
+msgstr "**技术术语**：使用一致的翻译（参见 ``docs/I18N_README.md`` 中的翻译指南）"
+
+#: ../../contributing.rst:165
+msgid "**Updating translations when source changes:**"
+msgstr "**当源文件更改时更新翻译：**"
+
+#: ../../contributing.rst:167
+msgid ""
+"When documentation source files are updated, translations need to be "
+"updated:"
+msgstr "当文档源文件更新时，需要更新翻译："
+
+#: ../../contributing.rst:177
+msgid ""
+"For detailed information about the translation system, see "
+"``docs/I18N_README.md``."
+msgstr "有关翻译系统的详细信息，请参阅 ``docs/I18N_README.md``。"
+
+#: ../../contributing.rst:180
+msgid "Submitting Changes"
+msgstr "提交更改"
+
+#: ../../contributing.rst:182
+msgid "Create a new branch for your changes:"
+msgstr "为您的更改创建新分支："
+
+#: ../../contributing.rst:188
+msgid "Make your changes and commit:"
+msgstr "进行更改并提交："
+
+#: ../../contributing.rst:195
+msgid "Push to your fork:"
+msgstr "推送到您的 Fork："
+
+#: ../../contributing.rst:201
+msgid "Open a Pull Request on GitHub"
+msgstr "在 GitHub 上打开 Pull Request"
+
+#: ../../contributing.rst:204
+msgid "Pull Request Guidelines"
+msgstr "Pull Request 指南"
+
+#: ../../contributing.rst:206
+msgid "Provide a clear description of the changes"
+msgstr "提供更改的清晰描述"
+
+#: ../../contributing.rst:207
+msgid "Reference any related issues"
+msgstr "引用任何相关问题"
+
+#: ../../contributing.rst:208
+msgid "Ensure all tests pass"
+msgstr "确保所有测试通过"
+
+#: ../../contributing.rst:209
+msgid "Update documentation as needed"
+msgstr "根据需要更新文档"
+
+#: ../../contributing.rst:210
+msgid "Keep changes focused and atomic"
+msgstr "保持更改集中且原子化"
+
+#: ../../contributing.rst:213
+msgid "Reporting Bugs"
+msgstr "报告错误"
+
+#: ../../contributing.rst:215
+msgid "When reporting bugs, please include:"
+msgstr "报告错误时，请包含："
+
+#: ../../contributing.rst:217
+msgid "Python version"
+msgstr "Python 版本"
+
+#: ../../contributing.rst:218
+msgid "dftt_timecode version"
+msgstr "dftt_timecode 版本"
+
+#: ../../contributing.rst:219
+msgid "Minimal code example that reproduces the issue"
+msgstr "能重现问题的最小代码示例"
+
+#: ../../contributing.rst:220
+msgid "Expected vs actual behavior"
+msgstr "预期行为与实际行为"
+
+#: ../../contributing.rst:221
+msgid "Any error messages or stack traces"
+msgstr "任何错误消息或堆栈跟踪"
+
+#: ../../contributing.rst:224
+msgid "Feature Requests"
+msgstr "功能请求"
+
+#: ../../contributing.rst:226
+msgid "Feature requests are welcome! Please provide:"
+msgstr "欢迎功能请求！请提供："
+
+#: ../../contributing.rst:228
+msgid "Clear description of the feature"
+msgstr "功能的清晰描述"
+
+#: ../../contributing.rst:229
+msgid "Use cases and examples"
+msgstr "使用场景和示例"
+
+#: ../../contributing.rst:230
+msgid "Why this would be valuable to other users"
+msgstr "为什么这对其他用户有价值"
+
+#: ../../contributing.rst:233
+msgid "Code of Conduct"
+msgstr "行为准则"
+
+#: ../../contributing.rst:235
+msgid "Be respectful and inclusive"
+msgstr "保持尊重和包容"
+
+#: ../../contributing.rst:236
+msgid "Focus on constructive feedback"
+msgstr "专注于建设性反馈"
+
+#: ../../contributing.rst:237
+msgid "Help create a welcoming environment for all contributors"
+msgstr "帮助为所有贡献者创建一个友好的环境"
+
+#: ../../contributing.rst:240
+msgid "License"
+msgstr "许可证"
+
+#: ../../contributing.rst:242
+msgid ""
+"By contributing, you agree that your contributions will be licensed under"
+" the GNU Lesser General Public License v2 (LGPLv2)."
+msgstr "通过贡献，您同意您的贡献将按照 GNU Lesser General Public License v2 (LGPLv2) 授权。"
+

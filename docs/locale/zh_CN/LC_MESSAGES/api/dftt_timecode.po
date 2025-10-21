@@ -1,0 +1,776 @@
+# DFTT Timecode Documentation Chinese Translation - API DfttTimecode Module
+# Copyright (C) 2025, You Ziyuan
+# This file is distributed under the same license as the DFTT Timecode
+# package.
+# You Ziyuan <hikaridragon0216@gmail.com>, 2025.
+#
+# Note: API documentation keeps technical details in English for accuracy
+# Only translating main page titles
+msgid ""
+msgstr ""
+"Project-Id-Version: DFTT Timecode 0.0.15a2\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-10-21 11:37+0800\n"
+"PO-Revision-Date: 2025-10-21 12:30+0800\n"
+"Last-Translator: You Ziyuan <hikaridragon0216@gmail.com>\n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN <hikaridragon0216@gmail.com>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../api/dftt_timecode.rst:2
+msgid "DfttTimecode API"
+msgstr "DfttTimecode API"
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode:1 of
+msgid "Bases: :py:class:`object`"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode:1 of
+msgid "High-precision timecode class for film and television production."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode:3 of
+msgid ""
+"DfttTimecode provides frame-accurate timecode representation with support"
+" for multiple professional formats, high frame rates (0.01-999.99 fps), "
+"drop-frame compensation, and comprehensive arithmetic operations."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode:7 of
+msgid ""
+"The class uses :class:`fractions.Fraction` internally for precise "
+"timestamp calculations, ensuring accuracy even with complex operations "
+"and format conversions."
+msgstr ""
+
+#: ../../api/dftt_timecode.rst
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__eq__
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__lt__
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__ne__
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__radd__
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__rmul__ of
+msgid "Parameters"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode:10 of
+msgid ""
+"The timecode value in various supported formats: - str: Timecode string "
+"(e.g., '01:00:00:00', '01:00:00,000') - int: Frame count (with "
+"timecode_type='frame') or seconds (with timecode_type='time') - float: "
+"Timestamp in seconds - Fraction: Precise timestamp as rational number - "
+"tuple/list: Two-element [numerator, denominator] for rational time - "
+"DfttTimecode: Returns the same instance (no copy)"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode:17 of
+msgid ""
+"Format type of the timecode value. Use 'auto' for automatic detection. "
+"See :data:`TimecodeType` for available formats. Defaults to 'auto'."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode:19 of
+msgid ""
+"Frame rate in frames per second. Supports 0.01-999.99 fps. Defaults to "
+"24.0."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode:20 of
+msgid ""
+"Enable drop-frame compensation for NTSC-compatible frame rates (29.97, "
+"59.94, 119.88 fps and their multiples). Defaults to False."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode:22 of
+msgid ""
+"Enable 24-hour wraparound mode. When True, timecodes automatically cycle "
+"within 0-24 hour range (e.g., 25:00:00:00 becomes 01:00:00:00). Defaults "
+"to True."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode:27 of
+msgid "Current timecode format type"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode of
+msgid "type"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode:29 of
+msgid "str"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode:33 of
+msgid "Frame rate in frames per second"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode:35
+#: dftt_timecode.core.dftt_timecode.DfttTimecode:59 of
+msgid "float"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode:39 of
+msgid "Whether drop-frame compensation is enabled"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode:41
+#: dftt_timecode.core.dftt_timecode.DfttTimecode:47 of
+msgid "bool"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode:45 of
+msgid "Whether 24-hour strict mode is enabled"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode:51 of
+msgid "Total frame count from zero"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode:53 of
+msgid "int"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode:57 of
+msgid "Total seconds from zero"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode:63 of
+msgid "High-precision timestamp as Fraction"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode:65 of
+msgid "Fraction"
+msgstr ""
+
+#: ../../api/dftt_timecode.rst
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__eq__
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__lt__ of
+msgid "Raises"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode:67 of
+msgid "When initialization parameters are incompatible"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode:68 of
+msgid "When timecode type doesn't match the value format"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode:69 of
+msgid "When timecode value is invalid for the given parameters"
+msgstr ""
+
+#: ../../api/dftt_timecode.rst:32
+#: dftt_timecode.core.dftt_timecode.DfttTimecode:72
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__add__:15
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__eq__:16
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__mul__:11
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__neg__:12
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__sub__:15
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__truediv__:11
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.get_audio_sample_count:12
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.set_fps:12
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.set_strict:10
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.set_type:13
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.timecode_output:16 of
+msgid "Examples"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode:73 of
+msgid "Create from SMPTE timecode string::"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode:79 of
+msgid "Create with automatic format detection::"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode:85 of
+msgid "Create from frame count::"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode:91 of
+msgid "Create with drop-frame compensation::"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode:97 of
+msgid "Arithmetic operations::"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode:107 of
+msgid "Format conversion::"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode:117 of
+msgid "Timecode objects are immutable. All operations return new instances."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode:118 of
+msgid ""
+"The internal timestamp uses :class:`fractions.Fraction` for maximum "
+"precision."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode:119 of
+msgid "Drop-frame compensation is automatically validated against frame rate."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode:120 of
+msgid "Negative timecodes are supported with a leading minus sign."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode:124 of
+msgid ":class:`DfttTimeRange`: For working with time intervals"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode:125 of
+msgid ":mod:`dftt_timecode.pattern`: Regex patterns for format validation"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode:126 of
+msgid ":mod:`dftt_timecode.error`: Custom exception classes"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.type:1 of
+msgid "Get the current timecode format type."
+msgstr ""
+
+#: ../../api/dftt_timecode.rst
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__eq__
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__float__
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__int__
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__lt__
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__ne__
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__neg__
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__radd__
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__repr__
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__rmul__
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__str__
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.fps
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.framecount
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.is_drop_frame
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.is_strict
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.precise_timestamp
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.timestamp
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.type of
+msgid "Returns"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.type:3 of
+msgid "The timecode format type (e.g., 'smpte', 'srt', 'ffmpeg')"
+msgstr ""
+
+#: ../../api/dftt_timecode.rst
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__eq__
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__float__
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__int__
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__lt__
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__ne__
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__neg__
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__radd__
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__repr__
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__rmul__
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__str__
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.fps
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.framecount
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.is_drop_frame
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.is_strict
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.precise_timestamp
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.timestamp
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.type of
+msgid "Return type"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__float__:7
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__int__:7
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__lt__:16
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__ne__:9
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__radd__:11
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__repr__:7
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__rmul__:9
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__str__:7
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.fps:7
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.framecount:7
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.is_drop_frame:12
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.is_strict:9
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.precise_timestamp:12
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.timestamp:7
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.type:7 of
+msgid "Example"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.fps:1 of
+msgid "Get the frame rate in frames per second."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.fps:3 of
+msgid "The frame rate"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.is_drop_frame:1 of
+msgid "Check if drop-frame compensation is enabled."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.is_drop_frame:3 of
+msgid "True if drop-frame mode is enabled, False otherwise"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.is_drop_frame:8 of
+msgid ""
+"Drop-frame is automatically enabled for NTSC-compatible frame rates "
+"(29.97, 59.94, 119.88 and their multiples) when drop_frame=True."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.is_strict:1 of
+msgid "Check if 24-hour strict mode is enabled."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.is_strict:3 of
+msgid "True if strict mode is enabled, False otherwise"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.is_strict:6 of
+msgid "In strict mode, timecodes automatically wrap around at 24 hours."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.framecount:1 of
+msgid "Get the total frame count from zero."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.framecount:3 of
+msgid "The frame number (zero-indexed)"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.timestamp:1 of
+msgid "Get the timestamp in seconds from zero."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.timestamp:3 of
+msgid "The timestamp in seconds (rounded to 5 decimal places)"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.precise_timestamp:1 of
+msgid "Get the high-precision timestamp as a Fraction."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.precise_timestamp:3 of
+msgid "The precise timestamp for exact calculations"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.precise_timestamp:8 of
+msgid ""
+"This is the internal representation used for all calculations to maintain"
+" maximum precision."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.timecode_output:1 of
+msgid "Convert timecode to specified format and return as string."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.timecode_output:3 of
+msgid ""
+"Target timecode format. Use 'auto' to output in current format. Available"
+" formats: 'smpte', 'srt', 'dlp', 'ffmpeg', 'fcpx', 'frame', 'time'. "
+"Defaults to 'auto'."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.timecode_output:6 of
+msgid ""
+"For multi-part formats (SMPTE, SRT, DLP, FFMPEG), specify which part to "
+"return. 0 returns the complete timecode string, 1-4 return individual "
+"parts (hours, minutes, seconds, frames/subseconds). Defaults to 0."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.timecode_output:10 of
+msgid "The formatted timecode string"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.timecode_output:13 of
+msgid "If dest_type is not a valid timecode format"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.timecode_output:29 of
+msgid "For 'auto', outputs in the current timecode type"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.timecode_output:30 of
+msgid "Falls back to SMPTE format if dest_type is invalid"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.set_fps:1 of
+msgid "Change the frame rate of the timecode."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.set_fps:3 of
+msgid "Target frame rate in frames per second (0.01-999.99)"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.set_fps:4 of
+msgid ""
+"If True, rounds the internal timestamp to the nearest frame at the new "
+"frame rate. If False, preserves exact timestamp. Defaults to True."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.set_fps:8
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.set_strict:6
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.set_type:9 of
+msgid "Self reference for method chaining"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.set_fps:20 of
+msgid "This method modifies the object in place and returns self for chaining."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.set_type:1 of
+msgid "Change the internal timecode format type."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.set_type:3 of
+msgid ""
+"Target timecode format type. Available formats: 'smpte', 'srt', 'dlp', "
+"'ffmpeg', 'fcpx', 'frame', 'time'. Defaults to 'smpte'."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.set_type:6 of
+msgid ""
+"If True, rounds the timestamp to match the precision of the new format. "
+"If False, preserves exact timestamp. Defaults to True."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.set_type:23 of
+msgid "This changes the internal type, affecting :meth:`__str__` output"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.set_type:24 of
+msgid ""
+"Rounding adjusts precision to match format (e.g., SRT has millisecond "
+"precision)"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.set_type:25 of
+msgid "Invalid types are ignored with a warning"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.set_strict:1 of
+msgid "Change the 24-hour strict mode setting."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.set_strict:3 of
+msgid ""
+"If True, enables 24-hour wraparound (timecodes cycle within 0-24 hours). "
+"If False, allows timecodes beyond 24 hours. Defaults to True."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.set_strict:18 of
+msgid ""
+"Changing strict mode recalculates the internal timestamp with the new "
+"mode."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.get_audio_sample_count:1 of
+msgid "Calculate the number of audio samples at the given sample rate."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.get_audio_sample_count:3 of
+msgid ""
+"Converts the timecode to audio sample count for audio synchronization. "
+"Uses high-precision rational arithmetic to avoid rounding errors."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.get_audio_sample_count:6 of
+msgid "Audio sample rate in Hz (e.g., 44100, 48000, 96000)"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.get_audio_sample_count:8 of
+msgid "The number of audio samples (floored to nearest integer)"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.get_audio_sample_count:20 of
+msgid ""
+"Uses floor division to ensure sample count doesn't exceed the timecode "
+"position."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__repr__:1 of
+msgid "Return detailed string representation of the timecode object."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__repr__:3 of
+msgid "Detailed representation including timecode, type, fps, and mode flags"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__str__:1 of
+msgid "Return timecode as formatted string in current type."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__str__:3 of
+msgid "Timecode string in the current format type"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__add__:1 of
+msgid "Add timecode with another timecode, frame count, or timestamp."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__add__:3 of
+msgid ""
+"Value to add. Can be: - DfttTimecode: Adds timestamps (must have same fps"
+" and drop_frame) - int: Treats as frame count to add - float: Treats as "
+"seconds to add - Fraction: Treats as precise seconds to add"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__add__:9
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__radd__:7 of
+msgid "New timecode object with the sum"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__add__:12
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__sub__:12 of
+msgid ""
+"If fps or drop_frame don't match between timecodes,     or if other is an"
+" unsupported type"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__add__:30 of
+msgid "Result inherits the format type of the left operand"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__add__:31 of
+msgid "If either operand has strict=True, result will have strict=True"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__radd__:1 of
+msgid "Reflected addition (called when left operand doesn't support +)."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__radd__:3 of
+msgid "Implements commutative property: other + timecode == timecode + other"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__radd__:5 of
+msgid "Value to add (int, float, or Fraction)"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__sub__:1 of
+msgid "Subtract timecode, frame count, or timestamp from this timecode."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__sub__:3 of
+msgid ""
+"Value to subtract. Can be: - DfttTimecode: Subtracts timestamps (must "
+"have same fps and drop_frame) - int: Treats as frame count to subtract - "
+"float: Treats as seconds to subtract - Fraction: Treats as precise "
+"seconds to subtract"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__sub__:9 of
+msgid "New timecode object with the difference"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__sub__:24 of
+msgid "Result can be negative, which will be displayed with a leading minus sign."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__mul__:1 of
+msgid "Multiply timecode by a numeric factor."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__mul__:3
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__rmul__:3 of
+msgid "Multiplication factor (int, float, or Fraction)"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__mul__:5
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__rmul__:5 of
+msgid "New timecode with timestamp multiplied by factor"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__mul__:8 of
+msgid ""
+"If attempting to multiply two timecodes or     if other is an unsupported"
+" type"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__mul__:20 of
+msgid ""
+"Multiplying two timecode objects together is not allowed and will raise "
+"an error."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__rmul__:1 of
+msgid "Reflected multiplication (implements commutative property)."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__truediv__:1 of
+msgid "Divide timecode by a numeric factor."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__truediv__:3 of
+msgid "Division factor (int, float, or Fraction)"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__truediv__:5 of
+msgid "New timecode with timestamp divided by factor"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__truediv__:8 of
+msgid "If attempting to divide timecodes or     if other is an unsupported type"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__truediv__:17 of
+msgid "Dividing two timecode objects is not allowed and will raise an error."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__eq__:1 of
+msgid "Check equality with another timecode or numeric value."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__eq__:3
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__lt__:3 of
+msgid ""
+"Value to compare. Can be: - DfttTimecode: Compares timestamps (must have "
+"same fps) - int: Compares as frame count - float: Compares as seconds - "
+"Fraction: Compares as precise seconds"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__eq__:9 of
+msgid "True if values are equal (within 5 decimal places), False otherwise"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__eq__:12
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__lt__:12 of
+msgid "If comparing timecodes with different fps"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__eq__:13
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__lt__:13 of
+msgid "If other is an unsupported type"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__ne__:1 of
+msgid "Check inequality with another timecode or numeric value."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__ne__:3 of
+msgid "Value to compare (DfttTimecode, int, float, or Fraction)"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__ne__:5 of
+msgid "True if values are not equal, False otherwise"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__lt__:1 of
+msgid "Check if this timecode is less than another value."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__lt__:9 of
+msgid "True if this timecode is less than other, False otherwise"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__le__:1 of
+msgid "Return self<=value."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__gt__:1 of
+msgid "Return self>value."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__ge__:1 of
+msgid "Return self>=value."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__neg__:1 of
+msgid "Return the negation of this timecode."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__neg__:3 of
+msgid "New timecode with negated timestamp"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__neg__:8 of
+msgid ""
+"In strict mode, negative timecodes wrap around within 24 hours. For "
+"example, -01:00:00:00 becomes 23:00:00:00 in strict mode."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__float__:1 of
+msgid "Convert timecode to float (seconds)."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__float__:3 of
+msgid "The timestamp in seconds"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__int__:1 of
+msgid "Convert timecode to integer (frame count)."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timecode.DfttTimecode.__int__:3 of
+msgid "The frame count"
+msgstr ""
+
+#: ../../api/dftt_timecode.rst:13
+msgid "Core Class"
+msgstr ""
+
+#: ../../api/dftt_timecode.rst:15
+msgid ""
+"The :class:`DfttTimecode` class is the main interface for working with "
+"timecodes in various formats."
+msgstr ""
+
+#: ../../api/dftt_timecode.rst:18
+msgid "Supported Timecode Types"
+msgstr ""
+
+#: ../../api/dftt_timecode.rst:20
+msgid "The following timecode types are supported:"
+msgstr ""
+
+#: ../../api/dftt_timecode.rst:22
+msgid "**auto**: Automatic detection based on input format"
+msgstr ""
+
+#: ../../api/dftt_timecode.rst:23
+msgid ""
+"**smpte**: SMPTE timecode format (HH:MM:SS:FF or HH:MM:SS;FF for drop-"
+"frame)"
+msgstr ""
+
+#: ../../api/dftt_timecode.rst:24
+msgid "**srt**: SubRip subtitle format (HH:MM:SS,mmm)"
+msgstr ""
+
+#: ../../api/dftt_timecode.rst:25
+msgid "**ffmpeg**: FFmpeg format (HH:MM:SS.ff)"
+msgstr ""
+
+#: ../../api/dftt_timecode.rst:26
+msgid "**fcpx**: Final Cut Pro X format (frames/fps)"
+msgstr ""
+
+#: ../../api/dftt_timecode.rst:27
+msgid "**dlp**: DLP Cinema format (HH:MM:SS:FFF)"
+msgstr ""
+
+#: ../../api/dftt_timecode.rst:28
+msgid "**frame**: Frame count (integer)"
+msgstr ""
+
+#: ../../api/dftt_timecode.rst:29
+msgid "**time**: Timestamp in seconds (float)"
+msgstr ""
+
+#: ../../api/dftt_timecode.rst:35
+msgid "Basic Usage"
+msgstr ""
+
+#: ../../api/dftt_timecode.rst:49
+msgid "Format Conversion"
+msgstr ""
+
+#: ../../api/dftt_timecode.rst:60
+msgid "Arithmetic Operations"
+msgstr ""
+

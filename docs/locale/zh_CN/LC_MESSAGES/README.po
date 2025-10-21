@@ -1,0 +1,148 @@
+# DFTT Timecode Documentation Chinese Translation
+# Copyright (C) 2025, You Ziyuan
+# This file is distributed under the same license as the DFTT Timecode
+# package.
+# You Ziyuan <hikaridragon0216@gmail.com>, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: DFTT Timecode 0.0.15a2\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-10-21 11:37+0800\n"
+"PO-Revision-Date: 2025-10-21 12:15+0800\n"
+"Last-Translator: You Ziyuan <hikaridragon0216@gmail.com>\n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN <hikaridragon0216@gmail.com>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../README.md:1
+msgid "Documentation"
+msgstr "文档"
+
+#: ../../README.md:3
+msgid "This directory contains the Sphinx documentation for dftt_timecode."
+msgstr "此目录包含 dftt_timecode 的 Sphinx 文档。"
+
+#: ../../README.md:5
+msgid "Building Documentation Locally"
+msgstr "本地构建文档"
+
+#: ../../README.md:7
+msgid "Prerequisites"
+msgstr "前提条件"
+
+#: ../../README.md:9
+msgid "Install the required dependencies:"
+msgstr "安装所需的依赖："
+
+#: ../../README.md:15
+msgid "Build HTML Documentation"
+msgstr "构建 HTML 文档"
+
+#: ../../README.md:17
+msgid "On Unix/macOS:"
+msgstr "在 Unix/macOS 上："
+
+#: ../../README.md:24
+msgid "On Windows:"
+msgstr "在 Windows 上："
+
+#: ../../README.md:31
+msgid "The built documentation will be available in `docs/_build/html/`."
+msgstr "构建的文档将在 `docs/_build/html/` 中提供。"
+
+#: ../../README.md:33
+msgid "View Documentation"
+msgstr "查看文档"
+
+#: ../../README.md:35
+msgid "Open `docs/_build/html/index.html` in your web browser."
+msgstr "在 Web 浏览器中打开 `docs/_build/html/index.html`。"
+
+#: ../../README.md:37
+msgid "Other Build Formats"
+msgstr "其他构建格式"
+
+#: ../../README.md:45
+msgid "Automatic Deployment"
+msgstr "自动部署"
+
+#: ../../README.md:47
+msgid ""
+"Documentation is automatically built and deployed to GitHub Pages when "
+"changes are pushed to the main branch."
+msgstr "当更改推送到主分支时，文档会自动构建并部署到 GitHub Pages。"
+
+#: ../../README.md:49
+msgid ""
+"The deployment is handled by the GitHub Actions workflow in "
+"`.github/workflows/docs.yml`."
+msgstr "部署由 `.github/workflows/docs.yml` 中的 GitHub Actions 工作流处理。"
+
+#: ../../README.md:51
+msgid "Documentation Structure"
+msgstr "文档结构"
+
+#: ../../README.md:53
+msgid "`index.rst` - Home page"
+msgstr "`index.rst` - 主页"
+
+#: ../../README.md:54
+msgid "`installation.rst` - Installation instructions"
+msgstr "`installation.rst` - 安装说明"
+
+#: ../../README.md:55
+msgid "`quickstart.rst` - Quick start guide"
+msgstr "`quickstart.rst` - 快速入门指南"
+
+#: ../../README.md:56
+msgid "`user_guide.rst` - Comprehensive user guide"
+msgstr "`user_guide.rst` - 综合用户指南"
+
+#: ../../README.md:57
+msgid "`api/` - API reference documentation"
+msgstr "`api/` - API 参考文档"
+
+#: ../../README.md:58
+msgid "`contributing.rst` - Contributing guidelines"
+msgstr "`contributing.rst` - 贡献指南"
+
+#: ../../README.md:59
+msgid "`changelog.rst` - Version history"
+msgstr "`changelog.rst` - 版本历史"
+
+#: ../../README.md:60
+msgid "`conf.py` - Sphinx configuration"
+msgstr "`conf.py` - Sphinx 配置"
+
+#: ../../README.md:61
+msgid "`_static/` - Static files (CSS, images, etc.)"
+msgstr "`_static/` - 静态文件（CSS、图片等）"
+
+#: ../../README.md:62
+msgid "`_templates/` - Custom templates"
+msgstr "`_templates/` - 自定义模板"
+
+#: ../../README.md:64
+msgid "Writing Documentation"
+msgstr "编写文档"
+
+#: ../../README.md:66
+msgid "Documentation is written in reStructuredText (RST) format"
+msgstr "文档以 reStructuredText（RST）格式编写"
+
+#: ../../README.md:67
+msgid "API documentation is auto-generated from docstrings using Sphinx autodoc"
+msgstr "API 文档使用 Sphinx autodoc 从文档字符串自动生成"
+
+#: ../../README.md:68
+msgid "Follow the existing style and structure when adding new pages"
+msgstr "添加新页面时遵循现有的风格和结构"
+
+#: ../../README.md:69
+msgid "Build and preview locally before committing changes"
+msgstr "在提交更改之前在本地构建和预览"

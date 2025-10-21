@@ -89,7 +89,92 @@ Update documentation when adding new features:
    .. code-block:: bash
 
       cd docs
-      uv run sphinx-build -b html . _build
+      uv run make html
+
+Contributing Translations
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+We welcome contributions to documentation translations! Currently we support:
+
+- **English** (primary language)
+- **中文 (Simplified Chinese)**
+
+How to Contribute Translations
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+**Adding new translations to existing languages:**
+
+1. Navigate to the translation files:
+
+   .. code-block:: bash
+
+      cd docs/locale/zh_CN/LC_MESSAGES/
+
+2. Edit the ``.po`` files to add or improve translations:
+
+   .. code-block:: po
+
+      #: ../../quickstart.rst:2
+      msgid "Quick Start"
+      msgstr "快速开始"
+
+3. Build and preview your translations:
+
+   .. code-block:: bash
+
+      cd docs
+      uv run make html-zh      # Build Chinese only
+      uv run make html-all     # Build all languages
+
+4. Preview locally:
+
+   .. code-block:: bash
+
+      cd docs/_build/html
+      python -m http.server 8000
+      # Visit http://localhost:8000/zh_CN/
+
+**Adding a new language:**
+
+1. Generate translation files for your language:
+
+   .. code-block:: bash
+
+      cd docs
+      uv run sphinx-intl update -p _build/gettext -l <LANG_CODE>
+      # e.g., for Japanese: -l ja
+
+2. Update ``docs/Makefile`` to include the new language in the ``LANGUAGES`` variable
+
+3. Update ``docs/_static/switcher.json`` to add your language option
+
+4. Update the language switcher template in ``docs/_templates/language-switcher.html``
+
+5. Translate the ``.po`` files in ``locale/<LANG_CODE>/LC_MESSAGES/``
+
+6. Build and test your translation
+
+**Translation Guidelines:**
+
+- **User documentation** (installation, quickstart, user guide): Translate everything
+- **API documentation**: Translate page titles and main descriptions, but keep technical details (class names, method names, parameters) in English
+- **Changelog**: Translate section headers, but keep technical change entries in English
+- **Code examples**: Keep code and variable names in English
+- **Technical terms**: Use consistent translations (see the translation guide in ``docs/I18N_README.md``)
+
+**Updating translations when source changes:**
+
+When documentation source files are updated, translations need to be updated:
+
+.. code-block:: bash
+
+   cd docs
+   uv run make gettext        # Generate new translation templates
+   uv run make update-po      # Update .po files with new strings
+   # Edit .po files to translate new or updated strings
+   uv run make html-all       # Rebuild documentation
+
+For detailed information about the translation system, see ``docs/I18N_README.md``.
 
 Submitting Changes
 ------------------

@@ -54,6 +54,22 @@ extensions = [
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
+# -- Internationalization (i18n) configuration -------------------------------
+# https://www.sphinx-doc.org/en/master/usage/advanced/intl.html
+
+# Default language (English)
+language = 'en'
+
+# Directory path for message catalogs
+locale_dirs = ['locale/']
+
+# Generate .pot files with message catalogs for each document
+gettext_compact = False
+
+# Additional languages for documentation
+# This is used by the language switcher
+gettext_additional_targets = ['index']
+
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
@@ -72,9 +88,13 @@ html_theme_options = {
     "logo": {
         "text": "DFTT Timecode",
     },
-    "navbar_end": ["navbar-icon-links"],
+    "navbar_end": ["navbar-icon-links", "language-switcher"],
     "primary_sidebar_end": [],  # Remove primary sidebar content
     "show_nav_level": 0,  # Hide navigation levels
+    "switcher": {
+        "json_url": "https://owenyou.github.io/dftt_timecode/_static/switcher.json",
+        "version_match": os.environ.get("READTHEDOCS_LANGUAGE", language),
+    },
 }
 
 # Disable the left sidebar navigation

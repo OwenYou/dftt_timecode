@@ -1,0 +1,108 @@
+# DFTT Timecode Documentation Chinese Translation
+# Copyright (C) 2025, You Ziyuan
+# This file is distributed under the same license as the DFTT Timecode
+# package.
+# You Ziyuan <hikaridragon0216@gmail.com>, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: DFTT Timecode 0.0.15a2\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-10-21 11:37+0800\n"
+"PO-Revision-Date: 2025-10-21 12:05+0800\n"
+"Last-Translator: You Ziyuan <hikaridragon0216@gmail.com>\n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN <hikaridragon0216@gmail.com>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../quickstart.rst:2
+msgid "Quick Start"
+msgstr "快速开始"
+
+#: ../../quickstart.rst:4
+msgid "This guide will help you get started with dftt_timecode quickly."
+msgstr "本指南将帮助您快速上手 dftt_timecode。"
+
+#: ../../quickstart.rst:7
+msgid "Importing the Library"
+msgstr "导入库"
+
+#: ../../quickstart.rst:14
+msgid "Creating Timecode Objects"
+msgstr "创建时码对象"
+
+#: ../../quickstart.rst:16
+msgid "There are multiple ways to create timecode objects:"
+msgstr "创建时码对象有多种方式："
+
+#: ../../quickstart.rst:19
+msgid "SMPTE Format"
+msgstr "SMPTE 格式"
+
+#: ../../quickstart.rst:30
+msgid "Frame Count"
+msgstr "帧计数"
+
+#: ../../quickstart.rst:41
+msgid "Timestamp"
+msgstr "时间戳"
+
+#: ../../quickstart.rst:56
+msgid "Other Formats"
+msgstr "其他格式"
+
+#: ../../quickstart.rst:70
+msgid "Accessing Timecode Properties"
+msgstr "访问时码属性"
+
+#: ../../quickstart.rst:84
+msgid "Converting Between Formats"
+msgstr "格式转换"
+
+#: ../../quickstart.rst:101
+msgid "Arithmetic Operations"
+msgstr "算术运算"
+
+#: ../../quickstart.rst:104
+msgid "Adding Timecodes"
+msgstr "时码相加"
+
+#: ../../quickstart.rst:123
+msgid "Subtracting Timecodes"
+msgstr "时码相减"
+
+#: ../../quickstart.rst:134
+msgid "Multiplying and Dividing"
+msgstr "乘法和除法"
+
+#: ../../quickstart.rst:149
+msgid "Comparison Operations"
+msgstr "比较运算"
+
+#: ../../quickstart.rst:164
+msgid "Changing Timecode Properties"
+msgstr "修改时码属性"
+
+#: ../../quickstart.rst:167
+msgid "Changing Frame Rate"
+msgstr "更改帧率"
+
+#: ../../quickstart.rst:182
+msgid "Changing Strict Mode"
+msgstr "更改严格模式"
+
+#: ../../quickstart.rst:193
+msgid "Changing Timecode Type"
+msgstr "更改时码类型"
+
+#: ../../quickstart.rst:205
+msgid "Strict Mode"
+msgstr "严格模式"
+
+#: ../../quickstart.rst:207
+msgid "Strict mode ensures timecodes stay within a 24-hour range:"
+msgstr "严格模式确保时码保持在 24 小时范围内："
