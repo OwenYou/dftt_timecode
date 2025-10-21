@@ -14,13 +14,6 @@ Getting Started
       git clone https://github.com/YOUR_USERNAME/dftt_timecode.git
       cd dftt_timecode
 
-3. Install development dependencies:
-
-   .. code-block:: bash
-
-      pip install -r requirements.txt
-      pip install -e .
-
 Development Workflow
 --------------------
 
@@ -31,10 +24,14 @@ Create a virtual environment and install dependencies:
 
 .. code-block:: bash
 
-   python3 -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   pip install -r requirements.txt
-   pip install -e .
+   uv sync
+
+This command will:
+
+- Create a virtual environment (if not already present)
+- Install all dependencies from ``pyproject.toml``
+- Install the package in editable mode
+- Generate/update ``uv.lock`` for reproducible builds
 
 Running Tests
 ~~~~~~~~~~~~~
@@ -43,19 +40,19 @@ Run all tests:
 
 .. code-block:: bash
 
-   pytest
+   uv run pytest
 
 Run tests with verbose output:
 
 .. code-block:: bash
 
-   pytest -v -s
+   uv run pytest -v -s
 
 Run specific test file:
 
 .. code-block:: bash
 
-   pytest test/test_dftt_timecode.py
+   uv run pytest test/test_dftt_timecode.py
 
 Code Style
 ----------
@@ -92,7 +89,7 @@ Update documentation when adding new features:
    .. code-block:: bash
 
       cd docs
-      sphinx-build -b html . _build
+      uv run sphinx-build -b html . _build
 
 Submitting Changes
 ------------------

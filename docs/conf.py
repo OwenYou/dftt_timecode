@@ -66,7 +66,6 @@ html_theme_options = {
     "show_toc_level": 2,
     "navbar_align": "left",
     "navigation_with_keys": False,
-    "show_nav_level": 2,  # Show navigation levels in sidebar
     "navigation_depth": 4,
     "collapse_navigation": False,  # Keep navigation expanded
     "logo": {
