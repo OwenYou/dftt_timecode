@@ -1,0 +1,31 @@
+{# Language switcher dropdown for the navigation bar #}
+<div class="navbar-item dropdown dropdown-hover">
+  <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="language-switcher-button" data-bs-toggle="dropdown" aria-expanded="false">
+    <i class="fa-solid fa-language"></i>
+    <span class="ms-1">
+      {% if language == 'zh-CN' or language == 'zh_CN' %}
+        中文
+      {% else %}
+        English
+      {% endif %}
+    </span>
+  </button>
+  <ul class="dropdown-menu" aria-labelledby="language-switcher-button">
+    <li>
+      {% if language == 'en' %}
+        <a class="dropdown-item active" href="{{ pathto(pagename) }}">English</a>
+      {% else %}
+        {# From zh_CN to en: go up one level #}
+        <a class="dropdown-item" href="../{{ pagename }}.html">English</a>
+      {% endif %}
+    </li>
+    <li>
+      {% if language == 'zh-CN' or language == 'zh_CN' %}
+        <a class="dropdown-item active" href="{{ pathto(pagename) }}">中文 (简体)</a>
+      {% else %}
+        {# From en to zh_CN: go into zh_CN subdirectory #}
+        <a class="dropdown-item" href="zh_CN/{{ pagename }}.html">中文 (简体)</a>
+      {% endif %}
+    </li>
+  </ul>
+</div>

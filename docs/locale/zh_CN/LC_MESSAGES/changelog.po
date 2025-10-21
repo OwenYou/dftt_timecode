@@ -1,0 +1,348 @@
+# DFTT Timecode Documentation Chinese Translation
+# Copyright (C) 2025, You Ziyuan
+# This file is distributed under the same license as the DFTT Timecode
+# package.
+# You Ziyuan <hikaridragon0216@gmail.com>, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: DFTT Timecode 0.0.15a2\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-10-21 11:37+0800\n"
+"PO-Revision-Date: 2025-10-21 12:20+0800\n"
+"Last-Translator: You Ziyuan <hikaridragon0216@gmail.com>\n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN <hikaridragon0216@gmail.com>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../../CHANGELOG.md:1
+msgid "Changelog"
+msgstr "更新日志"
+
+#: ../../../CHANGELOG.md:3
+msgid "All notable changes to this project will be documented in this file."
+msgstr "此项目的所有重要更改都将记录在此文件中。"
+
+#: ../../../CHANGELOG.md:5
+msgid ""
+"The format is based on [Keep a "
+"Changelog](https://keepachangelog.com/en/1.0.0/), and this project "
+"adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)."
+msgstr ""
+"格式基于 [Keep a "
+"Changelog](https://keepachangelog.com/en/1.0.0/)，本项目遵循[语义化版本控制](https://semver.org/spec/v2.0.0.html)。"
+
+#: ../../../CHANGELOG.md:8
+msgid "[Unreleased]"
+msgstr ""
+
+#: ../../../CHANGELOG.md:10
+msgid "[0.0.15a2] - Pre-Alpha"
+msgstr ""
+
+#: ../../../CHANGELOG.md:12 ../../../CHANGELOG.md:54 ../../../CHANGELOG.md:62
+#: ../../../CHANGELOG.md:94 ../../../CHANGELOG.md:130
+msgid "Fixed"
+msgstr ""
+
+#: ../../../CHANGELOG.md:14
+msgid "Fix several error string missing user input logging during format"
+msgstr ""
+
+#: ../../../CHANGELOG.md:16
+msgid "修复遗漏的错误信息格式化 [#26](https://github.com/OwenYou/dftt_timecode/issues/26)"
+msgstr ""
+
+#: ../../../CHANGELOG.md:18
+msgid "[0.0.15a1] - Pre-Alpha"
+msgstr ""
+
+#: ../../../CHANGELOG.md:20 ../../../CHANGELOG.md:70 ../../../CHANGELOG.md:102
+#: ../../../CHANGELOG.md:138
+msgid "Added"
+msgstr ""
+
+#: ../../../CHANGELOG.md:22
+msgid "Add `DfttTimecodeInitializationError` exception class"
+msgstr ""
+
+#: ../../../CHANGELOG.md:24
+msgid "增加 `DfttTimecodeInitializationError`"
+msgstr ""
+
+#: ../../../CHANGELOG.md:26
+msgid "Add GitHub Action to automatically upload releases to PyPI"
+msgstr ""
+
+#: ../../../CHANGELOG.md:28
+msgid "使用 GitHub Action 自动打包上传 PyPI"
+msgstr ""
+
+#: ../../../CHANGELOG.md:30 ../../../CHANGELOG.md:76 ../../../CHANGELOG.md:112
+#: ../../../CHANGELOG.md:152
+#, fuzzy
+msgid "Changed"
+msgstr "更新日志"
+
+#: ../../../CHANGELOG.md:32
+msgid "Modify drop frame logic to adapt to more frame rates"
+msgstr ""
+
+#: ../../../CHANGELOG.md:34
+msgid "修改丢帧逻辑适应更多帧率"
+msgstr ""
+
+#: ../../../CHANGELOG.md:36
+msgid "Refactor timecode type detection logic"
+msgstr ""
+
+#: ../../../CHANGELOG.md:38
+msgid "重构时码类型检测逻辑"
+msgstr ""
+
+#: ../../../CHANGELOG.md:40
+msgid "Refactor error handling during timecode initialization"
+msgstr ""
+
+#: ../../../CHANGELOG.md:42
+msgid "重构时码对象初始化时的错误处理"
+msgstr ""
+
+#: ../../../CHANGELOG.md:44
+msgid "Modify error messages to enhance readability"
+msgstr ""
+
+#: ../../../CHANGELOG.md:46
+msgid "修改报错信息，增强可读性"
+msgstr ""
+
+#: ../../../CHANGELOG.md:48 ../../../CHANGELOG.md:86
+msgid "Deprecated"
+msgstr ""
+
+#: ../../../CHANGELOG.md:50
+msgid "Completely remove `InstanceMethodDispatch`"
+msgstr ""
+
+#: ../../../CHANGELOG.md:52
+msgid "完全移除 `InstanceMethodDispatch`"
+msgstr ""
+
+#: ../../../CHANGELOG.md:56
+msgid ""
+"Fix millisecond overflow issue when converting certain timecodes from "
+"SMPTE to SRT [#19](https://github.com/OwenYou/dftt_timecode/issues/19)"
+msgstr ""
+
+#: ../../../CHANGELOG.md:58
+msgid "修复特定时码在SMPTE转SRT时毫秒会溢出的问题"
+msgstr ""
+
+#: ../../../CHANGELOG.md:60
+msgid "[0.0.14]"
+msgstr ""
+
+#: ../../../CHANGELOG.md:64
+msgid ""
+"Fix v0.0.13 import failure caused by missing dftt_timecode.core while "
+"packing"
+msgstr ""
+
+#: ../../../CHANGELOG.md:66
+msgid "修复v0.0.13打包后不包含core，导致库无法使用的问题"
+msgstr ""
+
+#: ../../../CHANGELOG.md:68
+msgid "[0.0.13]"
+msgstr ""
+
+#: ../../../CHANGELOG.md:72
+msgid ""
+"Add `get_audio_sample_count` method for correctly outputting the count of"
+" audio samples at TC timestamps "
+"[#9](https://github.com/OwenYou/dftt_timecode/issues/9)"
+msgstr ""
+
+#: ../../../CHANGELOG.md:74
+msgid "添加 `get_audio_sample_count` 方法用于正确输出TC时间戳下的音频采样数"
+msgstr ""
+
+#: ../../../CHANGELOG.md:78
+msgid "Use f-string for string format output"
+msgstr ""
+
+#: ../../../CHANGELOG.md:80
+msgid "使用 `f-string` 处理字符串格式输出"
+msgstr ""
+
+#: ../../../CHANGELOG.md:82
+msgid "Refactor timecode output function to reduce code duplication"
+msgstr ""
+
+#: ../../../CHANGELOG.md:84
+msgid "重构时间码输出函数，减少代码重复"
+msgstr ""
+
+#: ../../../CHANGELOG.md:88
+msgid ""
+"Use `functools.singledispatchmethod` instead of "
+"`dispatch.InstanceMethodDispatch`"
+msgstr ""
+
+#: ../../../CHANGELOG.md:90
+msgid "使用 `functools.singledispatchmethod` 代替 `dispatch.InstanceMethodDispatch`"
+msgstr ""
+
+#: ../../../CHANGELOG.md:92
+msgid "[0.0.12]"
+msgstr ""
+
+#: ../../../CHANGELOG.md:96
+msgid ""
+"Fix DLP pattern error causing DLP ticks in range [50-99] and [150-199] to"
+" not be matched. This bug caused errors when using strings like "
+"`'00:00:27:183'` to initialize a DLP timecode object"
+msgstr ""
+
+#: ../../../CHANGELOG.md:98
+msgid "修复DLP正则表达式错误导致范围在50-99、150-199的DLP tick不能被匹配的问题"
+msgstr ""
+
+#: ../../../CHANGELOG.md:100
+msgid "[0.0.11]"
+msgstr ""
+
+#: ../../../CHANGELOG.md:104
+msgid "Add `__str__` method to return timecode value for DfttTimecode object"
+msgstr ""
+
+#: ../../../CHANGELOG.md:106
+msgid "添加 `__str__` 方法，返回DfttTimecode对象的时间码值"
+msgstr ""
+
+#: ../../../CHANGELOG.md:108
+msgid "Add unit tests for DfttTimecode using pytest"
+msgstr ""
+
+#: ../../../CHANGELOG.md:110
+msgid "添加DfttTimecode单元测试（使用pytest）"
+msgstr ""
+
+#: ../../../CHANGELOG.md:114
+msgid "Add 23.98/23.976 FPS to drop frame detection conditions"
+msgstr ""
+
+#: ../../../CHANGELOG.md:116
+msgid "对丢帧的检测条件添加有关23.98/23.976的判定"
+msgstr ""
+
+#: ../../../CHANGELOG.md:118
+msgid ""
+"`+` and `-` operators perform an OR operation on the strict property of "
+"two DfttTimecode objects being added/subtracted"
+msgstr ""
+
+#: ../../../CHANGELOG.md:120
+msgid "`+` `-` 运算符对相加的两个DfttTimecode对象的strict属性进行或运算"
+msgstr ""
+
+#: ../../../CHANGELOG.md:122
+msgid ""
+"Comparison operators (`==`, `>`, `>=`, etc.) now validate that both "
+"DfttTimecode objects have the same frame rate before comparison, throwing"
+" an exception if frame rates differ"
+msgstr ""
+
+#: ../../../CHANGELOG.md:124
+msgid "比较运算符在对两个DfttTimecode对象进行比较时会先判定帧率，若帧率不同则抛出异常"
+msgstr ""
+
+#: ../../../CHANGELOG.md:126
+msgid "`print(self)` now outputs a formatted timecode string"
+msgstr ""
+
+#: ../../../CHANGELOG.md:128
+msgid "`print(self)` 将会输出基于类型的时间码字符串"
+msgstr ""
+
+#: ../../../CHANGELOG.md:132
+msgid ""
+"Fix issue in `timecode_output(self, dest_type, output_part)` where "
+"`output_part = 3` would incorrectly return minute data"
+msgstr ""
+
+#: ../../../CHANGELOG.md:134
+msgid "修复 `timecode_output` 中 `output_part = 3` 时错误返回分钟数据的问题"
+msgstr ""
+
+#: ../../../CHANGELOG.md:136
+msgid "[0.0.10]"
+msgstr ""
+
+#: ../../../CHANGELOG.md:140
+msgid ""
+"Add support for using a DfttTimecode object to initialize a new "
+"DfttTimecode object"
+msgstr ""
+
+#: ../../../CHANGELOG.md:142
+msgid "使用DfttTimecode对象初始化新DfttTimecode对象"
+msgstr ""
+
+#: ../../../CHANGELOG.md:144
+msgid "Add `float()` and `int()` class methods for DfttTimecode class"
+msgstr ""
+
+#: ../../../CHANGELOG.md:146
+msgid "添加DfttTimecode类的float和int方法"
+msgstr ""
+
+#: ../../../CHANGELOG.md:148
+msgid "Add `precise_timestamp` attribute for DfttTimecode class"
+msgstr ""
+
+#: ../../../CHANGELOG.md:150
+msgid "添加DfttTimecode类的precise_timestamp属性"
+msgstr ""
+
+#: ../../../CHANGELOG.md:154
+msgid ""
+"DfttTimecode operators now raise errors when encountering undefined "
+"circumstances or illegal operations"
+msgstr ""
+
+#: ../../../CHANGELOG.md:156
+msgid "DfttTimecode运算符在未定义/非法操作时将会报错"
+msgstr ""
+
+#: ../../../CHANGELOG.md:158
+msgid "Update comparison rules for DfttTimecode operators"
+msgstr ""
+
+#: ../../../CHANGELOG.md:160
+msgid "修改DfttTimecode运算符的大小比较规则"
+msgstr ""
+
+#: ../../../CHANGELOG.md:162
+msgid ""
+"When creating a timecode object using SMPTE NDF format string, if "
+"`drop_frame` is forced to `True`, the resulting object will be SMPTE DF "
+"format timecode"
+msgstr ""
+
+#: ../../../CHANGELOG.md:164
+msgid "使用SMPTE NDF格式字符串新建时码类对象时，若强制drop_frame为True，则新建得到的对象为SMPTE DF格式时码"
+msgstr ""
+
+#: ../../../CHANGELOG.md:166
+msgid "[0.0.9]"
+msgstr ""
+
+#: ../../../CHANGELOG.md:168
+msgid "Initial public release."
+msgstr ""
+

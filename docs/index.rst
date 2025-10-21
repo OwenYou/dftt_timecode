@@ -14,8 +14,6 @@ dftt_timecode
 
 Python timecode library for film and TV industry, with high frame rate support and comprehensive features.
 
-为影视行业设计的Python时码库，支持HFR高帧率以及其他丰富的功能。
-
 DFTT stands for the Department of Film and TV Technology of Beijing Film Academy.
 
 Features

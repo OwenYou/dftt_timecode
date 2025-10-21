@@ -1,0 +1,270 @@
+# DFTT Timecode Documentation Chinese Translation - API Error Module
+# Copyright (C) 2025, You Ziyuan
+# This file is distributed under the same license as the DFTT Timecode
+# package.
+# You Ziyuan <hikaridragon0216@gmail.com>, 2025.
+#
+# Note: API documentation keeps technical details in English for accuracy
+# Only translating main descriptions and page titles
+msgid ""
+msgstr ""
+"Project-Id-Version: DFTT Timecode 0.0.15a2\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-10-21 11:37+0800\n"
+"PO-Revision-Date: 2025-10-21 12:25+0800\n"
+"Last-Translator: You Ziyuan <hikaridragon0216@gmail.com>\n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN <hikaridragon0216@gmail.com>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../api/error.rst:2
+msgid "Error Handling"
+msgstr "错误处理"
+
+#: ../../api/error.rst:7
+msgid "Exception Classes"
+msgstr "异常类"
+
+#: ../../api/error.rst:9
+msgid ""
+"The dftt_timecode library defines custom exception classes for different "
+"error conditions."
+msgstr "dftt_timecode 库为不同的错误情况定义了自定义异常类。"
+
+#: ../../api/error.rst:12
+msgid "DFTTError"
+msgstr ""
+
+#: dftt_timecode.error.DFTTError:1 of
+msgid "Bases: :py:class:`Exception`"
+msgstr ""
+
+#: dftt_timecode.error.DFTTError:1 of
+#, fuzzy
+msgid "Base exception class for all DFTT Timecode library errors."
+msgstr "所有 dftt_timecode 错误的基础异常类。"
+
+#: dftt_timecode.error.DFTTError:3 of
+msgid "All custom exceptions in this library inherit from this base class."
+msgstr ""
+
+#: ../../api/error.rst:18
+msgid "Base exception class for all dftt_timecode errors."
+msgstr "所有 dftt_timecode 错误的基础异常类。"
+
+#: ../../api/error.rst:21
+msgid "DFTTTimecodeValueError"
+msgstr ""
+
+#: dftt_timecode.error.DFTTTimeRangeFPSError:1
+#: dftt_timecode.error.DFTTTimeRangeMethodError:1
+#: dftt_timecode.error.DFTTTimeRangeTypeError:1
+#: dftt_timecode.error.DFTTTimeRangeValueError:1
+#: dftt_timecode.error.DFTTTimecodeInitializationError:1
+#: dftt_timecode.error.DFTTTimecodeOperatorError:1
+#: dftt_timecode.error.DFTTTimecodeTypeError:1
+#: dftt_timecode.error.DFTTTimecodeValueError:1 of
+#, fuzzy
+msgid "Bases: :py:class:`~dftt_timecode.error.DFTTError`"
+msgstr "所有 dftt_timecode 错误的基础异常类。"
+
+#: dftt_timecode.error.DFTTTimecodeValueError:1 of
+#, fuzzy
+msgid "Raised when a timecode value is invalid or out of acceptable range."
+msgstr "当提供无效的时码值时抛出。"
+
+#: dftt_timecode.error.DFTTTimeRangeFPSError:3
+#: dftt_timecode.error.DFTTTimeRangeMethodError:3
+#: dftt_timecode.error.DFTTTimeRangeTypeError:3
+#: dftt_timecode.error.DFTTTimeRangeValueError:3
+#: dftt_timecode.error.DFTTTimecodeInitializationError:3
+#: dftt_timecode.error.DFTTTimecodeOperatorError:3
+#: dftt_timecode.error.DFTTTimecodeTypeError:3
+#: dftt_timecode.error.DFTTTimecodeValueError:3 of
+msgid "Examples include:"
+msgstr ""
+
+#: dftt_timecode.error.DFTTTimecodeValueError:4 of
+msgid "Frame number exceeding the frame rate limit"
+msgstr ""
+
+#: dftt_timecode.error.DFTTTimecodeValueError:5 of
+msgid "Invalid drop-frame timecode values"
+msgstr ""
+
+#: dftt_timecode.error.DFTTTimecodeValueError:6 of
+msgid "Illegal timecode values for the given parameters"
+msgstr ""
+
+#: ../../api/error.rst:27
+msgid "Raised when an invalid timecode value is provided."
+msgstr "当提供无效的时码值时抛出。"
+
+#: ../../api/error.rst:30
+msgid "DFTTTimecodeInitializationError"
+msgstr ""
+
+#: ../../api/error.rst:36 dftt_timecode.error.DFTTTimecodeInitializationError:1
+#: of
+msgid "Raised when timecode initialization fails due to incompatible parameters."
+msgstr ""
+
+#: dftt_timecode.error.DFTTTimecodeInitializationError:4 of
+msgid "Drop-frame status mismatch with timecode format"
+msgstr ""
+
+#: dftt_timecode.error.DFTTTimecodeInitializationError:5 of
+msgid "Incompatible timecode value and type combinations"
+msgstr ""
+
+#: ../../api/error.rst:39
+msgid "DFTTTimecodeTypeError"
+msgstr ""
+
+#: dftt_timecode.error.DFTTTimecodeTypeError:1 of
+#, fuzzy
+msgid "Raised when a timecode type is invalid or incompatible."
+msgstr "当提供无效的时码值时抛出。"
+
+#: dftt_timecode.error.DFTTTimecodeTypeError:4 of
+msgid "Unknown timecode format type"
+msgstr ""
+
+#: dftt_timecode.error.DFTTTimecodeTypeError:5 of
+msgid "Type mismatch between expected and actual timecode format"
+msgstr ""
+
+#: dftt_timecode.error.DFTTTimecodeTypeError:6 of
+msgid "Invalid data type for timecode operations"
+msgstr ""
+
+#: ../../api/error.rst:45
+#, fuzzy
+msgid "Raised when an invalid timecode type is specified or type mismatch occurs."
+msgstr "当提供无效的时码值时抛出。"
+
+#: ../../api/error.rst:48
+msgid "DFTTTimecodeOperatorError"
+msgstr ""
+
+#: ../../api/error.rst:54 dftt_timecode.error.DFTTTimecodeOperatorError:1 of
+msgid ""
+"Raised when an arithmetic or comparison operation on timecode objects "
+"fails."
+msgstr ""
+
+#: dftt_timecode.error.DFTTTimecodeOperatorError:4 of
+msgid "Operations between timecodes with different frame rates"
+msgstr ""
+
+#: dftt_timecode.error.DFTTTimecodeOperatorError:5 of
+msgid "Undefined operations (e.g., dividing number by timecode)"
+msgstr ""
+
+#: dftt_timecode.error.DFTTTimecodeOperatorError:6 of
+msgid "Invalid operand types for timecode arithmetic"
+msgstr ""
+
+#: ../../api/error.rst:57
+msgid "DFTTTimeRangeMethodError"
+msgstr ""
+
+#: ../../api/error.rst:63 dftt_timecode.error.DFTTTimeRangeMethodError:1 of
+msgid ""
+"Raised when a timerange method is called with invalid parameters or "
+"conditions."
+msgstr ""
+
+#: dftt_timecode.error.DFTTTimeRangeMethodError:4 of
+msgid "Attempting to intersect/union timeranges with different directions"
+msgstr ""
+
+#: dftt_timecode.error.DFTTTimeRangeMethodError:5 of
+msgid "Invalid offset or extend values"
+msgstr ""
+
+#: dftt_timecode.error.DFTTTimeRangeMethodError:6 of
+msgid "Operations on non-overlapping, non-adjacent timeranges"
+msgstr ""
+
+#: ../../api/error.rst:66
+msgid "DFTTTimeRangeValueError"
+msgstr ""
+
+#: ../../api/error.rst:72 dftt_timecode.error.DFTTTimeRangeValueError:1 of
+msgid "Raised when a timerange value is invalid or out of acceptable range."
+msgstr ""
+
+#: dftt_timecode.error.DFTTTimeRangeValueError:4 of
+msgid "Zero-length timerange"
+msgstr ""
+
+#: dftt_timecode.error.DFTTTimeRangeValueError:5 of
+msgid "Duration exceeding 24 hours in strict mode"
+msgstr ""
+
+#: dftt_timecode.error.DFTTTimeRangeValueError:6 of
+msgid "Invalid timerange separation parameters"
+msgstr ""
+
+#: ../../api/error.rst:75
+msgid "DFTTTimeRangeTypeError"
+msgstr ""
+
+#: ../../api/error.rst:81 dftt_timecode.error.DFTTTimeRangeTypeError:1 of
+msgid "Raised when a timerange type or operand type is invalid."
+msgstr ""
+
+#: dftt_timecode.error.DFTTTimeRangeTypeError:4 of
+msgid "Invalid item type for contains check"
+msgstr ""
+
+#: dftt_timecode.error.DFTTTimeRangeTypeError:5 of
+msgid "Attempting to operate on non-timerange objects"
+msgstr ""
+
+#: dftt_timecode.error.DFTTTimeRangeTypeError:6 of
+msgid "Type mismatches in timerange operations"
+msgstr ""
+
+#: ../../api/error.rst:84
+msgid "DFTTTimeRangeFPSError"
+msgstr ""
+
+#: ../../api/error.rst:90 dftt_timecode.error.DFTTTimeRangeFPSError:1 of
+msgid "Raised when timerange operations fail due to frame rate mismatches."
+msgstr ""
+
+#: dftt_timecode.error.DFTTTimeRangeFPSError:4 of
+msgid "FPS mismatch between start and end timecodes"
+msgstr ""
+
+#: dftt_timecode.error.DFTTTimeRangeFPSError:5 of
+msgid "Operations between timeranges with different frame rates"
+msgstr ""
+
+#: ../../api/error.rst:93
+msgid "Error Examples"
+msgstr ""
+
+#: ../../api/error.rst:96
+#, fuzzy
+msgid "Invalid Timecode Value"
+msgstr "当提供无效的时码值时抛出。"
+
+#: ../../api/error.rst:109
+msgid "Timecode Initialization Error"
+msgstr ""
+
+#: ../../api/error.rst:123
+msgid "Type Error"
+msgstr ""
+
+#: ../../api/error.rst:136
+msgid "Operator Error"
+msgstr ""
+

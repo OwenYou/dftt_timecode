@@ -1,0 +1,226 @@
+# DFTT Timecode Documentation Chinese Translation
+# Copyright (C) 2025, You Ziyuan
+# This file is distributed under the same license as the DFTT Timecode
+# package.
+# You Ziyuan <hikaridragon0216@gmail.com>, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: DFTT Timecode 0.0.15a2\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-10-21 11:37+0800\n"
+"PO-Revision-Date: 2025-10-21 12:10+0800\n"
+"Last-Translator: You Ziyuan <hikaridragon0216@gmail.com>\n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN <hikaridragon0216@gmail.com>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../user_guide.rst:2
+msgid "User Guide"
+msgstr "用户指南"
+
+#: ../../user_guide.rst:4
+msgid "This comprehensive guide covers all aspects of using dftt_timecode."
+msgstr "本综合指南涵盖了使用 dftt_timecode 的各个方面。"
+
+#: ../../user_guide.rst:7
+msgid "Overview"
+msgstr "概述"
+
+#: ../../user_guide.rst:9
+msgid ""
+"dftt_timecode is a comprehensive Python library designed for the film and"
+" TV industry to handle timecodes in various formats with high precision. "
+"It supports high frame rates (HFR) up to 999.99 fps and provides a rich "
+"set of operations for timecode manipulation."
+msgstr "dftt_timecode 是一个为影视行业设计的综合性 Python 库，用于高精度处理各种格式的时码。它支持高达 999.99 fps 的高帧率（HFR），并提供丰富的时码操作功能。"
+
+#: ../../user_guide.rst:14
+msgid "Key Concepts"
+msgstr "核心概念"
+
+#: ../../user_guide.rst:17
+msgid "Timecode Types"
+msgstr "时码类型"
+
+#: ../../user_guide.rst:19
+msgid "The library supports multiple timecode formats used in different contexts:"
+msgstr "该库支持在不同场景下使用的多种时码格式："
+
+#: ../../user_guide.rst:21
+msgid "**SMPTE**: Industry-standard format (HH:MM:SS:FF)"
+msgstr "**SMPTE**：行业标准格式（HH:MM:SS:FF）"
+
+#: ../../user_guide.rst:22
+msgid "**SRT**: SubRip subtitle format (HH:MM:SS,mmm)"
+msgstr "**SRT**：SubRip 字幕格式（HH:MM:SS,mmm）"
+
+#: ../../user_guide.rst:23
+msgid "**FFMPEG**: FFmpeg timestamp format (HH:MM:SS.ff)"
+msgstr "**FFMPEG**：FFmpeg 时间戳格式（HH:MM:SS.ff）"
+
+#: ../../user_guide.rst:24
+msgid "**FCPX**: Final Cut Pro X format (frames/fps)"
+msgstr "**FCPX**：Final Cut Pro X 格式（frames/fps）"
+
+#: ../../user_guide.rst:25
+msgid "**DLP**: Digital cinema format (HH:MM:SS:FFF)"
+msgstr "**DLP**：数字电影格式（HH:MM:SS:FFF）"
+
+#: ../../user_guide.rst:26
+msgid "**Frame**: Simple frame count"
+msgstr "**Frame**：简单的帧计数"
+
+#: ../../user_guide.rst:27
+msgid "**Time**: Seconds-based timestamp"
+msgstr "**Time**：基于秒的时间戳"
+
+#: ../../user_guide.rst:30
+msgid "Frame Rates"
+msgstr "帧率"
+
+#: ../../user_guide.rst:32
+msgid "The library supports:"
+msgstr "该库支持："
+
+#: ../../user_guide.rst:34
+msgid "Standard frame rates (23.976, 24, 25, 29.97, 30, 50, 59.94, 60, etc.)"
+msgstr "标准帧率（23.976、24、25、29.97、30、50、59.94、60 等）"
+
+#: ../../user_guide.rst:35
+msgid "High frame rates (96, 100, 120, 144, 240, etc.)"
+msgstr "高帧率（96、100、120、144、240 等）"
+
+#: ../../user_guide.rst:36
+msgid "Custom frame rates from 0.01 to 999.99 fps"
+msgstr "0.01 到 999.99 fps 的自定义帧率"
+
+#: ../../user_guide.rst:37
+msgid "Precise fractional frame rates using Python's Fraction type"
+msgstr "使用 Python 的 Fraction 类型的精确分数帧率"
+
+#: ../../user_guide.rst:40
+msgid "Drop-Frame vs Non-Drop-Frame"
+msgstr "跳帧 vs 非跳帧"
+
+#: ../../user_guide.rst:42
+msgid ""
+"For NTSC video standards (29.97 fps, 59.94 fps), the library correctly "
+"handles:"
+msgstr "对于 NTSC 视频标准（29.97 fps、59.94 fps），该库正确处理："
+
+#: ../../user_guide.rst:44
+msgid "Non-drop-frame (NDF): Uses colon separator (HH:MM:SS:FF)"
+msgstr "非跳帧（NDF）：使用冒号分隔符（HH:MM:SS:FF）"
+
+#: ../../user_guide.rst:45
+msgid "Drop-frame (DF): Uses semicolon separator (HH:MM:SS;FF)"
+msgstr "跳帧（DF）：使用分号分隔符（HH:MM:SS;FF）"
+
+#: ../../user_guide.rst:47
+msgid ""
+"Drop-frame timecode compensates for the slight discrepancy between "
+"nominal and actual frame rates by periodically skipping frame numbers."
+msgstr "跳帧时码通过定期跳过帧编号来补偿名义帧率和实际帧率之间的微小差异。"
+
+#: ../../user_guide.rst:51
+msgid "Strict Mode"
+msgstr "严格模式"
+
+#: ../../user_guide.rst:53
+msgid "Strict mode ensures timecodes remain within a 24-hour cycle:"
+msgstr "严格模式确保时码保持在 24 小时周期内："
+
+#: ../../user_guide.rst:55
+msgid ""
+"Enabled: Timecodes wrap around at 24 hours (25:00:00:00 becomes "
+"01:00:00:00)"
+msgstr "启用：时码在 24 小时处循环（25:00:00:00 变为 01:00:00:00）"
+
+#: ../../user_guide.rst:56
+msgid "Disabled: Timecodes can exceed 24 hours (useful for long-form content)"
+msgstr "禁用：时码可以超过 24 小时（适用于长篇内容）"
+
+#: ../../user_guide.rst:59
+msgid "Common Use Cases"
+msgstr "常见使用场景"
+
+#: ../../user_guide.rst:62
+msgid "Video Editing"
+msgstr "视频编辑"
+
+#: ../../user_guide.rst:77
+msgid "Subtitle Timing"
+msgstr "字幕时间轴"
+
+#: ../../user_guide.rst:90
+msgid "Frame Rate Conversion"
+msgstr "帧率转换"
+
+#: ../../user_guide.rst:100
+msgid "High Frame Rate Workflows"
+msgstr "高帧率工作流"
+
+#: ../../user_guide.rst:112
+msgid "Best Practices"
+msgstr "最佳实践"
+
+#: ../../user_guide.rst:114
+msgid ""
+"**Use Strict Mode for Standard Workflows**: Enable strict mode for "
+"typical video editing to prevent timecode values from exceeding 24 hours."
+msgstr "**标准工作流使用严格模式**：为典型的视频编辑启用严格模式，以防止时码值超过 24 小时。"
+
+#: ../../user_guide.rst:117
+msgid ""
+"**Specify Frame Rates Explicitly**: Always specify the correct frame rate"
+" when creating timecode objects to ensure accurate conversions."
+msgstr "**明确指定帧率**：创建时码对象时始终指定正确的帧率，以确保准确转换。"
+
+#: ../../user_guide.rst:120
+msgid ""
+"**Use Fraction for Precise Frame Rates**: For frame rates like 23.976 or "
+"29.97, use Fraction for maximum precision:"
+msgstr "**使用 Fraction 获得精确帧率**：对于 23.976 或 29.97 等帧率，使用 Fraction 以获得最大精度："
+
+#: ../../user_guide.rst:128
+msgid ""
+"**Handle Drop-Frame Correctly**: When working with NTSC frame rates "
+"(29.97, 59.94), ensure drop-frame is set correctly based on your workflow"
+" requirements."
+msgstr "**正确处理跳帧**：使用 NTSC 帧率（29.97、59.94）时，根据工作流要求确保正确设置跳帧。"
+
+#: ../../user_guide.rst:131
+msgid ""
+"**Validate User Input**: Use try-except blocks to catch and handle "
+"timecode errors gracefully:"
+msgstr "**验证用户输入**：使用 try-except 块优雅地捕获和处理时码错误："
+
+#: ../../user_guide.rst:143
+msgid "Performance Considerations"
+msgstr "性能考虑"
+
+#: ../../user_guide.rst:145
+msgid ""
+"The library uses high-precision Fraction internally for timestamp "
+"storage, which ensures accuracy but may be slower than floating-point "
+"arithmetic. For performance-critical applications:"
+msgstr "该库在内部使用高精度 Fraction 存储时间戳，这确保了准确性，但可能比浮点运算慢。对于性能关键型应用："
+
+#: ../../user_guide.rst:148
+msgid "Create timecode objects once and reuse them"
+msgstr "创建一次时码对象并重复使用"
+
+#: ../../user_guide.rst:149
+msgid "Use frame count operations when possible (integer arithmetic is faster)"
+msgstr "尽可能使用帧计数操作（整数运算更快）"
+
+#: ../../user_guide.rst:150
+msgid ""
+"Consider caching converted values if the same conversions are needed "
+"repeatedly"
+msgstr "如果需要重复进行相同的转换，请考虑缓存转换后的值"

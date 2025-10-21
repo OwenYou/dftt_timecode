@@ -1,0 +1,854 @@
+# DFTT Timecode Documentation Chinese Translation - API DfttTimeRange Module
+# Copyright (C) 2025, You Ziyuan
+# This file is distributed under the same license as the DFTT Timecode
+# package.
+# You Ziyuan <hikaridragon0216@gmail.com>, 2025.
+#
+# Note: API documentation keeps technical details in English for accuracy
+# Only translating main page titles
+msgid ""
+msgstr ""
+"Project-Id-Version: DFTT Timecode 0.0.15a2\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-10-21 11:37+0800\n"
+"PO-Revision-Date: 2025-10-21 12:30+0800\n"
+"Last-Translator: You Ziyuan <hikaridragon0216@gmail.com>\n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN <hikaridragon0216@gmail.com>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../api/dftt_timerange.rst:2
+msgid "DfttTimeRange API"
+msgstr "DfttTimeRange API"
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange:1 of
+msgid "Bases: :py:class:`object`"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange:1 of
+msgid "High-precision timerange class for representing time intervals."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange:3 of
+msgid ""
+"DfttTimeRange represents a time interval with a start point, duration, "
+"and direction. It provides comprehensive operations for manipulating time"
+" ranges including offset, extend, shorten, reverse, retime, intersection,"
+" and union operations."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange:7 of
+msgid ""
+"The class uses :class:`fractions.Fraction` internally for precise "
+"calculations, ensuring frame-accurate operations even with complex "
+"interval manipulations."
+msgstr ""
+
+#: ../../api/dftt_timerange.rst
+msgid "Parameters"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange:10 of
+msgid ""
+"Start timecode. Can be a DfttTimecode object or any value that can "
+"construct a DfttTimecode. Required if not using precise parameters."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange:12 of
+msgid ""
+"End timecode. Can be a DfttTimecode object or any value that can "
+"construct a DfttTimecode. Required if not using precise parameters."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange:14 of
+msgid ""
+"Direction of the timerange. True for forward (start < end), False for "
+"backward (start > end). Defaults to True."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange:16 of
+msgid ""
+"Frame rate in frames per second. Used when constructing timecodes from "
+"non-timecode values. Defaults to 24.0."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange:18 of
+msgid ""
+"Internal construction parameter - precise start time as Fraction. Use "
+"with precise_duration for direct construction."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange:20 of
+msgid ""
+"Internal construction parameter - precise duration as Fraction. Use with "
+"start_precise_time for direct construction."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange:22 of
+msgid ""
+"Enable 24-hour constraint mode. When True, the timerange duration cannot "
+"exceed 24 hours and midnight-crossing ranges are handled specially. "
+"Defaults to False."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange:28
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.fps:1 of
+msgid "Frame rate of the timerange"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange of
+msgid "type"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange:30
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange:66 of
+msgid "float"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange:34
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.forward:1 of
+msgid "Direction of the timerange"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange:36
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange:42 of
+msgid "bool"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange:40 of
+msgid "Whether 24-hour constraint is enabled"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange:46 of
+msgid "Duration as high-precision Fraction"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange:48
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange:54
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange:60 of
+msgid "Fraction"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange:52 of
+msgid "Start time as high-precision Fraction"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange:58 of
+msgid "End time as high-precision Fraction"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange:64 of
+msgid "Duration in seconds (absolute value)"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange:70 of
+msgid "Duration in frames (absolute value)"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange:72 of
+msgid "int"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange:76 of
+msgid "Start timecode object"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange:78
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange:84 of
+#, fuzzy
+msgid "DfttTimecode"
+msgstr "DfttTimeRange API"
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange:82 of
+msgid "End timecode object"
+msgstr ""
+
+#: ../../api/dftt_timerange.rst
+msgid "Raises"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange:86 of
+msgid "When creating zero-length or invalid timeranges"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange:87 of
+msgid "When start and end timecodes have mismatched fps"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange:88 of
+msgid ""
+"When neither (start_tc, end_tc) nor (start_precise_time, "
+"precise_duration) are provided"
+msgstr ""
+
+#: ../../api/dftt_timerange.rst:18
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange:91
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.add:20
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.contains:16
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.extend:19
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.intersect:16
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.offset:18
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.retime:18
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.reverse:10
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.separate:14
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.shorten:18
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.subtract:20
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.union:18 of
+msgid "Examples"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange:92 of
+msgid "Create from two timecodes::"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange:100 of
+msgid "Create backward timerange::"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange:108 of
+msgid "Operations::"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange:118 of
+msgid "Iteration::"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange:128 of
+msgid "Set operations::"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange:141 of
+msgid "Timerange objects are immutable. All operations return new instances."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange:142 of
+msgid ""
+"The internal representation uses :class:`fractions.Fraction` for "
+"precision."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange:143 of
+msgid "Forward and backward timeranges behave differently in some operations."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange:144 of
+msgid "Zero-length timeranges are not allowed."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange:148 of
+msgid ":class:`DfttTimecode`: For working with individual timecodes"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange:149 of
+msgid ":mod:`dftt_timecode.error`: Custom exception classes"
+msgstr ""
+
+#: ../../docstring
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.TIME_24H_SECONDS:1 of
+msgid "Constant representing 24 hours in seconds (86400)."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.strict_24h:1 of
+msgid "Whether timerange is constrained to 24 hours"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.precise_duration:1 of
+msgid "Precise duration as Fraction to avoid calculation errors"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.start_precise_time:1 of
+msgid "Start time as precise Fraction"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.end_precise_time:1 of
+msgid "End time as precise Fraction"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.duration:1 of
+msgid "Duration in seconds"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.framecount:1 of
+msgid "Duration in frames"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.start:1 of
+msgid "Start timecode"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.end:1 of
+msgid "End timecode"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.offset:1 of
+msgid "Move timerange in time while preserving duration."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.offset:3 of
+msgid ""
+"Shifts the entire timerange by the specified offset amount without "
+"changing the duration. Both start and end points move by the same amount."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.offset:6 of
+msgid ""
+"Amount to offset the timerange. Can be: - float: Seconds to shift - int: "
+"Frames to shift (converted using current fps) - DfttTimecode: Uses the "
+"timecode's timestamp - str: Timecode string to parse"
+msgstr ""
+
+#: ../../api/dftt_timerange.rst
+msgid "Returns"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.offset:12 of
+msgid "New timerange with shifted start/end points"
+msgstr ""
+
+#: ../../api/dftt_timerange.rst
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.__add__
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.__and__
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.__eq__
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.__ge__
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.__gt__
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.__iter__
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.__le__
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.__lt__
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.__mul__
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.__ne__
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.__or__
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.__repr__
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.__str__
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.__sub__
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.__truediv__ of
+msgid "Return type"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.offset:15 of
+msgid "If offset_value cannot be parsed"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.offset:26 of
+msgid "In strict_24h mode, the new start time wraps around at 24 hours."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.extend:1 of
+msgid "Extend duration (positive value increases duration)."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.extend:3 of
+msgid ""
+"Extends or shortens the timerange by modifying the end point while "
+"keeping the start point fixed. Positive values increase duration, "
+"negative values decrease it."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.extend:7 of
+msgid ""
+"Amount to extend the duration. Can be: - int or float: Seconds to extend "
+"(positive) or shorten (negative) - DfttTimecode: Uses the timecode's "
+"timestamp - str: Timecode string to parse"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.extend:12 of
+msgid "New timerange with modified duration"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.extend:15 of
+msgid ""
+"If extension results in zero-length timerange     or exceeds 24 hours in "
+"strict mode"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.extend:16 of
+msgid "If extend_value cannot be parsed"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.extend:28 of
+msgid "The direction (forward/backward) affects how extension is applied."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.shorten:1 of
+msgid "Shorten duration (positive value decreases duration)."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.shorten:3 of
+msgid ""
+"This is a convenience method that calls :meth:`extend` with a negated "
+"value. Shortens the timerange by modifying the end point while keeping "
+"the start fixed."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.shorten:6 of
+msgid ""
+"Amount to shorten the duration. Can be: - int or float: Seconds to "
+"shorten (positive decreases duration) - DfttTimecode: Uses the timecode's"
+" timestamp - str: Timecode string to parse"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.shorten:11 of
+msgid "New timerange with shortened duration"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.shorten:14 of
+msgid "If shortening results in zero-length timerange"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.shorten:15 of
+msgid "If shorten_value cannot be parsed"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.shorten:26 of
+msgid "Internally calls ``extend(-shorten_value)`` for numeric values."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.reverse:1 of
+msgid "Reverse direction of timerange."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.reverse:3 of
+msgid ""
+"Creates a new timerange with swapped start/end points and inverted "
+"direction. The duration magnitude remains the same, but the direction is "
+"flipped."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.reverse:6 of
+msgid "New timerange with reversed direction"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.reverse:24 of
+msgid "The new start becomes the old end"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.reverse:25 of
+msgid "The forward flag is flipped"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.reverse:26 of
+msgid "Duration magnitude is preserved"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.reverse:27 of
+msgid "This is useful for working with timeranges that play backward"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.retime:1 of
+msgid "Change duration by multiplication factor."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.retime:3 of
+msgid ""
+"Scales the timerange duration by the given factor while keeping the start"
+" point fixed. This is useful for time-stretching or speed-change "
+"operations."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.retime:6 of
+msgid ""
+"Multiplication factor for the duration. Can be: - int or float: Factor to"
+" multiply duration by - Fraction: Precise rational factor Examples: 2.0 "
+"doubles duration, 0.5 halves it, 1.5 extends by 50%"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.retime:11 of
+msgid "New timerange with scaled duration"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.retime:14 of
+msgid "If retime_factor is not numeric"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.retime:15 of
+msgid ""
+"If retime_factor is 0, or if result exceeds     24 hours in strict_24h "
+"mode"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.add:35
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.retime:37
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.subtract:38 of
+msgid "Start point remains unchanged"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.retime:38 of
+msgid "Commonly used for speed ramping or time-stretching effects"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.retime:39 of
+msgid "Factor > 1 increases duration (slow down)"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.retime:40 of
+msgid "Factor < 1 decreases duration (speed up)"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.retime:41 of
+msgid "Can also use the ``*`` operator for the same effect"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.separate:1 of
+msgid "Separate timerange into multiple equal parts."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.separate:3 of
+msgid ""
+"Divides the timerange into a specified number of equal-duration sub-"
+"ranges. All parts have the same duration and are contiguous (adjacent "
+"with no gaps)."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.separate:6 of
+msgid "Number of parts to divide the timerange into (must be >= 2)"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.separate:8 of
+msgid "List of timerange parts, ordered from start to end"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.separate:11 of
+msgid "If num_parts is less than 2"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.separate:31 of
+msgid "Each part has duration = original_duration / num_parts"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.separate:32 of
+msgid "Parts are contiguous (no gaps or overlaps)"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.separate:33 of
+msgid "All parts inherit the same fps, forward direction, and strict_24h mode"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.separate:34 of
+msgid "For backward timeranges, parts are still ordered from start to end"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.separate:35 of
+msgid "Useful for splitting work into parallel chunks or creating segments"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.contains:1 of
+msgid "Check if timerange contains another timerange or timecode."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.contains:3 of
+msgid ""
+"Item to check for containment. Can be: - DfttTimecode: Checks if timecode"
+" is within range - DfttTimeRange: Checks if entire timerange is contained"
+" - str, int, float: Converted to timecode for checking"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.contains:7 of
+msgid ""
+"If True, requires contained timerange to have same direction. Only "
+"applies when item is a DfttTimeRange. Defaults to False."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.contains:10 of
+msgid "True if item is contained within this timerange, False otherwise"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.contains:13 of
+msgid "If item cannot be converted to timecode"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.contains:27 of
+msgid "For backward timeranges, containment is checked accordingly."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.intersect:1 of
+msgid "Calculate intersection of two timeranges (AND operation)."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.intersect:3 of
+msgid ""
+"Returns the overlapping portion of two timeranges. Both timeranges must "
+"have the same direction and frame rate."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.intersect:6 of
+msgid "Another DfttTimeRange to intersect with"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.intersect:8 of
+msgid "New timerange representing the intersection, or None if no overlap"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.add:15
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.intersect:11
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.subtract:15
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.union:13 of
+msgid "If other is not a DfttTimeRange"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.intersect:12 of
+msgid "If timeranges have different directions"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.add:16
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.intersect:13
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.subtract:16
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.union:15 of
+msgid "If timeranges have different frame rates"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.intersect:29 of
+msgid "Returns None if timeranges don't overlap"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.intersect:30
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.union:61 of
+msgid "Strict_24h is True only if both input timeranges have it enabled"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.union:1 of
+msgid "Calculate union of two timeranges (OR operation)."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.union:3 of
+msgid ""
+"Combines two overlapping or adjacent timeranges into a single continuous "
+"timerange that spans from the earliest start to the latest end. Both "
+"timeranges must have the same direction and frame rate, and must either "
+"overlap or be adjacent (touching) with no gap between them."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.union:8 of
+msgid "Another DfttTimeRange to union with"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.union:10 of
+msgid "New timerange spanning both input ranges"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.union:14 of
+msgid ""
+"If timeranges have different directions,     or if they are non-"
+"overlapping and non-adjacent (have a gap)"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.union:19 of
+msgid "Overlapping timeranges::"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.union:31 of
+msgid "Adjacent (touching) timeranges::"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.union:41 of
+msgid "Using the | operator::"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.union:49 of
+msgid "Non-adjacent timeranges (will fail)::"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.union:58 of
+msgid "Timeranges must overlap or be adjacent (no gap allowed)"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.union:59 of
+msgid "The result spans from earliest start to latest end"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.union:60 of
+msgid "Direction must be the same for both timeranges"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.union:62 of
+msgid ""
+"This is a set operation, different from :meth:`add` which combines "
+"durations"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.union:63 of
+msgid "Can also use the ``|`` operator as a shorthand"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.union:64 of
+msgid "For checking overlap, use :meth:`intersect` first"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.union:68 of
+msgid ":meth:`intersect`: Get the overlapping portion (AND operation)"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.union:69 of
+msgid ":meth:`add`: Add durations (different from union)"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.add:1 of
+msgid "Add durations of two timeranges (direction-sensitive)."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.add:3 of
+msgid ""
+"Combines the durations of two timeranges to create a new timerange with "
+"extended duration. The behavior depends on whether the timeranges have "
+"the same or opposite directions."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.add:7 of
+#, fuzzy
+msgid "Another DfttTimeRange to add"
+msgstr "DfttTimeRange API"
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.add:9 of
+msgid ""
+"New timerange with combined duration, same start point     and direction "
+"as the original"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.add:11 of
+msgid "New timerange with combined duration, same start point"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.add:12
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.subtract:12 of
+msgid "and direction as the original"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.add:17
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.subtract:17 of
+msgid "If result is zero-length"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.add:33 of
+msgid "Same direction: durations are added (extend)"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.add:34 of
+msgid "Opposite direction: durations are subtracted (shorten)"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.add:36 of
+msgid "This is different from :meth:`union` which combines overlapping ranges"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.subtract:1 of
+msgid "Subtract durations of two timeranges (direction-sensitive)."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.subtract:3 of
+msgid ""
+"Subtracts the duration of another timerange from this one to create a new"
+" timerange with reduced duration. The behavior depends on whether the "
+"timeranges have the same or opposite directions."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.subtract:7 of
+#, fuzzy
+msgid "Another DfttTimeRange to subtract"
+msgstr "DfttTimeRange API"
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.subtract:9 of
+msgid ""
+"New timerange with reduced duration, same start point     and direction "
+"as the original"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.subtract:11 of
+msgid "New timerange with reduced duration, same start point"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.subtract:36 of
+msgid "Same direction: durations are subtracted (shorten)"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.subtract:37 of
+msgid "Opposite direction: durations are added (extend)"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.subtract:39 of
+msgid "This is the inverse operation of :meth:`add`"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.subtract:40 of
+msgid "Can result in zero-length error if durations are equal"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.__str__:1 of
+msgid "Return str(self)."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.__repr__:1 of
+msgid "Return repr(self)."
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.__iter__:1 of
+msgid "Iterate through timecodes in the range"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.__add__:1 of
+msgid "Add operator for timeranges"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.__sub__:1 of
+msgid "Subtract operator for timeranges"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.__mul__:1 of
+msgid "Multiply duration by factor"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.__truediv__:1 of
+msgid "Divide duration by factor"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.__and__:1 of
+msgid "Intersection operator"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.__or__:1 of
+msgid "Union operator"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.__eq__:1 of
+msgid "Equality comparison"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.__ne__:1 of
+msgid "Inequality comparison"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.__lt__:1 of
+msgid "Less than comparison based on start time"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.__le__:1 of
+msgid "Less than or equal comparison"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.__gt__:1 of
+msgid "Greater than comparison"
+msgstr ""
+
+#: dftt_timecode.core.dftt_timerange.DfttTimeRange.__ge__:1 of
+msgid "Greater than or equal comparison"
+msgstr ""
+
+#: ../../api/dftt_timerange.rst:13
+msgid "Core Class"
+msgstr ""
+
+#: ../../api/dftt_timerange.rst:15
+msgid ""
+"The :class:`DfttTimeRange` class represents a time range with start and "
+"end points, built on top of :class:`DfttTimecode`."
+msgstr ""
+
+#: ../../api/dftt_timerange.rst:21
+msgid "Basic Usage"
+msgstr ""
+
+#: ../../api/dftt_timerange.rst:36
+msgid "Checking Containment and Intersection"
+msgstr ""
+
