@@ -5,7 +5,6 @@ This module contains the main DfttTimecode class which provides comprehensive
 timecode functionality for film and television production workflows.
 """
 
-import logging
 from fractions import Fraction
 from functools import singledispatchmethod
 from math import ceil, floor
@@ -17,6 +16,7 @@ from dftt_timecode.error import (
     DFTTTimecodeTypeError,
     DFTTTimecodeValueError,
 )
+from dftt_timecode.logging_config import get_logger
 from dftt_timecode.pattern import (
     DLP_REGEX,
     FCPX_REGEX,
@@ -29,23 +29,8 @@ from dftt_timecode.pattern import (
     TIME_REGEX,
 )
 
-# logging.basicConfig(filename='dftt_timecode_log.txt',
-#                     filemode='w',
-#                     format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
-#                     datefmt='%Y-%m-%d %a %H:%M:%S',
-#                     level=logging.DEBUG)
-#set up logger
-logger=logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-formatter=logging.Formatter('%(asctime)s [%(levelname)s] [%(filename)s:%(lineno)d-%(funcName)s()] %(message)s')
-
-stream_handler=logging.StreamHandler()
-stream_handler.setFormatter(formatter)
-
-# file_handler=logging.FileHandler('dftt_timecode_log.txt',filemode='w')
-# file_handler.setFormatter(formatter)
-
-logger.addHandler(stream_handler)
+# Set up logger with automatic level detection based on git branch
+logger = get_logger(__name__)
 
 TimecodeType: TypeAlias = Literal['smpte', 'srt', 'dlp', 'ffmpeg', 'fcpx', 'frame', 'time', 'auto']
 """Type alias for supported timecode format types.

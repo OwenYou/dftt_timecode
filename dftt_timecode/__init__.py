@@ -27,6 +27,7 @@ Example:
 
 from dftt_timecode.core.dftt_timecode import DfttTimecode
 from dftt_timecode.core.dftt_timerange import DfttTimeRange
+from dftt_timecode.logging_config import configure_logging, get_logger
 
 # Read version from package metadata (populated from pyproject.toml)
 try:
@@ -116,4 +117,13 @@ def dtr(*args, **kwargs) -> DfttTimeRange:
 name = "dftt_timecode"
 __author__ = "You Ziyuan"
 
-__all__ = ["DfttTimecode", "DfttTimeRange", "timecode", "timerange", "dtc", "dtr"]
+__all__ = [
+    "DfttTimecode",
+    "DfttTimeRange",
+    "timecode",
+    "timerange",
+    "dtc",
+    "dtr",
+    "configure_logging",
+    "get_logger",
+]
