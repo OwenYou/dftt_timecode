@@ -16,6 +16,10 @@ from dftt_timecode.error import (
     DFTTTimeRangeTypeError,
     DFTTTimeRangeValueError,
 )
+from dftt_timecode.logging_config import get_logger
+
+# Set up logger with automatic level detection based on git branch
+logger = get_logger(__name__)
 
 
 class DfttTimeRange:
@@ -155,13 +159,25 @@ class DfttTimeRange:
 
         # Validate 24h constraint
         if self.__strict_24h and abs(self.__precise_duration) > self.TIME_24H_SECONDS:
+            logger.error(
+                f"Duration {abs(self.__precise_duration)}s exceeds 24 hours ({self.TIME_24H_SECONDS}s) in strict mode"
+            )
             raise DFTTTimeRangeValueError("Duration exceeds 24 hours in strict mode")
+
+        logger.debug(
+            f"TimeRange created: start={float(self.__start_precise_time):.3f}s, "
+            f"duration={float(self.__precise_duration):.3f}s, fps={self.__fps}, "
+            f"forward={self.__forward}, strict_24h={self.__strict_24h}"
+        )
 
     def _init_from_timecodes(self, start_tc, end_tc):
         """Initialize from start and end timecodes"""
         # Convert inputs to DfttTimecode objects
         if isinstance(start_tc, DfttTimecode) and isinstance(end_tc, DfttTimecode):
             if start_tc.fps != end_tc.fps:
+                logger.error(
+                    f"FPS mismatch: start_tc fps={start_tc.fps}, end_tc fps={end_tc.fps}"
+                )
                 raise DFTTTimeRangeFPSError(
                     "FPS mismatch between start and end timecodes"
                 )
@@ -205,6 +221,7 @@ class DfttTimeRange:
             self.__precise_duration += self.TIME_24H_SECONDS
 
         if self.__precise_duration == 0:
+            logger.error("Cannot create zero-length timerange")
             raise DFTTTimeRangeValueError("Time range cannot be zero-length!")
 
         self.__start_precise_time = start_precise
@@ -308,6 +325,12 @@ class DfttTimeRange:
             if self.__strict_24h:
                 new_start = new_start % self.TIME_24H_SECONDS
 
+            logger.debug(
+                f"Offset timerange by {float(offset_precise):.3f}s: "
+                f"old_start={float(self.__start_precise_time):.3f}s, "
+                f"new_start={float(new_start):.3f}s"
+            )
+
             return DfttTimeRange(
                 start_precise_time=new_start,
                 precise_duration=self.__precise_duration,
@@ -365,13 +388,23 @@ class DfttTimeRange:
             )
 
             if new_duration == 0:
+                logger.error("Cannot create zero-length timerange via extend")
                 raise DFTTTimeRangeValueError("Cannot create zero-length timerange")
 
             # Handle 24h constraint
             if self.__strict_24h and abs(new_duration) > self.TIME_24H_SECONDS:
+                logger.error(
+                    f"Extended duration {abs(new_duration):.3f}s exceeds 24 hours in strict mode"
+                )
                 raise DFTTTimeRangeValueError(
                     "Duration exceeds 24 hours in strict mode"
                 )
+
+            logger.debug(
+                f"Extend timerange by {float(extend_precise):.3f}s: "
+                f"old_duration={float(self.__precise_duration):.3f}s, "
+                f"new_duration={float(new_duration):.3f}s"
+            )
 
             return DfttTimeRange(
                 start_precise_time=self.__start_precise_time,
@@ -446,6 +479,9 @@ class DfttTimeRange:
             - Duration magnitude is preserved
             - This is useful for working with timeranges that play backward
         """
+        logger.debug(
+            f"Reversing timerange: forward={self.__forward} -> {not self.__forward}"
+        )
         return DfttTimeRange(
             start_precise_time=self.end_precise_time,
             precise_duration=self.__precise_duration,
@@ -499,15 +535,26 @@ class DfttTimeRange:
             - Can also use the ``*`` operator for the same effect
         """
         if not isinstance(retime_factor, (int, float, Fraction)):
+            logger.error(f"Retime factor must be numeric, got {type(retime_factor)}")
             raise DFTTTimeRangeTypeError("Retime factor must be numeric")
 
         if retime_factor == 0:
+            logger.error("Cannot retime to zero duration")
             raise DFTTTimeRangeValueError("Cannot retime to zero duration")
 
         new_duration = self.__precise_duration * Fraction(retime_factor)
 
         if self.__strict_24h and abs(new_duration) > self.TIME_24H_SECONDS:
+            logger.error(
+                f"Retimed duration {abs(new_duration):.3f}s exceeds 24 hours in strict mode"
+            )
             raise DFTTTimeRangeValueError("Duration exceeds 24 hours in strict mode")
+
+        logger.debug(
+            f"Retime timerange by factor {retime_factor}: "
+            f"old_duration={float(self.__precise_duration):.3f}s, "
+            f"new_duration={float(new_duration):.3f}s"
+        )
 
         return DfttTimeRange(
             start_precise_time=self.__start_precise_time,
@@ -555,9 +602,13 @@ class DfttTimeRange:
             - Useful for splitting work into parallel chunks or creating segments
         """
         if num_parts < 2:
+            logger.error(f"Cannot separate into {num_parts} parts, must be >= 2")
             raise DFTTTimeRangeValueError("Must separate into at least 2 parts")
 
         part_duration = self.__precise_duration / num_parts
+        logger.debug(
+            f"Separating timerange into {num_parts} parts, each with duration={float(part_duration):.3f}s"
+        )
         parts = []
 
         for i in range(num_parts):
@@ -668,16 +719,25 @@ class DfttTimeRange:
             - Strict_24h is True only if both input timeranges have it enabled
         """
         if not isinstance(other, DfttTimeRange):
+            logger.error(f"Can only intersect with DfttTimeRange, got {type(other)}")
             raise DFTTTimeRangeTypeError(
                 "Can only intersect with another DfttTimeRange"
             )
 
         if self.__forward != other.forward:
+            logger.error(
+                f"Cannot intersect timeranges with different directions: "
+                f"self.forward={self.__forward}, other.forward={other.forward}"
+            )
             raise DFTTTimeRangeMethodError(
                 "Cannot intersect timeranges with different directions"
             )
 
         if self.__fps != other.fps:
+            logger.error(
+                f"Cannot intersect timeranges with different FPS: "
+                f"self.fps={self.__fps}, other.fps={other.fps}"
+            )
             raise DFTTTimeRangeFPSError(
                 "Cannot intersect timeranges with different FPS"
             )
@@ -691,9 +751,13 @@ class DfttTimeRange:
             end = max(self.end_precise_time, other.end_precise_time)
 
         if (self.__forward and start >= end) or (not self.__forward and start <= end):
+            logger.debug("No intersection found between timeranges")
             return None  # No intersection
 
         duration = end - start if self.__forward else start - end
+        logger.debug(
+            f"Intersection found: start={float(start):.3f}s, duration={float(duration):.3f}s"
+        )
 
         return DfttTimeRange(
             start_precise_time=start,
@@ -775,14 +839,23 @@ class DfttTimeRange:
             - :meth:`add`: Add durations (different from union)
         """
         if not isinstance(other, DfttTimeRange):
+            logger.error(f"Can only union with DfttTimeRange, got {type(other)}")
             raise DFTTTimeRangeTypeError("Can only union with another DfttTimeRange")
 
         if self.__forward != other.forward:
+            logger.error(
+                f"Cannot union timeranges with different directions: "
+                f"self.forward={self.__forward}, other.forward={other.forward}"
+            )
             raise DFTTTimeRangeMethodError(
                 "Cannot union timeranges with different directions"
             )
 
         if self.__fps != other.fps:
+            logger.error(
+                f"Cannot union timeranges with different FPS: "
+                f"self.fps={self.__fps}, other.fps={other.fps}"
+            )
             raise DFTTTimeRangeFPSError("Cannot union timeranges with different FPS")
 
         # Check for overlap or adjacency
@@ -793,6 +866,11 @@ class DfttTimeRange:
                     self.end_precise_time == other.start_precise_time
                     or other.end_precise_time == self.__start_precise_time
                 ):
+                    logger.error(
+                        "Cannot union non-overlapping, non-adjacent timeranges: "
+                        f"self=[{float(self.__start_precise_time):.3f}s, {float(self.end_precise_time):.3f}s], "
+                        f"other=[{float(other.start_precise_time):.3f}s, {float(other.end_precise_time):.3f}s]"
+                    )
                     raise DFTTTimeRangeMethodError(
                         "Cannot union non-overlapping, non-adjacent timeranges"
                     )
@@ -801,6 +879,9 @@ class DfttTimeRange:
                     self.end_precise_time == other.start_precise_time
                     or other.end_precise_time == self.__start_precise_time
                 ):
+                    logger.error(
+                        "Cannot union non-overlapping, non-adjacent timeranges (backward)"
+                    )
                     raise DFTTTimeRangeMethodError(
                         "Cannot union non-overlapping, non-adjacent timeranges"
                     )
@@ -814,6 +895,10 @@ class DfttTimeRange:
             end = min(self.end_precise_time, other.end_precise_time)
 
         duration = end - start if self.__forward else start - end
+
+        logger.debug(
+            f"Union created: start={float(start):.3f}s, duration={float(duration):.3f}s"
+        )
 
         return DfttTimeRange(
             start_precise_time=start,
@@ -860,9 +945,14 @@ class DfttTimeRange:
             - This is different from :meth:`union` which combines overlapping ranges
         """
         if not isinstance(other, DfttTimeRange):
+            logger.error(f"Can only add DfttTimeRange, got {type(other)}")
             raise DFTTTimeRangeTypeError("Can only add another DfttTimeRange")
 
         if self.__fps != other.fps:
+            logger.error(
+                f"Cannot add timeranges with different FPS: "
+                f"self.fps={self.__fps}, other.fps={other.fps}"
+            )
             raise DFTTTimeRangeFPSError("Cannot add timeranges with different FPS")
 
         # Direction sensitive addition
@@ -872,7 +962,14 @@ class DfttTimeRange:
             new_duration = self.__precise_duration - other.precise_duration
 
         if new_duration == 0:
+            logger.error("Add operation resulted in zero-length timerange")
             raise DFTTTimeRangeValueError("Cannot create zero-length timerange")
+
+        logger.debug(
+            f"Add timerange: same_direction={self.__forward == other.forward}, "
+            f"old_duration={float(self.__precise_duration):.3f}s, "
+            f"new_duration={float(new_duration):.3f}s"
+        )
 
         return DfttTimeRange(
             start_precise_time=self.__start_precise_time,
@@ -923,9 +1020,14 @@ class DfttTimeRange:
             - Can result in zero-length error if durations are equal
         """
         if not isinstance(other, DfttTimeRange):
+            logger.error(f"Can only subtract DfttTimeRange, got {type(other)}")
             raise DFTTTimeRangeTypeError("Can only subtract another DfttTimeRange")
 
         if self.__fps != other.fps:
+            logger.error(
+                f"Cannot subtract timeranges with different FPS: "
+                f"self.fps={self.__fps}, other.fps={other.fps}"
+            )
             raise DFTTTimeRangeFPSError("Cannot subtract timeranges with different FPS")
 
         # Direction sensitive subtraction
@@ -935,7 +1037,14 @@ class DfttTimeRange:
             new_duration = self.__precise_duration + other.precise_duration
 
         if new_duration == 0:
+            logger.error("Subtract operation resulted in zero-length timerange")
             raise DFTTTimeRangeValueError("Cannot create zero-length timerange")
+
+        logger.debug(
+            f"Subtract timerange: same_direction={self.__forward == other.forward}, "
+            f"old_duration={float(self.__precise_duration):.3f}s, "
+            f"new_duration={float(new_duration):.3f}s"
+        )
 
         return DfttTimeRange(
             start_precise_time=self.__start_precise_time,

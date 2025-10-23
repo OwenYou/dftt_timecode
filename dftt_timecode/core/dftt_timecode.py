@@ -5,7 +5,6 @@ This module contains the main DfttTimecode class which provides comprehensive
 timecode functionality for film and television production workflows.
 """
 
-import logging
 from fractions import Fraction
 from functools import singledispatchmethod
 from math import ceil, floor
@@ -17,6 +16,7 @@ from dftt_timecode.error import (
     DFTTTimecodeTypeError,
     DFTTTimecodeValueError,
 )
+from dftt_timecode.logging_config import get_logger
 from dftt_timecode.pattern import (
     DLP_REGEX,
     FCPX_REGEX,
@@ -29,23 +29,8 @@ from dftt_timecode.pattern import (
     TIME_REGEX,
 )
 
-# logging.basicConfig(filename='dftt_timecode_log.txt',
-#                     filemode='w',
-#                     format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
-#                     datefmt='%Y-%m-%d %a %H:%M:%S',
-#                     level=logging.DEBUG)
-#set up logger
-logger=logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-formatter=logging.Formatter('%(asctime)s [%(levelname)s] [%(filename)s:%(lineno)d-%(funcName)s()] %(message)s')
-
-stream_handler=logging.StreamHandler()
-stream_handler.setFormatter(formatter)
-
-# file_handler=logging.FileHandler('dftt_timecode_log.txt',filemode='w')
-# file_handler.setFormatter(formatter)
-
-logger.addHandler(stream_handler)
+# Set up logger with automatic level detection based on git branch
+logger = get_logger(__name__)
 
 TimecodeType: TypeAlias = Literal['smpte', 'srt', 'dlp', 'ffmpeg', 'fcpx', 'frame', 'time', 'auto']
 """Type alias for supported timecode format types.
@@ -174,7 +159,7 @@ class DfttTimecode:
             # FPS为29.97以及倍数时候，尊重drop_frame参数(for 29.97/59.94/119.88 NDF)
             return False if not drop_frame else True
         else:
-            return round(self.fps, 2) % 23.98 == 0
+            return round(fps, 2) % 23.98 == 0
 
     def __detect_timecode_type(self,timecode_value)->TimecodeType:
         if SMPTE_NDF_REGEX.match(timecode_value):  # SMPTE NDF 强制DF为False
@@ -183,7 +168,7 @@ class DfttTimecode:
             return 'smpte'
 
         elif SMPTE_DF_REGEX.match(timecode_value):
-            
+
             # 判断丢帧状态与帧率是否匹配 不匹配则强制转换
             if not self.__drop_frame:
                 raise DFTTTimecodeInitializationError(f'Init Timecode Failed: Timecode value [{timecode_value}] DONOT match drop_frame status [{self.__drop_frame}]! Check input.')
@@ -198,7 +183,10 @@ class DfttTimecode:
             return  'frame'
         elif TIME_REGEX.match(timecode_value):
             return  'time'
-        
+        else:
+            # No pattern matched - raise error instead of returning None
+            logger.error(f'Cannot detect timecode type for value [{timecode_value}]. No matching pattern found.')
+            raise DFTTTimecodeTypeError(f'Cannot detect timecode type for value [{timecode_value}]. No matching pattern found.')
     def __apply_strict(self) -> None:
         """Apply 24h wraparound if strict mode enabled"""
         if self.__strict:
@@ -366,9 +354,10 @@ class DfttTimecode:
             'frame':self.__init_frame,
             'time':self.__init_time
         }
-        init_func=timecode_type_handler_map[timecode_type]
+        init_func=timecode_type_handler_map.get(timecode_type)
         if not init_func:
-            raise DFTTTimecodeTypeError(f'Unknown timecode type :{timecode_type}')
+            logger.error(f'Unknown timecode type: [{timecode_type}]')
+            raise DFTTTimecodeTypeError(f'Unknown timecode type: [{timecode_type}]')
         init_func(timecode_value,minus_flag)
     
         instance_success_log = f'value type {type(timecode_value)} Timecode instance: type={self.__type}, fps={self.__fps}, dropframe={self.__drop_frame}, strict={self.__strict}'
@@ -747,17 +736,25 @@ class DfttTimecode:
             - For 'auto', outputs in the current timecode type
             - Falls back to SMPTE format if dest_type is invalid
         """
-        if dest_type == 'auto':
-            func = getattr(self, f'_convert_to_output_{self.__type}')
-        else:
-            func = getattr(self, f'_convert_to_output_{dest_type}')
-        if func:
-            return func(output_part)
-        else:
+        # Determine which format to use
+        format_type = self.__type if dest_type == 'auto' else dest_type
+        method_name = f'_convert_to_output_{format_type}'
+
+        # Check if the conversion method exists
+        if not hasattr(self, method_name):
             logger.warning(
-                f'CANNOT find such destination type [{dest_type}], will return SMPTE type')
-            func = getattr(self, '_convert_to_output_smpte', None)
+                f'CANNOT find conversion method for type [{format_type}], will return SMPTE type')
+            return self._convert_to_output_smpte(output_part)
+
+        # Call the conversion method
+        try:
+            func = getattr(self, method_name)
             return func(output_part)
+        except Exception as e:
+            # If the conversion method fails, log the error and fall back to SMPTE
+            logger.error(
+                f'Error during conversion to [{format_type}]: {type(e).__name__}: {e}. Falling back to SMPTE type')
+            return self._convert_to_output_smpte(output_part)
 
     def set_fps(self, dest_fps: float, rounding: bool = True) -> 'DfttTimecode':
         """Change the frame rate of the timecode.
