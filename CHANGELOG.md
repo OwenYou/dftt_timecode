@@ -7,6 +7,70 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0b1] - 2025-10-24
+
+### Summary
+
+First beta release! The library has reached feature completeness and API stability for its core functionality. All major features are implemented, tested, and documented. This beta release is ready for production testing and feedback.
+
+### Added
+
+- Comprehensive internationalization (i18n) support with Chinese translations
+
+  完整的国际化支持，包含中文翻译
+
+- Language switcher in documentation
+
+  文档语言切换器
+
+- Enhanced documentation with auto-generated changelog integration
+
+  增强文档，自动集成 CHANGELOG.md
+
+### Changed
+
+- API is now considered stable for 1.0.0 release
+
+  API 现在被视为稳定版本，准备发布 1.0.0
+
+- Updated development status from Pre-Alpha to Beta
+
+  开发状态从预览版更新为测试版
+
+### Core Features (Stable)
+
+- Multiple timecode format support: SMPTE (DF/NDF), SRT, FFMPEG, FCPX, DLP, frame count, timestamps
+
+  多种时码格式支持
+
+- High frame rate support (0.01-999.99 fps)
+
+  高帧率支持
+
+- High-precision calculations using Fraction for lossless accuracy
+
+  使用 Fraction 进行高精度计算
+
+- Full arithmetic operators (+, -, *, /) and comparison operators (==, !=, <, >, <=, >=)
+
+  完整的算术和比较运算符
+
+- DfttTimeRange class for time interval operations
+
+  时间范围操作类
+
+- Comprehensive test coverage with pytest
+
+  完整的测试覆盖
+
+- Sphinx-based documentation with API reference
+
+  基于 Sphinx 的文档和 API 参考
+
+- Automated CI/CD for documentation and PyPI publishing
+
+  自动化 CI/CD 用于文档和 PyPI 发布
+
 ## [0.0.15a2] - Pre-Alpha
 
 ### Fixed
