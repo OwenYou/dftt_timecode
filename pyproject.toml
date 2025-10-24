@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dftt-timecode"
-version = "0.0.15a2"
+version = "1.0.0b1"
 description = "Timecode library for film and TV industry, supports HFR and a bunch of cool features"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -17,7 +17,7 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
-    "Development Status :: 2 - Pre-Alpha",
+    "Development Status :: 4 - Beta",
     "Natural Language :: Chinese (Simplified)",
     "Operating System :: OS Independent",
 ]
