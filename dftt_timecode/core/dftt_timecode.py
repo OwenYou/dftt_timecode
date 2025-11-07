@@ -684,7 +684,7 @@ class DfttTimecode:
         else:
             logger.warning(
                 '_convert_to_output_fcpx: This timecode type has only one part.')
-        output_fcpx_denominator='' if float(self.__precise_time).is_integer() else self.__precise_time.denominator
+        output_fcpx_denominator='' if float(self.__precise_time).is_integer() else f'/{self.__precise_time.denominator}'
         return f'{self.__precise_time.numerator}{output_fcpx_denominator}s'
 
     def _convert_to_output_frame(self, output_part=0) -> str:
