@@ -228,8 +228,7 @@ class DfttTimecode:
             
         if minus_flag:
             frame_index = -frame_index
-        self.__precise_time = Fraction(
-            frame_index / self.__fps)  # 时间戳=帧号/帧率
+        self.__precise_time = Fraction(frame_index) / Fraction(self.__fps)  # 时间戳=帧号/帧率
     
     def __init_srt(self, timecode_value: str,minus_flag:bool):
         if not SRT_REGEX.match(timecode_value):  # 判断输入是否符合SRT类型
@@ -305,8 +304,7 @@ class DfttTimecode:
                 self.__nominal_fps * 86400)
         else:
             pass
-        self.__precise_time = Fraction(
-            temp_frame_index / self.__fps)  # 转换为内部精准时间戳
+        self.__precise_time = Fraction(temp_frame_index) / Fraction(self.__fps)  # 转换为内部精准时间戳
         
     def __init_time(self, timecode_value: str,minus_flag:bool):
         if not TIME_REGEX.match(timecode_value):
@@ -548,6 +546,103 @@ class DfttTimecode:
             Fraction(1, 1)
         """
         return self.__precise_time
+    
+    @property
+    def smpte(self) -> str:
+        """Get the SMPTE timecode string representation.
+
+        Returns:
+            str: The SMPTE timecode string (e.g., '01:23:45:12' or '01:23:45;12' for drop-frame)
+
+        Example:
+            >>> tc = DfttTimecode('01:00:00:00', fps=24)
+            >>> tc.smpte
+            '01:00:00:00'
+        """
+        return self._convert_to_output_smpte()
+    
+    @property
+    def srt(self) -> str:
+        """Get the SRT timecode string representation.
+
+        Returns:
+            str: The SRT timecode string (e.g., '01:23:45,678')
+
+        Example:
+            >>> tc = DfttTimecode('01:00:00:00', fps=24)
+            >>> tc.srt
+            '01:00:00,000'
+        """
+        return self._convert_to_output_srt()
+    
+    @property
+    def dlp(self) -> str:
+        """Get the DLP timecode string representation.
+
+        Returns:
+            str: The DLP timecode string (e.g., '01:23:45:102')
+
+        Example:
+            >>> tc = DfttTimecode('01:00:00:00', fps=24)
+            >>> tc.dlp
+            '01:00:00:000'
+        """
+        return self._convert_to_output_dlp()
+    
+    @property
+    def ffmpeg(self) -> str:
+        """Get the FFmpeg timecode string representation.
+
+        Returns:
+            str: The FFmpeg timecode string (e.g., '01:23:45.67')
+
+        Example:
+            >>> tc = DfttTimecode('01:00:00:00', fps=24)
+            >>> tc.ffmpeg
+            '01:00:00.00'
+        """
+        return self._convert_to_output_ffmpeg()
+    
+    @property
+    def fcpx(self) -> str:
+        """Get the Final Cut Pro X timecode string representation.
+
+        Returns:
+            str: The FCPX timecode string (e.g., '1234/24s')
+
+        Example:
+            >>> tc = DfttTimecode('01:00:00:00', fps=24)
+            >>> tc.fcpx
+            '86400/24s'
+        """
+        return self._convert_to_output_fcpx()
+    
+    @property
+    def frame(self) -> int:
+        """Get the frame count string representation.
+
+        Returns:
+            int: The frame count (e.g., 1234)
+
+        Example:
+            >>> tc = DfttTimecode('01:00:00:00', fps=24)
+            >>> tc.frame
+            86400
+        """
+        return self._convert_to_output_frame()
+    
+    @property
+    def time(self) -> float:
+        """Get the timestamp string representation in seconds.
+
+        Returns:
+            float: The timestamp in seconds (e.g., 1234.5)
+        Example:
+            >>> tc = DfttTimecode('01:00:00:00', fps=24)
+            >>> tc.time
+            3600.0
+        """
+        return self._convert_to_output_time()
 
     def _convert_to_output_smpte(self, output_part=0) -> str:
         minus_flag = False
@@ -684,25 +779,25 @@ class DfttTimecode:
         else:
             logger.warning(
                 '_convert_to_output_fcpx: This timecode type has only one part.')
-        output_fcpx_denominator='' if float(self.__precise_time).is_integer() else f'/{self.__precise_time.denominator}'
-        return f'{self.__precise_time.numerator}{output_fcpx_denominator}s'
-
-    def _convert_to_output_frame(self, output_part=0) -> str:
-        if output_part == 0:
-            pass
+        if float(self.__precise_time).is_integer():
+            return f'{int(self.__precise_time)}s'
         else:
+            return f'{self.__precise_time.numerator}/{self.__precise_time.denominator}s'
+
+    def _convert_to_output_frame(self, output_part=0) -> int:
+        if output_part != 0:
             logger.warning(
                 'This timecode type [frame] has only one part.')
-        return str(round(self.__precise_time * self.__fps))
+        return round(self.__precise_time * self.__fps)
 
-    def _convert_to_output_time(self, output_part=0) -> str:
+    def _convert_to_output_time(self, output_part=0) -> float:
         if output_part == 0:
             pass
         else:
             logger.warning(
                 'This timecode type [time] has only one part.')
         output_time = round(float(self.__precise_time), 5)
-        return str(output_time)
+        return output_time
 
     def timecode_output(self, dest_type: TimecodeType = 'auto', output_part: int = 0) -> str:
         """Convert timecode to specified format and return as string.
@@ -749,7 +844,7 @@ class DfttTimecode:
         # Call the conversion method
         try:
             func = getattr(self, method_name)
-            return func(output_part)
+            return str(func(output_part))
         except Exception as e:
             # If the conversion method fails, log the error and fall back to SMPTE
             logger.error(
@@ -882,6 +977,42 @@ class DfttTimecode:
         """
         numerator,denominator=self.__precise_time.as_integer_ratio()
         return floor(numerator * sample_rate/denominator)
+
+    def move_frame(self, frames: int) -> 'DfttTimecode':
+        """Move the timecode by a certain number of frames.
+        Args:
+            frames: Number of frames to move. Positive to move forward, negative to move backward.
+        Returns:
+            DfttTimecode: Self reference for method chaining
+        """
+        if not isinstance(frames, int):
+            logger.error('Frames parameter must be an integer.')
+            raise DFTTTimecodeOperatorError
+
+        new_precise_time = self.__precise_time + Fraction(frames) / Fraction(self.__fps)
+        
+        self.__precise_time = new_precise_time
+        self.__apply_strict()
+
+        return self
+    
+    def move_time(self, seconds: Union[float, Fraction,int]) -> 'DfttTimecode':
+        """Move the timecode by a certain number of seconds.
+        Args:
+            seconds: Number of seconds to move. Positive to move forward, negative to move backward.
+        Returns:
+            DfttTimecode: Self reference for method chaining
+        """
+        if not isinstance(seconds, (float, Fraction,int)):
+            logger.error('Seconds parameter must be a float or Fraction.')
+            raise DFTTTimecodeOperatorError
+
+        new_precise_time = self.__precise_time + Fraction(seconds)
+        
+        self.__precise_time = new_precise_time
+        self.__apply_strict()
+
+        return self
 
     def __repr__(self) -> str:
         """Return detailed string representation of the timecode object.

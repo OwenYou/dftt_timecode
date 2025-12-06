@@ -7,7 +7,72 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.0.0b1] - 2025-10-24
+## [1.0.0b3]
+
+### Fixed
+
+- Fix Python 3.14 compatibility issue in `move_frame()` method where `Fraction()` constructor with two arguments failed due to stricter type requirements
+
+  修复 Python 3.14 兼容性问题，`move_frame()` 方法中 `Fraction()` 构造函数因更严格的类型要求而失败
+
+- Fix precision loss issues in timecode initialization methods (`__init_smpte()`, `__init_frame()`) by using `Fraction()` division instead of float division
+
+  修复时码初始化方法中的精度损失问题，使用 `Fraction()` 除法替代浮点数除法
+
+- Fix FCPX format output to correctly handle integer timestamps, avoiding large numerator values when the result is a whole number
+
+  修复 FCPX 格式输出，正确处理整数时间戳，避免结果为整数时出现大分子值
+
+### Added
+
+- Add `move_frame()` and `move_time()` methods to DfttTimecode class for moving timecode by specified frames or time duration
+
+  为 DfttTimecode 类添加 `move_frame()` 和 `move_time()` 方法，用于按指定帧数或时间段移动时码
+
+- Add comprehensive unit tests (32 tests) for `move_frame()` and `move_time()` methods
+
+  为 `move_frame()` 和 `move_time()` 方法添加全面的单元测试（32 个测试）
+
+  - Frame movement tests: forward/backward movement, zero movement, large movements (86400 frames)
+
+    帧移动测试：正向/反向移动、零移动、大规模移动（86400 帧）
+
+  - Time movement tests: float/int/Fraction input support, various time movements
+
+    时间移动测试：浮点数/整数/分数输入支持、各种时间移动
+
+  - Strict mode tests: 24-hour cycling behavior verification
+
+    严格模式测试：24 小时循环行为验证
+
+  - Different frame rates: 24, 30, 60, 119.88 fps
+
+    不同帧率：24、30、60、119.88 fps
+
+  - Drop-frame timecode support tests
+
+    丢帧时码支持测试
+
+  - Method chaining and input validation tests
+
+    方法链和输入验证测试
+
+  - Equivalence test between `move_frame()` and `move_time()`
+
+    `move_frame()` 和 `move_time()` 的等价性测试
+
+### Changed
+
+- Improved internal timestamp precision across the entire codebase by consistently using `Fraction()` arithmetic
+
+  通过始终使用 `Fraction()` 算术运算，提高整个代码库的内部时间戳精度
+
+## [1.0.0b2]
+### Fixed
+- Fix bug for fcpx output format
+  修复 fcpx 输出格式的错误
+
+## [1.0.0b1]
 
 ### Summary
 

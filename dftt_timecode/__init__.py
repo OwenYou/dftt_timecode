@@ -25,13 +25,16 @@ Example:
     01:00:04:04
 """
 
-from dftt_timecode.core.dftt_timecode import DfttTimecode
+from fractions import Fraction
+from typing import Optional
+from dftt_timecode.core.dftt_timecode import DfttTimecode, TimecodeType
 from dftt_timecode.core.dftt_timerange import DfttTimeRange
 from dftt_timecode.logging_config import configure_logging, get_logger
 
 # Read version from package metadata (populated from pyproject.toml)
 try:
     from importlib.metadata import version, PackageNotFoundError
+
     try:
         __version__ = version("dftt-timecode")
     except PackageNotFoundError:
@@ -43,7 +46,13 @@ except ImportError:
 
 
 # Aliases for easier importing
-def timecode(*args, **kwargs) -> DfttTimecode:
+def Timecode(
+    timecode_value,
+    timecode_type: TimecodeType = "auto",
+    fps=24.0,
+    drop_frame=None,
+    strict=True,
+) -> DfttTimecode:
     """Create a DfttTimecode instance.
 
     This is an alias for :class:`DfttTimecode` constructor.
@@ -56,12 +65,26 @@ def timecode(*args, **kwargs) -> DfttTimecode:
         DfttTimecode: A new timecode instance
 
     Example:
-        >>> tc = timecode('01:00:00:00', fps=24)
+        >>> tc = Timecode('01:00:00:00', fps=24)
     """
-    return DfttTimecode(*args, **kwargs)
+    return DfttTimecode(
+        timecode_value,
+        timecode_type=timecode_type,
+        fps=fps,
+        drop_frame=drop_frame,
+        strict=strict,
+    )
 
 
-def timerange(*args, **kwargs) -> DfttTimeRange:
+def Timerange(
+    start_tc=None,
+    end_tc=None,
+    forward: bool = True,
+    fps=24.0,
+    start_precise_time: Optional[Fraction] = None,
+    precise_duration: Optional[Fraction] = None,
+    strict_24h: bool = False,
+) -> DfttTimeRange:
     """Create a DfttTimeRange instance.
 
     This is an alias for :class:`DfttTimeRange` constructor.
@@ -74,12 +97,26 @@ def timerange(*args, **kwargs) -> DfttTimeRange:
         DfttTimeRange: A new timerange instance
 
     Example:
-        >>> tr = timerange('01:00:00:00', '02:00:00:00', fps=24)
+        >>> tr = Timerange('01:00:00:00', '02:00:00:00', fps=24)
     """
-    return DfttTimeRange(*args, **kwargs)
+    return DfttTimeRange(
+        start_tc=start_tc,
+        end_tc=end_tc,
+        fps=fps,
+        forward=forward,
+        start_precise_time=start_precise_time,
+        precise_duration=precise_duration,
+        strict_24h=strict_24h,
+    )
 
 
-def dtc(*args, **kwargs) -> DfttTimecode:
+def dtc(
+    timecode_value,
+    timecode_type: TimecodeType = "auto",
+    fps=24.0,
+    drop_frame=None,
+    strict=True,
+) -> DfttTimecode:
     """Create a DfttTimecode instance (short alias).
 
     This is a short alias for :class:`DfttTimecode` constructor.
@@ -94,10 +131,24 @@ def dtc(*args, **kwargs) -> DfttTimecode:
     Example:
         >>> tc = dtc('01:00:00:00', fps=24)
     """
-    return DfttTimecode(*args, **kwargs)
+    return DfttTimecode(
+        timecode_value,
+        timecode_type=timecode_type,
+        fps=fps,
+        drop_frame=drop_frame,
+        strict=strict,
+    )
 
 
-def dtr(*args, **kwargs) -> DfttTimeRange:
+def dtr(
+    start_tc=None,
+    end_tc=None,
+    forward: bool = True,
+    fps=24.0,
+    start_precise_time: Optional[Fraction] = None,
+    precise_duration: Optional[Fraction] = None,
+    strict_24h: bool = False,
+) -> DfttTimeRange:
     """Create a DfttTimeRange instance (short alias).
 
     This is a short alias for :class:`DfttTimeRange` constructor.
@@ -112,7 +163,16 @@ def dtr(*args, **kwargs) -> DfttTimeRange:
     Example:
         >>> tr = dtr('01:00:00:00', '02:00:00:00', fps=24)
     """
-    return DfttTimeRange(*args, **kwargs)
+    return DfttTimeRange(
+        start_tc=start_tc,
+        end_tc=end_tc,
+        fps=fps,
+        forward=forward,
+        start_precise_time=start_precise_time,
+        precise_duration=precise_duration,
+        strict_24h=strict_24h,
+    )
+
 
 name = "dftt_timecode"
 __author__ = "You Ziyuan"
