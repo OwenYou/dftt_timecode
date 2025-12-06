@@ -150,7 +150,7 @@ wheels = [
 
 [[package]]
 name = "dftt-timecode"
-version = "0.0.15a2"
+version = "1.0.0b3"
 source = { editable = "." }
 
 [package.dev-dependencies]

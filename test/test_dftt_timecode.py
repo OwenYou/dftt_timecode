@@ -63,7 +63,7 @@ def test_invalid_timecode(timecode_value, timecode_type, fps, drop_frame, strict
     from dftt_timecode.error import DFTTTimecodeValueError
 
     with pytest.raises(DFTTTimecodeValueError):
-        tc = TC(timecode_value, timecode_type, fps, drop_frame, strict)
+        TC(timecode_value, timecode_type, fps, drop_frame, strict)
 
 
 @pytest.mark.parametrize(
@@ -121,10 +121,10 @@ def test_dropframe_strict(timecode_value, timecode_type, fps, drop_frame, strict
 
 @pytest.fixture(
     params=[
-        ("00:01:01:01", "auto", 24, False, True, 61.04167, Fraction(1465 / 24)),
-        ("1000f", "auto", 119.88, True, True, 8.34168, Fraction(1000 / 119.88)),
+        ("00:01:01:01", "auto", 24, False, True, 61.04167, Fraction(1465, 24)),
+        ("1000f", "auto", 119.88, True, True, 8.34168, Fraction(1000, Fraction(119.88))),
         ("1.0s", "auto", Fraction(60000 / 1001), True, True, 1, 1),
-        ("00:01:00;02", "auto", 29.97, True, True, 60.06006, Fraction(1800 / 29.97)),
+        ("00:01:00;02", "auto", 29.97, True, True, 60.06006, Fraction(1800, Fraction(29.97))),
     ],
     ids=["smpte", "frame", "time", "smpte_nf"],
 )
@@ -716,7 +716,7 @@ def test_mul_xfail():
     tc_1 = TC("00:00:00:23", "auto", 24, False, True)
     tc_2 = TC("00:11:45:14", "auto", 24, False, True)
     with pytest.raises(DFTTTimecodeOperatorError):
-        tc_mul_xfail = tc_1 * tc_2
+        tc_1 * tc_2
 
 
 @pytest.fixture(
@@ -1057,7 +1057,7 @@ def test_lt(tc_value, compare_value, xvalue):
         "srt_float",
     ],
 )
-def test_lt(tc_value, compare_value, xvalue):
+def test_le(tc_value, compare_value, xvalue):
     tc = TC(*tc_value)
     from numbers import Number
 
@@ -1112,3 +1112,188 @@ def test_int(tc_value, xvalue):
 def test_audio_sample_count(tc_value, sample_rate, xvalue):
     tc = TC(*tc_value)
     assert tc.get_audio_sample_count(sample_rate) == xvalue
+
+
+# Tests for move_frame method
+@pytest.mark.parametrize(
+    argnames="tc_value,frames,expected_tc",
+    argvalues=[
+        # Move forward
+        (("00:00:00:00", "auto", 24, False, True), 24, "00:00:01:00"),
+        (("00:00:00:00", "auto", 24, False, True), 100, "00:00:04:04"),
+        # Move backward
+        (("00:00:10:00", "auto", 24, False, True), -24, "00:00:09:00"),
+        (("00:00:10:00", "auto", 24, False, True), -100, "00:00:05:20"),
+        # Move by zero
+        (("00:00:05:12", "auto", 24, False, True), 0, "00:00:05:12"),
+        # Large movement (86400 frames at 24fps = 1 hour)
+        (("00:00:00:00", "auto", 24, False, True), 86400, "01:00:00:00"),
+        # Different frame rates
+        (("00:00:00:00", "auto", 30, False, True), 30, "00:00:01:00"),
+        (("00:00:00:00", "auto", 60, False, True), 60, "00:00:01:00"),
+        # High frame rate
+        (("00:00:00:00", "auto", 119.88, False, True), 119, "00:00:00:119"),
+        # Drop frame
+        (("00:00:00;00", "auto", 29.97, True, True), 30, "00:00:01;00"),
+    ],
+    ids=[
+        "forward_1sec_24fps",
+        "forward_100frames_24fps",
+        "backward_1sec_24fps",
+        "backward_100frames_24fps",
+        "zero_movement",
+        "large_movement_86400frames",
+        "forward_1sec_30fps",
+        "forward_1sec_60fps",
+        "high_fps_119.88",
+        "drop_frame_29.97",
+    ],
+)
+def test_move_frame(tc_value, frames, expected_tc):
+    """Test move_frame method with various frame movements."""
+    tc = TC(*tc_value)
+    tc.move_frame(frames)
+    assert tc.timecode_output() == expected_tc
+
+
+@pytest.mark.parametrize(
+    argnames="tc_value,frames,expected_framecount",
+    argvalues=[
+        # Verify frame count after movement
+        (("00:00:00:00", "auto", 24, False, True), 100, 100),
+        (("00:00:10:00", "auto", 24, False, True), -100, 140),
+        (("00:00:00:00", "auto", 24, False, True), 86400, 86400),
+    ],
+    ids=["forward_framecount", "backward_framecount", "large_framecount"],
+)
+def test_move_frame_framecount(tc_value, frames, expected_framecount):
+    """Test that move_frame correctly updates framecount property."""
+    tc = TC(*tc_value)
+    tc.move_frame(frames)
+    assert tc.framecount == expected_framecount
+
+
+def test_move_frame_strict_mode():
+    """Test move_frame with strict mode (24-hour cycling)."""
+    tc = TC("23:59:59:23", "auto", fps=24, drop_frame=False, strict=True)
+    tc.move_frame(1)  # Should cycle to 00:00:00:00
+    assert tc.timecode_output() == "00:00:00:00"
+
+
+def test_move_frame_chaining():
+    """Test that move_frame returns self for method chaining."""
+    tc = TC("00:00:00:00", "auto", fps=24, drop_frame=False, strict=True)
+    result = tc.move_frame(100).move_frame(50)
+    assert result is tc
+    assert tc.framecount == 150
+
+
+def test_move_frame_invalid_input():
+    """Test move_frame raises error with non-integer input."""
+    tc = TC("00:00:00:00", "auto", fps=24, drop_frame=False, strict=True)
+    with pytest.raises(DFTTTimecodeOperatorError):
+        tc.move_frame(10.5)  # Float should raise error
+    with pytest.raises(DFTTTimecodeOperatorError):
+        tc.move_frame("100")  # String should raise error
+
+
+# Tests for move_time method
+@pytest.mark.parametrize(
+    argnames="tc_value,seconds,expected_tc",
+    argvalues=[
+        # Move forward with float
+        (("00:00:00:00", "auto", 24, False, True), 1.0, "00:00:01:00"),
+        (("00:00:00:00", "auto", 24, False, True), 10.5, "00:00:10:12"),
+        # Move backward with float
+        (("00:00:10:00", "auto", 24, False, True), -5.0, "00:00:05:00"),
+        # Move by zero
+        (("00:00:05:12", "auto", 24, False, True), 0.0, "00:00:05:12"),
+        # Move with integer seconds
+        (("00:00:00:00", "auto", 24, False, True), 60, "00:01:00:00"),
+        # Different frame rates
+        (("00:00:00:00", "auto", 30, False, True), 1.0, "00:00:01:00"),
+        (("00:00:00:00", "auto", 60, False, True), 2.5, "00:00:02:30"),
+        # Large movement (3600 seconds = 1 hour)
+        (("00:00:00:00", "auto", 24, False, True), 3600, "01:00:00:00"),
+    ],
+    ids=[
+        "forward_1sec_float",
+        "forward_10.5sec",
+        "backward_5sec",
+        "zero_movement",
+        "forward_60sec_int",
+        "forward_1sec_30fps",
+        "forward_2.5sec_60fps",
+        "large_movement_3600sec",
+    ],
+)
+def test_move_time(tc_value, seconds, expected_tc):
+    """Test move_time method with various time movements."""
+    tc = TC(*tc_value)
+    tc.move_time(seconds)
+    assert tc.timecode_output() == expected_tc
+
+
+@pytest.mark.parametrize(
+    argnames="tc_value,seconds,expected_timestamp",
+    argvalues=[
+        # Verify timestamp after movement
+        (("00:00:00:00", "auto", 24, False, True), 10.0, 10.0),
+        (("00:00:10:00", "auto", 24, False, True), -5.0, 5.0),
+        (("00:00:00:00", "auto", 24, False, True), 3600.0, 3600.0),
+    ],
+    ids=["forward_timestamp", "backward_timestamp", "large_timestamp"],
+)
+def test_move_time_timestamp(tc_value, seconds, expected_timestamp):
+    """Test that move_time correctly updates timestamp property."""
+    tc = TC(*tc_value)
+    tc.move_time(seconds)
+    assert tc.timestamp == pytest.approx(expected_timestamp, rel=1e-6)
+
+
+def test_move_time_with_fraction():
+    """Test move_time with Fraction input for high precision."""
+    tc = TC("00:00:00:00", "auto", fps=24, drop_frame=False, strict=True)
+    tc.move_time(Fraction(1, 3))  # Move by 1/3 second
+    # 1/3 second at 24fps = 8 frames
+    assert tc.framecount == 8
+    assert tc.precise_timestamp == Fraction(1, 3)
+
+
+def test_move_time_strict_mode():
+    """Test move_time with strict mode (24-hour cycling)."""
+    tc = TC("23:59:59:23", "auto", fps=24, drop_frame=False, strict=True)
+    tc.move_time(Fraction(1, 24))  # Move by 1 frame duration, should cycle to 00:00:00:00
+    assert tc.timecode_output() == "00:00:00:00"
+
+
+def test_move_time_chaining():
+    """Test that move_time returns self for method chaining."""
+    tc = TC("00:00:00:00", "auto", fps=24, drop_frame=False, strict=True)
+    result = tc.move_time(1.0).move_time(2.5)
+    assert result is tc
+    assert tc.timestamp == pytest.approx(3.5, rel=1e-6)
+
+
+def test_move_time_invalid_input():
+    """Test move_time raises error with invalid input types."""
+    tc = TC("00:00:00:00", "auto", fps=24, drop_frame=False, strict=True)
+    with pytest.raises(DFTTTimecodeOperatorError):
+        tc.move_time("10.5")  # String should raise error
+    with pytest.raises(DFTTTimecodeOperatorError):
+        tc.move_time([10.5])  # List should raise error
+
+
+# Combined test for move_frame and move_time equivalence
+def test_move_frame_time_equivalence():
+    """Test that move_frame and move_time produce equivalent results."""
+    tc1 = TC("00:00:00:00", "auto", fps=24, drop_frame=False, strict=True)
+    tc2 = TC("00:00:00:00", "auto", fps=24, drop_frame=False, strict=True)
+
+    # Moving 24 frames should equal moving 1 second at 24fps
+    tc1.move_frame(24)
+    tc2.move_time(1.0)
+
+    assert tc1.framecount == tc2.framecount
+    assert tc1.timecode_output() == tc2.timecode_output()
+    assert tc1.timestamp == pytest.approx(tc2.timestamp, rel=1e-9)
