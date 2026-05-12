@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["uv_build>=0.11,<0.13"]
+build-backend = "uv_build"
 
 [project]
 name = "dftt-timecode"
@@ -8,7 +8,7 @@ version = "1.0.0b3"
 description = "Timecode library for film and TV industry, supports HFR and a bunch of cool features"
 readme = "README.md"
 requires-python = ">=3.11"
-license = "LGPL-2.1"
+license = "LGPL-2.1-only"
 authors = [
     {name = "You Ziyuan", email = "hikaridragon0216@gmail.com"},
     {name = "Wheheo Hu", email = "wheheohu@outlook.com"}
@@ -31,8 +31,10 @@ Documentation = "https://owenyou.github.io/dftt_timecode/"
 Repository = "https://github.com/OwenYou/dftt_timecode"
 Issues = "https://github.com/OwenYou/dftt_timecode/issues"
 
-[tool.setuptools.packages.find]
-include = ["dftt_timecode*"]
+[tool.uv.build-backend]
+module-root = ""
+source-exclude = [".DS_Store", "**/.DS_Store"]
+wheel-exclude = [".DS_Store", "**/.DS_Store"]
 
 [tool.pytest.ini_options]
 addopts = "-v -s"
@@ -45,4 +47,6 @@ dev = [
     "pydata-sphinx-theme>=0.15.0",
     "myst-parser>=4.0.0",
     "sphinx-intl>=2.0.0",
+    "ruff>=0.15.12",
+    "ty>=0.0.35",
 ]

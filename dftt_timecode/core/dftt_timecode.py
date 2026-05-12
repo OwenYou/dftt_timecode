@@ -8,6 +8,7 @@ timecode functionality for film and television production workflows.
 from fractions import Fraction
 from functools import singledispatchmethod
 from math import ceil, floor
+import re
 from typing import Literal, TypeAlias, Union
 
 from dftt_timecode.error import (
@@ -141,7 +142,7 @@ class DfttTimecode:
         - :mod:`dftt_timecode.pattern`: Regex patterns for format validation
         - :mod:`dftt_timecode.error`: Custom exception classes
     """
-    __type = 'time'
+    __type: TimecodeType = 'time'
     __fps = 24.0  # 帧率
     __nominal_fps = 24  # 名义帧率（无小数,进一法取整）
     __drop_frame = False  # 是否丢帧Dropframe（True为丢帧，False为不丢帧）
@@ -157,7 +158,7 @@ class DfttTimecode:
     def __validate_drop_frame(self, drop_frame: bool, fps: float) -> bool:
         if round(fps, 2) % 29.97 == 0:
             # FPS为29.97以及倍数时候，尊重drop_frame参数(for 29.97/59.94/119.88 NDF)
-            return False if not drop_frame else True
+            return drop_frame
         else:
             return round(fps, 2) % 23.98 == 0
 
@@ -184,27 +185,24 @@ class DfttTimecode:
         elif TIME_REGEX.match(timecode_value):
             return  'time'
         else:
-            # No pattern matched - raise error instead of returning None
-            logger.error(f'Cannot detect timecode type for value [{timecode_value}]. No matching pattern found.')
             raise DFTTTimecodeTypeError(f'Cannot detect timecode type for value [{timecode_value}]. No matching pattern found.')
     def __apply_strict(self) -> None:
         """Apply 24h wraparound if strict mode enabled"""
         if self.__strict:
             self.__precise_time %= 86400
-            
+    
+    @staticmethod 
+    def _ensure_match(pattern:re.Pattern[str], timecode_value:str, timecode_type:str) -> re.Match[str]:
+        if not (match_result:=pattern.match(timecode_value)):
+            raise DFTTTimecodeTypeError(f'Timecode type [{timecode_type}] DONOT match input value [{timecode_value}]! Check input.')
+        return match_result
+        
         
     def __init_smpte(self, timecode_value: str,minus_flag:bool):
-        if not SMPTE_REGEX.match(timecode_value):  # 判断输入是否符合
-                logger.error(
-                    f'Timecode type [smpte] DONOT match input value [{timecode_value}]! Check input.')
-                raise DFTTTimecodeTypeError
-        temp_timecode_list = [int(x) if x else 0 for x in SMPTE_REGEX.match(
-            timecode_value).groups()]  # 正则取值
-        hh,mm,ss,ff = temp_timecode_list
+        match = self._ensure_match(SMPTE_REGEX, timecode_value, 'smpte')
+        hh,mm,ss,ff = map(int,match.groups(default='0'))  # 将捕获的时分秒帧转换为整数，缺失部分默认为0
         if ff > self.__nominal_fps - 1:  # 判断输入帧号在当前帧率下是否合法
-            logger.error(
-                f'This timecode: [{timecode_value}] is illegal under given params, check your input!')
-            raise DFTTTimecodeValueError
+            raise DFTTTimecodeValueError(f'This timecode: [{timecode_value}] is illegal under given params, check your input!')
 
         if not self.__drop_frame:  # 时码丢帧处理逻辑
             frame_index = ff + self.__nominal_fps * \
@@ -213,9 +211,8 @@ class DfttTimecode:
             drop_per_min = self.__nominal_fps / 30 * 2
             # 检查是否有DF下不合法的帧号
             if mm % 10 != 0 and ss == 0 and ff in (0, drop_per_min - 1):
-                logger.error(
+                raise DFTTTimecodeValueError(
                     f'This timecode: [{timecode_value}] is illegal under given params, check your input!')
-                raise DFTTTimecodeValueError
             else:
                 total_minutes = 60 * hh + mm
                 frame_index = (hh * 3600 + mm * 60 + ss) * self.__nominal_fps + ff - (
@@ -231,16 +228,10 @@ class DfttTimecode:
         self.__precise_time = Fraction(frame_index) / Fraction(self.__fps)  # 时间戳=帧号/帧率
     
     def __init_srt(self, timecode_value: str,minus_flag:bool):
-        if not SRT_REGEX.match(timecode_value):  # 判断输入是否符合SRT类型
-            logger.error(
-                f'Timecode type [srt] DONOT match input value [{timecode_value}]! Check input.')
-            raise DFTTTimecodeTypeError
-        
-        temp_timecode_list = [
-            int(x) if x else 0 for x in SRT_REGEX.match(timecode_value).groups()]
+        match = self._ensure_match(SRT_REGEX, timecode_value, 'srt')
+        hh, mm, ss, sub_sec = map(int, match.groups(default='0'))
         # 由于SRT格式本身不存在帧率，将为SRT赋予默认帧率和丢帧状态
         logger.info(f'SRT timecode framerate {self.__fps}, DF={self.__drop_frame} assigned')
-        hh,mm,ss,sub_sec = temp_timecode_list
         
         self.__precise_time = Fraction(hh * 3600 + mm * 60 + ss + sub_sec / 1000)
         if minus_flag:
@@ -250,15 +241,10 @@ class DfttTimecode:
         
     
     def __init_dlp(self, timecode_value: str, minus_flag: bool):
-        if not DLP_REGEX.match(timecode_value):
-            logger.error(
-                f'Timecode type [dlp] DONOT match input value [{timecode_value}]! Check input.')
-            raise DFTTTimecodeTypeError
-        temp_timecode_list = [
-            int(x) if x else 0 for x in DLP_REGEX.match(timecode_value).groups()]
+        match = self._ensure_match(DLP_REGEX, timecode_value, 'dlp')
+        hh, mm, ss, sub_sec = map(int, match.groups(default='0'))
         # 由于DLP不存在帧率，将为DLP赋予默认帧率和丢帧状态
         logger.info(f'DLP timecode framerate {self.__fps}, DF={self.__drop_frame} assigned')
-        hh, mm, ss, sub_sec = temp_timecode_list
         # dlp每秒共250个子帧 即4ms一个
         # 详见https://interop-docs.cinepedia.com/Reference_Documents/CineCanvas(tm)_RevC.pdf 第17页 “TimeIn”部分
 
@@ -269,12 +255,8 @@ class DfttTimecode:
 
         
     def __init_ffmpeg(self, timecode_value: str,minus_flag:bool):
-        if not FFMPEG_REGEX.match(timecode_value):
-            logger.error(f'Timecode type [ffmpeg] DONOT match input value [{timecode_value}]! Check input.')
-            raise DFTTTimecodeTypeError
-        temp_timecode_list = [
-            int(x) if x else 0 for x in FFMPEG_REGEX.match(timecode_value).groups()]
-        hh,mm,ss,sub_sec = temp_timecode_list
+        match = self._ensure_match(FFMPEG_REGEX, timecode_value, 'ffmpeg')
+        hh, mm, ss, sub_sec = map(int, match.groups(default='0'))
         self.__precise_time = Fraction(hh * 3600 + mm * 60 + ss + float(f'0.{sub_sec}'))
         if minus_flag:
             self.__precise_time = -self.__precise_time
@@ -282,22 +264,17 @@ class DfttTimecode:
         self.__apply_strict()
 
     def __init_fcpx(self, timecode_value: str,minus_flag:bool):
-        if not FCPX_REGEX.match(timecode_value):
-            logger.error(f'Timecode type [fcpx] DONOT match input value [{timecode_value}]! Check input.')
-            raise DFTTTimecodeTypeError
-        temp_timecode_list = [
-            int(x) if x else 0 for x in FCPX_REGEX.match(timecode_value).groups()]
-        self.__precise_time = Fraction(temp_timecode_list[0], temp_timecode_list[1])
+        match = self._ensure_match(FCPX_REGEX, timecode_value, 'fcpx')
+        numerator, denominator = map(int, match.groups(default='0'))
+        self.__precise_time = Fraction(numerator, denominator)
         if minus_flag:
             self.__precise_time = -self.__precise_time
             
         self.__apply_strict()
     
     def __init_frame(self, timecode_value: str,minus_flag:bool):
-        if not FRAME_REGEX.match(timecode_value):
-            logger.error(f'Timecode type [frame] DONOT match input value [{timecode_value}]! Check input.')
-            raise DFTTTimecodeTypeError
-        temp_frame_index = int(FRAME_REGEX.match(timecode_value).group(1))
+        match = self._ensure_match(FRAME_REGEX, timecode_value, 'frame')
+        temp_frame_index = int(match.group(1))
         if self.__strict:  # 严格模式，对于丢帧时码而言 用实际FPS运算，对于不丢帧时码而言，使用名义FPS运算
             temp_frame_index = temp_frame_index % (
                 self.__fps * 86400) if self.__drop_frame else temp_frame_index % (
@@ -307,16 +284,13 @@ class DfttTimecode:
         self.__precise_time = Fraction(temp_frame_index) / Fraction(self.__fps)  # 转换为内部精准时间戳
         
     def __init_time(self, timecode_value: str,minus_flag:bool):
-        if not TIME_REGEX.match(timecode_value):
-            logger.error(f'Timecode type [time] DONOT match input value [{timecode_value}]! Check input.')
-            raise DFTTTimecodeTypeError
-        temp_timecode_value = TIME_REGEX.match(timecode_value).group(1)
-        self.__precise_time = Fraction(temp_timecode_value)  # 内部时间戳直接等于输入值
+        match = self._ensure_match(TIME_REGEX, timecode_value, 'time')
+        self.__precise_time = Fraction(match.group(1))  # 内部时间戳直接等于输入值
         
         self.__apply_strict()
     
-    def __init_common(self, timecode_type,fps,drop_frame,strict):
-        self.__type = timecode_type
+    def __init_common(self, timecode_type: TimecodeType, fps: float, drop_frame: bool, strict: bool):
+        self.__type: TimecodeType = timecode_type
         self.__fps = fps
         self.__nominal_fps = ceil(fps)
         self.__drop_frame = self.__validate_drop_frame(drop_frame, fps)
@@ -327,7 +301,7 @@ class DfttTimecode:
         raise TypeError(f"Unsupported timecode value type: {type(timecode_value)}")
 
     @__init__.register  # 若传入的TC值为字符串，则调用此函数
-    def _(self, timecode_value: str, timecode_type:TimecodeType='auto', fps=24.0, drop_frame=None, strict=True):
+    def _(self, timecode_value: str, timecode_type:TimecodeType='auto', fps=24.0, drop_frame=False, strict=True):
         # if timecode_value[0] == '-':  # 判断首位是否为负，并为flag赋值
         #     minus_flag = True
         # else:
@@ -341,8 +315,8 @@ class DfttTimecode:
         
         timecode_type= timecode_type if timecode_type != 'auto' else self.__detect_timecode_type(timecode_value)
         
-        self.__type = timecode_type      
-    
+        self.__type: TimecodeType = timecode_type
+
         timecode_type_handler_map={
             'smpte':self.__init_smpte,
             'srt':self.__init_srt,
@@ -388,7 +362,7 @@ class DfttTimecode:
             
         elif timecode_type == 'time':
             self.__init_common(timecode_type,fps,drop_frame,strict)
-            self.__precise_time = timecode_value  # 内部时间戳直接等于输入值
+            self.__precise_time = Fraction(timecode_value)  # 内部时间戳直接等于输入值
             self.__apply_strict()
         else:
             logger.error(
@@ -439,11 +413,11 @@ class DfttTimecode:
         logger.debug(instance_success_log)
 
     @property
-    def type(self) -> str:
+    def type(self) -> TimecodeType:
         """Get the current timecode format type.
 
         Returns:
-            str: The timecode format type (e.g., 'smpte', 'srt', 'ffmpeg')
+            TimecodeType: The timecode format type (e.g., 'smpte', 'srt', 'ffmpeg')
 
         Example:
             >>> tc = DfttTimecode('01:00:00:00', fps=24)
@@ -654,7 +628,7 @@ class DfttTimecode:
         # 计算framecount用于输出smpte时码个部分值
         if not self.__drop_frame:  # 不丢帧
             # 对于不丢帧时码而言 framecount 为帧计数
-            _nominal_framecount = frame_index
+            _nominal_framecount = int(frame_index)
         else:  # 丢帧
             drop_per_min = self.__nominal_fps / 30 * 2  # 提前计算每分钟丢帧数量 简化后续计算
             df_framecount_10min = self.__nominal_fps * 600 - 9 * drop_per_min
@@ -664,7 +638,7 @@ class DfttTimecode:
                 # 剩余小于十分钟部分计算丢了多少帧，补偿
                 ((m - drop_per_min) // (self.__nominal_fps * 60 - drop_per_min)) if m > 2 else 0)
 
-            _nominal_framecount = drop_frame_frame_number
+            _nominal_framecount = int(drop_frame_frame_number)
 
         def _convert_framecount_to_smpte_parts(frame_count: int, fps: int) -> tuple:
             hour, r_1 = divmod(frame_count, 60*60*fps)
@@ -877,8 +851,8 @@ class DfttTimecode:
         self.__fps = dest_fps
         self.__nominal_fps = ceil(self.__fps)
         if rounding:
-            self.__precise_time = round(
-                self.__precise_time * self.__fps) / self.__fps
+            self.__precise_time = Fraction(round(
+                self.__precise_time * self.__fps) / self.__fps)
         else:
             pass
         return self
@@ -1297,7 +1271,7 @@ class DfttTimecode:
             logger.error(f'Undefined division with [{type(other)}].')
             raise DFTTTimecodeOperatorError
 
-    def __eq__(self, other: Union['DfttTimecode', int, float, Fraction]) -> bool:
+    def __eq__(self, other: object) -> bool:
         """Check equality with another timecode or numeric value.
 
         Args:
@@ -1340,7 +1314,7 @@ class DfttTimecode:
             logger.error(f'CANNOT compare with data type [{type(other)}].')
             raise DFTTTimecodeTypeError
 
-    def __ne__(self, other: Union['DfttTimecode', int, float, Fraction]) -> bool:
+    def __ne__(self, other: object) -> bool:
         """Check inequality with another timecode or numeric value.
 
         Args:
