@@ -218,9 +218,7 @@ class DfttTimeRange:
             self.__precise_duration += self.TIME_24H_SECONDS
 
         if self.__precise_duration == 0:
-            raise DFTTTimeRangeValueError(
-                "Time range cannot be zero-length (start equals end)!"
-            )
+            raise DFTTTimeRangeValueError("Time range cannot be zero-length (start equals end)!")
 
         self.__start_precise_time = start_precise
 
@@ -392,9 +390,7 @@ class DfttTimeRange:
         )
 
         if new_duration == 0:
-            raise DFTTTimeRangeValueError(
-                "Cannot create zero-length timerange via extend"
-            )
+            raise DFTTTimeRangeValueError("Cannot create zero-length timerange via extend")
 
         # Handle 24h constraint
         if self.__strict_24h and abs(new_duration) > self.TIME_24H_SECONDS:
@@ -477,9 +473,7 @@ class DfttTimeRange:
             - Duration magnitude is preserved
             - This is useful for working with timeranges that play backward
         """
-        logger.debug(
-            f"Reversing timerange: forward={self.__forward} -> {not self.__forward}"
-        )
+        logger.debug(f"Reversing timerange: forward={self.__forward} -> {not self.__forward}")
         return DfttTimeRange(
             start_precise_time=self.end_precise_time,
             precise_duration=self.__precise_duration,
@@ -599,9 +593,7 @@ class DfttTimeRange:
             - Useful for splitting work into parallel chunks or creating segments
         """
         if num_parts < 2:
-            raise DFTTTimeRangeValueError(
-                f"Cannot separate into {num_parts} parts, must be >= 2"
-            )
+            raise DFTTTimeRangeValueError(f"Cannot separate into {num_parts} parts, must be >= 2")
 
         part_duration = self.__precise_duration / num_parts
         logger.debug(
@@ -626,7 +618,11 @@ class DfttTimeRange:
         return parts
 
     # Operations with other timeranges
-    def contains(self, item: Union[DfttTimecode, 'DfttTimeRange', str, int, float], strict_forward: bool = False) -> bool:
+    def contains(
+        self,
+        item: Union[DfttTimecode, "DfttTimeRange", str, int, float],
+        strict_forward: bool = False,
+    ) -> bool:
         """Check if timerange contains another timerange or timecode.
 
         Args:
@@ -674,9 +670,9 @@ class DfttTimeRange:
             item_start = item.start_precise_time
             item_end = item.end_precise_time
 
-            return self.contains(
-                DfttTimecode(float(item_start), fps=self.__fps)
-            ) and self.contains(DfttTimecode(float(item_end), fps=self.__fps))
+            return self.contains(DfttTimecode(float(item_start), fps=self.__fps)) and self.contains(
+                DfttTimecode(float(item_end), fps=self.__fps)
+            )
         else:
             try:
                 tc = DfttTimecode(item, fps=self.__fps)
@@ -882,9 +878,7 @@ class DfttTimeRange:
 
         duration = end - start if self.__forward else start - end
 
-        logger.debug(
-            f"Union created: start={float(start):.3f}s, duration={float(duration):.3f}s"
-        )
+        logger.debug(f"Union created: start={float(start):.3f}s, duration={float(duration):.3f}s")
 
         return DfttTimeRange(
             start_precise_time=start,
@@ -948,9 +942,7 @@ class DfttTimeRange:
             new_duration = self.__precise_duration - other.precise_duration
 
         if new_duration == 0:
-            raise DFTTTimeRangeValueError(
-                "Add operation resulted in zero-length timerange"
-            )
+            raise DFTTTimeRangeValueError("Add operation resulted in zero-length timerange")
 
         logger.debug(
             f"Add timerange: same_direction={self.__forward == other.forward}, "
@@ -1024,9 +1016,7 @@ class DfttTimeRange:
             new_duration = self.__precise_duration + other.precise_duration
 
         if new_duration == 0:
-            raise DFTTTimeRangeValueError(
-                "Subtract operation resulted in zero-length timerange"
-            )
+            raise DFTTTimeRangeValueError("Subtract operation resulted in zero-length timerange")
 
         logger.debug(
             f"Subtract timerange: same_direction={self.__forward == other.forward}, "

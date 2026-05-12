@@ -40,6 +40,13 @@ wheel-exclude = [".DS_Store", "**/.DS_Store"]
 addopts = "-v -s"
 testpaths = ["test"]
 
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ty.environment]
+python-version = "3.11"
+
 [dependency-groups]
 dev = [
     "pytest>=8.3.4",
