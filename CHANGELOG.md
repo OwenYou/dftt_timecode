@@ -7,7 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.0.0b4]
+## [1.0.0] - 2026-05-12
+
+### Summary
+
+First stable release. The library graduates from beta with the breaking changes accumulated during the `1.0.0b*` series finalized. Downstream code that worked against `1.0.0b4` should require no further changes.
+
+首个正式版本。库从测试版毕业，`1.0.0b*` 系列累积的破坏性变更在此版本定稿。已适配 `1.0.0b4` 的下游代码无需进一步修改。
 
 ### Fixed
 
