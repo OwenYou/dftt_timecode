@@ -142,18 +142,7 @@ class DfttTimecode:
         - :mod:`dftt_timecode.error`: Custom exception classes
     """
     __type: TimecodeType = 'time'
-    __fps = 24.0  # 帧率
-    __nominal_fps = 24  # 名义帧率（无小数,进一法取整）
-    __drop_frame = False  # 是否丢帧Dropframe（True为丢帧，False为不丢帧）
-    __strict = True  # 严格模式，默认为真，在该模式下不允许超出24或小于0的时码，将自动平移至0-24范围内，例如-1小时即为23小时，25小时即为1小时
-    __precise_time = Fraction(0)  # 精准时间戳，是所有时码类对象的工作基础
 
-    def __new__(cls, timecode_value=0, timecode_type='auto', fps=24.0, drop_frame=False, strict=True):
-        if isinstance(timecode_value, DfttTimecode):
-            return timecode_value
-        else:
-            return super(DfttTimecode, cls).__new__(cls)
-        
     def __validate_drop_frame(self, drop_frame: bool, fps: float) -> bool:
         if round(fps, 2) % 29.97 == 0:
             # FPS为29.97以及倍数时候，尊重drop_frame参数(for 29.97/59.94/119.88 NDF)
@@ -296,8 +285,10 @@ class DfttTimecode:
         self.__strict = strict
         
     @singledispatchmethod
-    def __init__(self, timecode_value, timecode_type, fps, drop_frame, strict):  # 构造函数
-        raise TypeError(f"Unsupported timecode value type: {type(timecode_value)}")
+    def __init__(self, timecode_value, timecode_type='auto', fps=24.0, drop_frame=False, strict=True):  # 构造函数
+        raise DFTTTimecodeTypeError(
+            f"Unsupported timecode value type: {type(timecode_value).__name__}"
+        )
 
     @__init__.register  # 若传入的TC值为字符串，则调用此函数
     def _(self, timecode_value: str, timecode_type:TimecodeType='auto', fps=24.0, drop_frame=False, strict=True):
