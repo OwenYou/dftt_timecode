@@ -5,6 +5,7 @@ This module provides the DfttTimeRange class for working with time intervals,
 supporting operations like offset, extend, intersection, union, and iteration.
 """
 
+import logging
 from fractions import Fraction
 from typing import Optional, List, Iterator, Union
 
@@ -16,10 +17,8 @@ from dftt_timecode.error import (
     DFTTTimeRangeTypeError,
     DFTTTimeRangeValueError,
 )
-from dftt_timecode.logging_config import get_logger
 
-# Set up logger with automatic level detection based on git branch
-logger = get_logger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class DfttTimeRange:

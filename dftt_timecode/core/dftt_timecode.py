@@ -5,6 +5,7 @@ This module contains the main DfttTimecode class which provides comprehensive
 timecode functionality for film and television production workflows.
 """
 
+import logging
 from fractions import Fraction
 from functools import singledispatchmethod
 from math import ceil, floor
@@ -17,7 +18,6 @@ from dftt_timecode.error import (
     DFTTTimecodeTypeError,
     DFTTTimecodeValueError,
 )
-from dftt_timecode.logging_config import get_logger
 from dftt_timecode.pattern import (
     DLP_REGEX,
     FCPX_REGEX,
@@ -30,8 +30,7 @@ from dftt_timecode.pattern import (
     TIME_REGEX,
 )
 
-# Set up logger with automatic level detection based on git branch
-logger = get_logger(__name__)
+logger = logging.getLogger(__name__)
 
 TimecodeType: TypeAlias = Literal['smpte', 'srt', 'dlp', 'ffmpeg', 'fcpx', 'frame', 'time', 'auto']
 """Type alias for supported timecode format types.

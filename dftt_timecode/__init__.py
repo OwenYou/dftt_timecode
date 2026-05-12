@@ -25,11 +25,13 @@ Example:
     01:00:04:04
 """
 
+import logging
 from fractions import Fraction
 from typing import Optional
 from dftt_timecode.core.dftt_timecode import DfttTimecode, TimecodeType
 from dftt_timecode.core.dftt_timerange import DfttTimeRange
-from dftt_timecode.logging_config import configure_logging, get_logger
+
+logging.getLogger(__name__).addHandler(logging.NullHandler())
 
 # Read version from package metadata (populated from pyproject.toml)
 try:
@@ -184,6 +186,4 @@ __all__ = [
     "timerange",
     "dtc",
     "dtr",
-    "configure_logging",
-    "get_logger",
 ]
