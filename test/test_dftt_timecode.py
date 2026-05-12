@@ -716,7 +716,7 @@ def test_mul_xfail():
     tc_1 = TC("00:00:00:23", "auto", 24, False, True)
     tc_2 = TC("00:11:45:14", "auto", 24, False, True)
     with pytest.raises(DFTTTimecodeOperatorError):
-        tc_1 * tc_2
+        tc_1 * tc_2  # ty: ignore[unsupported-operator]
 
 
 @pytest.fixture(
@@ -1192,9 +1192,9 @@ def test_move_frame_invalid_input():
     """Test move_frame raises error with non-integer input."""
     tc = TC("00:00:00:00", "auto", fps=24, drop_frame=False, strict=True)
     with pytest.raises(DFTTTimecodeOperatorError):
-        tc.move_frame(10.5)  # Float should raise error
+        tc.move_frame(10.5)  # ty: ignore[invalid-argument-type]  # Float should raise error
     with pytest.raises(DFTTTimecodeOperatorError):
-        tc.move_frame("100")  # String should raise error
+        tc.move_frame("100")  # ty: ignore[invalid-argument-type]  # String should raise error
 
 
 # Tests for move_time method
@@ -1279,9 +1279,9 @@ def test_move_time_invalid_input():
     """Test move_time raises error with invalid input types."""
     tc = TC("00:00:00:00", "auto", fps=24, drop_frame=False, strict=True)
     with pytest.raises(DFTTTimecodeOperatorError):
-        tc.move_time("10.5")  # String should raise error
+        tc.move_time("10.5")  # ty: ignore[invalid-argument-type]  # String should raise error
     with pytest.raises(DFTTTimecodeOperatorError):
-        tc.move_time([10.5])  # List should raise error
+        tc.move_time([10.5])  # ty: ignore[invalid-argument-type]  # List should raise error
 
 
 # Combined test for move_frame and move_time equivalence

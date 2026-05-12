@@ -15,7 +15,7 @@ class TestDfttTimeRangeInitialization:
         tr = DfttTimeRange(start, end)
         
         assert tr.fps == 24
-        assert tr.forward == True
+        assert tr.forward
         assert tr.duration == 1.0
         assert tr.framecount == 24
         
@@ -45,7 +45,7 @@ class TestDfttTimeRangeInitialization:
         end = DfttTimecode('00:00:00:00', fps=24)
         tr = DfttTimeRange(start, end, forward=False)
         
-        assert tr.forward == False
+        assert not tr.forward
         assert tr.duration == 2.0
         
     def test_init_fps_mismatch_error(self):
@@ -73,7 +73,7 @@ class TestDfttTimeRangeInitialization:
             strict_24h=True
         )
         
-        assert tr.strict_24h == True
+        assert tr.strict_24h
         assert tr.duration == 86400
         
     def test_init_strict_24h_exceeded_error(self):
@@ -100,8 +100,8 @@ class TestDfttTimeRangeProperties:
         )
         
         assert tr.fps == 25
-        assert tr.forward == False
-        assert tr.strict_24h == False
+        assert not tr.forward
+        assert not tr.strict_24h
         assert tr.precise_duration == Fraction(5)
         assert tr.start_precise_time == Fraction(10)
         
@@ -255,7 +255,7 @@ class TestDfttTimeRangeCoreOperations:
         
         assert reversed_tr.start_precise_time == Fraction(15)  # original end
         assert reversed_tr.precise_duration == Fraction(5)
-        assert reversed_tr.forward == False
+        assert not reversed_tr.forward
         
     def test_retime_factor(self):
         """Test retime with factor"""
@@ -325,8 +325,8 @@ class TestDfttTimeRangeContains:
         tc_inside = DfttTimecode(12.0, fps=24)
         tc_outside = DfttTimecode(16.0, fps=24)
         
-        assert tr.contains(tc_inside) == True
-        assert tr.contains(tc_outside) == False
+        assert tr.contains(tc_inside)
+        assert not tr.contains(tc_outside)
         
     def test_contains_timecode_reverse(self):
         """Test contains with timecode in reverse direction"""
@@ -340,8 +340,8 @@ class TestDfttTimeRangeContains:
         tc_inside = DfttTimecode(8.0, fps=24)  # between 5 and 10
         tc_outside = DfttTimecode(12.0, fps=24)
         
-        assert tr.contains(tc_inside) == True
-        assert tr.contains(tc_outside) == False
+        assert tr.contains(tc_inside)
+        assert not tr.contains(tc_outside)
         
     def test_contains_timerange(self):
         """Test contains with another timerange"""
@@ -357,8 +357,8 @@ class TestDfttTimeRangeContains:
             fps=24
         )
         
-        assert tr1.contains(tr2) == True
-        assert tr2.contains(tr1) == False
+        assert tr1.contains(tr2)
+        assert not tr2.contains(tr1)
         
     def test_contains_string_input(self):
         """Test contains with string input"""
@@ -368,8 +368,8 @@ class TestDfttTimeRangeContains:
             fps=24
         )
         
-        assert tr.contains('12.0s') == True
-        assert tr.contains('16.0s') == False
+        assert tr.contains('12.0s')
+        assert not tr.contains('16.0s')
 
 
 class TestDfttTimeRangeOperations:

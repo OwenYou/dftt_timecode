@@ -7,6 +7,54 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0b4]
+
+### Fixed
+
+- Initialization failures in `DfttTimecode` no longer leave behind a half-built object that silently behaves like a "value-0 timecode at 24 fps". The five class-level state defaults (`__fps`, `__nominal_fps`, `__drop_frame`, `__strict`, `__precise_time`) that masked missing instance attributes have been removed; any access to state on a partial instance now raises `AttributeError`
+
+  `DfttTimecode` 初始化失败时不再遗留一个表现为「24fps 下零值时码」的半构造对象。原本掩盖未赋值实例属性的五个类级别默认值（`__fps`、`__nominal_fps`、`__drop_frame`、`__strict`、`__precise_time`）已被移除；对半构造实例的状态访问现在会抛出 `AttributeError`
+
+### Removed
+
+- **Breaking:** Remove `configure_logging()` and `get_logger()` from the public API (`dftt_timecode.configure_logging`, `dftt_timecode.get_logger`)
+
+  **破坏性变更：** 从公开 API 中移除 `configure_logging()` 和 `get_logger()`
+
+- **Breaking:** Remove the `dftt_timecode.logging_config` module. Logging is now configured directly inside core modules using a standard `NullHandler`, following the recommended library logging convention. Downstream code should configure logging via the standard `logging` module
+
+  **破坏性变更：** 移除 `dftt_timecode.logging_config` 模块。日志现在在核心模块内部直接配置，并按照库日志最佳实践添加 `NullHandler`。下游代码应使用标准 `logging` 模块自行配置日志
+
+- **Breaking:** Remove the `DfttTimecode(existing_tc)` passthrough constructor introduced in 0.0.10. Passing an existing `DfttTimecode` to the constructor now raises `DFTTTimecodeTypeError` like any other unsupported input type. The previous behavior returned the same instance unchanged (`DfttTimecode(tc) is tc`), which created an aliasing footgun when the result was subsequently passed to mutators like `set_fps()`. Callers that want to reuse an instance should pass it directly; callers that want an independent copy should construct from a primitive representation such as `precise_timestamp`, `framecount`, or a string form
+
+  **破坏性变更：** 移除 0.0.10 引入的 `DfttTimecode(existing_tc)` 透传构造行为。现在向构造器传入已有的 `DfttTimecode` 会和其它不支持的输入类型一样抛出 `DFTTTimecodeTypeError`。原行为返回的是同一个实例（`DfttTimecode(tc) is tc`），后续若调用 `set_fps()` 等就地修改方法会出现别名陷阱。需要复用实例的调用方请直接使用原对象；需要独立副本的调用方请改用 `precise_timestamp`、`framecount` 或字符串等基本表示重新构造
+
+- **Breaking (latent):** Remove five class-level state attributes on `DfttTimecode` (`__fps`, `__nominal_fps`, `__drop_frame`, `__strict`, `__precise_time`). These were never part of the documented API but were observable via `vars(DfttTimecode)` / class-attribute inspection. See the corresponding Fixed entry above for the user-visible behavior change
+
+  **破坏性变更（隐性）：** 移除 `DfttTimecode` 上的五个类级别状态属性（`__fps`、`__nominal_fps`、`__drop_frame`、`__strict`、`__precise_time`）。它们从未作为文档化 API 公开，但可通过 `vars(DfttTimecode)` 等方式观测到。用户可见的行为变化见上方 Fixed 条目
+
+### Changed
+
+- **Breaking:** `DfttTimecode.timecode_output()` no longer silently falls back to SMPTE when a conversion method raises an unexpected exception. Only the defensive `AttributeError` guard remains; other errors now propagate to the caller
+
+  **破坏性变更：** `DfttTimecode.timecode_output()` 在转换方法抛出意外异常时，不再静默回退到 SMPTE 格式。仅保留对 `AttributeError` 的防御性回退，其它异常会正常抛给调用方
+
+- **Breaking:** Narrow the exception wrapping in `DfttTimeRange.offset()`, `DfttTimeRange.extend()`, and `DfttTimeRange.__contains__()`. Previously a broad `except Exception` re-raised everything as `DFTTTimeRangeMethodError` / `DFTTTimeRangeTypeError`; now only `DFTTError` raised during internal `DfttTimecode` construction is wrapped, and other exception types propagate unchanged
+
+  **破坏性变更：** 收窄 `DfttTimeRange.offset()`、`DfttTimeRange.extend()` 和 `DfttTimeRange.__contains__()` 中的异常包装范围。之前用宽泛的 `except Exception` 将所有异常重新包装；现在只包装内部构造 `DfttTimecode` 时抛出的 `DFTTError`，其它类型异常按原类型透传
+
+- All `DFTTError` subclasses raised across `DfttTimecode` and `DfttTimeRange` now carry descriptive messages (`raise DFTTTimecodeOperatorError("...")`). Previously many sites raised the bare exception class with no message and emitted a separate `logger.error(...)` line, so `str(exc)` / `exc.args` were empty
+
+  所有在 `DfttTimecode` 和 `DfttTimeRange` 中抛出的 `DFTTError` 子类现在都附带描述性消息。之前多处只 `raise` 异常类本身（无消息）并额外打一条 `logger.error(...)` 日志，导致 `str(exc)` / `exc.args` 为空
+
+- Stop logging an `ERROR` record immediately before raising a `DFTTError`. The exception itself is now the single source of truth; callers using log capture for error visibility will see fewer records
+
+  在抛出 `DFTTError` 前不再额外记录一条 `ERROR` 日志。异常本身作为唯一的错误信息来源；依赖日志捕获错误信息的调用方将看到更少的日志记录
+
+- **Breaking:** The base `DfttTimecode.__init__` overload now raises `DFTTTimecodeTypeError` for unsupported input types (previously raised bare `TypeError`). Callers using `try / except DFTTError:` will now catch this case alongside other library errors
+
+  **破坏性变更：** `DfttTimecode.__init__` 的 dispatch 兜底分支在收到不支持的输入类型时改为抛出 `DFTTTimecodeTypeError`（原为裸 `TypeError`）。使用 `try / except DFTTError:` 的调用方现在会一并捕获到该情况
+
 ## [1.0.0b3]
 
 ### Fixed
