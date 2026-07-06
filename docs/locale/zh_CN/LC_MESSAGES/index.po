@@ -79,9 +79,12 @@ msgstr "**跳帧/非跳帧**：严格支持 SMPTE DF/NDF 格式"
 
 #: ../../index.rst:25
 msgid ""
-"**Extended Time Range**: Currently supports time range from -99 to 99 "
-"hours"
-msgstr "**扩展时间范围**：目前支持 -99 到 99 小时的时间范围"
+"**Extended Time Range**: Hours are unbounded (zero-padded to at least 2 "
+"digits), so non-strict timecodes may exceed 99 hours (e.g. "
+"``100:00:00:00``)"
+msgstr ""
+"**扩展时间范围**：小时数无上限（需补零至至少 2 位），因此非严格模式下的时码可超过 99 "
+"小时（例如 ``100:00:00:00``）"
 
 #: ../../index.rst:26
 msgid ""
