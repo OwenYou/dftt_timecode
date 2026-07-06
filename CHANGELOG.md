@@ -7,11 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed
+### Added
 
-- Colon-separated timecode formats (SMPTE, SRT, FFMPEG, DLP) no longer reject timecodes whose hours field has more than 2 digits. The hours group was limited to exactly 2 digits (max 99 hours), so non-strict timecodes such as `100:00:00:00` raised `DFTTTimecodeTypeError` at the regex layer before any strict/non-strict handling. The hours field now accepts any number of digits (still zero-padded to at least 2), lifting the previous -99–99 hour range limit; single-digit unpadded hours (`1:00:00:00`) remain invalid
+- Support for timecodes whose hours field exceeds 99 hours. Colon-separated formats (SMPTE, SRT, FFMPEG, DLP) now accept an unbounded hours field (still zero-padded to at least 2 digits), so non-strict timecodes such as `100:00:00:00` are parsed correctly. This lifts the previous -99–99 hour range limit; single-digit unpadded hours (`1:00:00:00`) remain invalid
 
-  冒号分隔的时码格式（SMPTE、SRT、FFMPEG、DLP）不再拒绝小时字段超过两位的时码。原先小时捕获组被限制为恰好两位（最大 99 小时），导致 `100:00:00:00` 等非严格模式时码在进入严格/非严格处理前就在正则层抛出 `DFTTTimecodeTypeError`。现在小时字段可接受任意位数（仍需补零至至少两位），此前 -99–99 小时的范围限制已被取消；未补零的单位数小时（`1:00:00:00`）仍视为无效
+  支持小时字段超过 99 小时的时码。冒号分隔格式（SMPTE、SRT、FFMPEG、DLP）现在接受无上限的小时字段（仍需补零至至少两位），因此 `100:00:00:00` 等非严格模式时码可被正确解析。此前 -99–99 小时的范围限制已被取消；未补零的单位数小时（`1:00:00:00`）仍视为无效
 
 ## [1.0.0] - 2026-05-12
 
