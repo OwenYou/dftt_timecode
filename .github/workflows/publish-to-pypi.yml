@@ -5,7 +5,36 @@ on:
     types: [published]
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Verify release tag matches pyproject version
+        run: |
+          PYPROJECT_VERSION=$(python -c "import tomllib;print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
+          TAG="${{ github.event.release.tag_name }}"
+          TAG_VERSION="${TAG#v}"
+          TAG_VERSION="${TAG_VERSION#V}"
+          echo "pyproject=$PYPROJECT_VERSION tag=$TAG normalized=$TAG_VERSION"
+          if [ "$PYPROJECT_VERSION" != "$TAG_VERSION" ]; then
+            echo "::error::Release tag '$TAG' does not match pyproject version '$PYPROJECT_VERSION'"
+            exit 1
+          fi
+
+      - name: Run tests
+        run: uv run pytest
+
   publish:
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
