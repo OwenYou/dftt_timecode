@@ -67,6 +67,45 @@ def test_invalid_timecode(timecode_value, timecode_type, fps, drop_frame, strict
 
 
 @pytest.mark.parametrize(
+    "timecode_value, timecode_type, fps, drop_frame, strict, output_type, expected_output",
+    [
+        ("100:00:00:00", "auto", 24, False, False, "smpte", "100:00:00:00"),
+        ("123:45:59:12", "auto", 24, False, False, "smpte", "123:45:59:12"),
+        ("1000:00:00:00", "auto", 24, False, False, "smpte", "1000:00:00:00"),
+        ("100:00:00;00", "auto", 29.97, True, False, "smpte", "100:00:00;00"),
+        ("100:00:00,000", "srt", 24, False, False, "srt", "100:00:00,000"),
+        ("1000:00:00,000", "srt", 24, False, False, "srt", "1000:00:00,000"),
+        ("100:00:00.67", "ffmpeg", 24, False, False, "ffmpeg", "100:00:00.67"),
+        ("100:00:00:102", "dlp", 24, False, False, "dlp", "100:00:00:102"),
+    ],
+    ids=["smpte_ndf", "smpte_ndf_full", "smpte_ndf_4digit", "smpte_df", "srt", "srt_4digit", "ffmpeg", "dlp"],
+)
+def test_hours_over_two_digits(
+    timecode_value, timecode_type, fps, drop_frame, strict, output_type, expected_output
+):
+    # Non-strict timecodes may exceed 99h; the hours field must parse and round-trip.
+    tc = TC(timecode_value, timecode_type, fps, drop_frame, strict)
+    assert tc.timecode_output(output_type) == expected_output
+
+
+def test_hours_over_two_digits_framecount():
+    assert TC("100:00:00:00", "auto", 24, False, False).framecount == 100 * 3600 * 24
+    assert TC("1000:00:00:00", "auto", 24, False, False).framecount == 1000 * 3600 * 24
+    assert (
+        TC("123:45:59:12", "auto", 24, False, False).framecount
+        == 123 * 3600 * 24 + 45 * 60 * 24 + 59 * 24 + 12
+    )
+
+
+def test_unpadded_single_digit_hours_rejected():
+    # Hours must still be zero-padded to at least 2 digits; single-digit is invalid.
+    from dftt_timecode.error import DFTTTimecodeTypeError
+
+    with pytest.raises(DFTTTimecodeTypeError):
+        TC("1:00:00:00", "auto", 24, False, False)
+
+
+@pytest.mark.parametrize(
     "timecode_value, timecode_type, fps, drop_frame, strict, result_fps",
     [
         ("01:00:00:00", "auto", 24, False, True, 24),

@@ -7,6 +7,11 @@ __pycache__/
 .DS_Store
 Thumbs.db
 
+# Compiled gettext catalogs — regenerated from .po at build time
+# (sphinx-build auto-compiles with gettext_auto_build). Keep .po in git,
+# not the binary .mo artifacts.
+locale/**/*.mo
+
 # Note: _static/ and _templates/ are NOT ignored
 # because they contain source files for the documentation
 # (custom templates and static assets like switcher.json)

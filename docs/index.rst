@@ -22,7 +22,7 @@ Features
 - **Multiple Timecode Format Support**: SMPTE (DF/NDF), SRT, DLP (Cine Canvas), FFMPEG, FCPX, frame count, timestamp
 - **High Frame Rate Support**: Supports frame rates from 0.01 to 999.99 fps
 - **Drop-Frame/Non-Drop-Frame**: Strictly supports SMPTE DF/NDF formats
-- **Extended Time Range**: Currently supports time range from -99 to 99 hours
+- **Extended Time Range**: Hours are unbounded (zero-padded to at least 2 digits), so non-strict timecodes may exceed 99 hours (e.g. ``100:00:00:00``)
 - **Strict Mode**: 24-hour cycling mode that automatically converts timecodes outside the 0-24 hour range
 - **High Precision**: Internal storage using high-precision Fraction timestamps for accurate conversions
 - **Rich Operators**: Comprehensive support for arithmetic and comparison operations between timecodes and numbers

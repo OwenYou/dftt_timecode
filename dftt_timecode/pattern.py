@@ -4,11 +4,15 @@ Regular expression patterns for timecode format validation.
 This module defines regex patterns for matching various professional timecode formats
 used in film, television, and video production. All patterns support negative timecodes
 with an optional leading minus sign.
+
+For the colon-separated formats (SMPTE, SRT, FFMPEG, DLP), the hours field must be
+zero-padded to at least 2 digits but is otherwise unbounded, so timecodes may exceed
+99 hours (e.g. ``100:00:00:00``) as produced in non-strict mode without 24h wraparound.
 """
 
 import re
 
-SMPTE_NDF_REGEX = re.compile(r'^(?:-)?(?:(?:(?:(\d\d{1}):){1}([0-5]?\d):){1}([0-5]?\d):){1}(\d?\d\d{1}){1}$')
+SMPTE_NDF_REGEX = re.compile(r'^(?:-)?(?:(?:(?:(\d{2,}):){1}([0-5]?\d):){1}([0-5]?\d):){1}(\d?\d\d{1}){1}$')
 """Regex pattern for SMPTE Non-Drop-Frame (NDF) timecode format.
 
 Matches: ``HH:MM:SS:FF`` where frames use colon separator.
@@ -21,7 +25,7 @@ Note:
     The colon separator before frames distinguishes NDF from drop-frame format.
 """
 
-SMPTE_DF_REGEX = re.compile(r'^(?:-)?(?:(?:(?:(\d\d{1}):){1}([0-5]?\d):){1}([0-5]?\d);){1}(\d?\d\d{1}){1}$')
+SMPTE_DF_REGEX = re.compile(r'^(?:-)?(?:(?:(?:(\d{2,}):){1}([0-5]?\d):){1}([0-5]?\d);){1}(\d?\d\d{1}){1}$')
 """Regex pattern for SMPTE Drop-Frame (DF) timecode format.
 
 Matches: ``HH:MM:SS;FF`` where frames use semicolon separator.
@@ -35,7 +39,7 @@ Note:
     Used primarily with 29.97 fps and its multiples (59.94, 119.88).
 """
 
-SMPTE_REGEX = re.compile(r'^(?:-)?(?:(?:(?:(\d\d{1}):){1}([0-5]?\d):){1}([0-5]?\d);?:?){1}(\d?\d\d{1}){1}$')
+SMPTE_REGEX = re.compile(r'^(?:-)?(?:(?:(?:(\d{2,}):){1}([0-5]?\d):){1}([0-5]?\d);?:?){1}(\d?\d\d{1}){1}$')
 """Regex pattern for any SMPTE timecode format (both NDF and DF).
 
 Matches: ``HH:MM:SS:FF`` or ``HH:MM:SS;FF``
@@ -44,7 +48,7 @@ This is the union of :data:`SMPTE_NDF_REGEX` and :data:`SMPTE_DF_REGEX` patterns
 accepting either colon or semicolon before the frame number.
 """
 
-SRT_REGEX = re.compile(r'^(?:-)?(?:(?:(?:(\d\d{1}):){1}([0-5]?\d):){1}([0-5]?\d),){1}(\d\d\d){1}$')
+SRT_REGEX = re.compile(r'^(?:-)?(?:(?:(?:(\d{2,}):){1}([0-5]?\d):){1}([0-5]?\d),){1}(\d\d\d){1}$')
 """Regex pattern for SubRip (SRT) subtitle timecode format.
 
 Matches: ``HH:MM:SS,mmm`` where mmm is milliseconds.
@@ -56,7 +60,7 @@ Note:
     Uses comma separator before milliseconds. This format is frame rate independent.
 """
 
-FFMPEG_REGEX = re.compile(r'^(?:-)?(?:(?:(?:(\d\d{1}):){1}([0-5]?\d):){1}([0-5]?\d)\.){1}(\d?\d+){1}$')
+FFMPEG_REGEX = re.compile(r'^(?:-)?(?:(?:(?:(\d{2,}):){1}([0-5]?\d):){1}([0-5]?\d)\.){1}(\d?\d+){1}$')
 """Regex pattern for FFmpeg timecode format.
 
 Matches: ``HH:MM:SS.ss`` where ss is sub-seconds (centiseconds).
@@ -68,7 +72,7 @@ Note:
     Uses period separator before sub-seconds. Commonly used in video processing tools.
 """
 
-DLP_REGEX = re.compile(r'^(?:-)?(?:(?:(?:(\d\d{1}):){1}([0-5]?\d):){1}([0-5]?\d):){1}([01][0-9][0-9]|2[0-4][0-9]|25[0]){1}$')
+DLP_REGEX = re.compile(r'^(?:-)?(?:(?:(?:(\d{2,}):){1}([0-5]?\d):){1}([0-5]?\d):){1}([01][0-9][0-9]|2[0-4][0-9]|25[0]){1}$')
 """Regex pattern for DLP Cinema timecode format.
 
 Matches: ``HH:MM:SS:sss`` where sss is sub-frames (0-249).
