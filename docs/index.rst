@@ -1,7 +1,7 @@
 dftt_timecode
 =============
 
-.. image:: https://img.shields.io/badge/pypi-0.0.14-brightgreen
+.. image:: https://img.shields.io/pypi/v/dftt-timecode.svg
    :target: https://pypi.org/project/dftt-timecode/
    :alt: PyPI
 

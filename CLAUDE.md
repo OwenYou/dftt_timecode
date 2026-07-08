@@ -26,7 +26,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Building and Publishing
 - Build package: `uv build`
-- Publishing is automated via GitHub Actions on release creation
+- Publishing is automated via GitHub Actions on GitHub Release creation, gated on the test suite and a tag↔version check. See [Release Process](#release-process) for the full runbook.
 
 ## Code Structure
 
@@ -111,13 +111,38 @@ dftt_timecode/
 
 ### CI/CD Workflows
 - **Documentation:** Builds and deploys to GitHub Pages on push to main (`.github/workflows/docs.yml`)
-- **Publishing:** Automatically publishes to PyPI on GitHub release creation (`.github/workflows/publish-to-pypi.yml`)
+- **Publishing:** Publishes to PyPI on GitHub Release creation, after running the test suite and verifying the release tag matches `pyproject.toml` (`.github/workflows/publish-to-pypi.yml`). See [Release Process](#release-process)
 
 ## Version Information
-- Current version: 1.0.0
+- Current version: single-sourced from `pyproject.toml` (`[project].version`), read at runtime via `importlib.metadata`
 - Python requirement: >=3.11
 - Main dependencies: All standard library (fractions, logging, math, functools, re, subprocess)
 - Dev dependencies: pytest, sphinx, pydata-sphinx-theme, myst-parser, sphinx-intl
+
+## Release Process
+
+Versioning follows [Semantic Versioning](https://semver.org). The version number changes **only at release time**, on a dedicated short-lived branch — never on feature branches.
+
+### Branching and versioning model
+- **Feature/bugfix branches** are short-lived and PR into `main`. Each PR adds its entry under the `## [Unreleased]` section of `CHANGELOG.md` and does **not** touch the version number. `main` therefore always accumulates changes under `Unreleased`.
+- The **SemVer level is decided when cutting the release**, from what has accumulated under `Unreleased`:
+  - `### Added` (new, backwards-compatible) → **minor** bump
+  - `### Fixed` only → **patch** bump
+  - Any `### Removed` or breaking `### Changed` → **major** bump
+
+### Cutting a release
+1. From an up-to-date `main`, create `release/X.Y.Z`.
+2. Bump the version in the **single source of truth**: `pyproject.toml` → `[project].version`. Do not hardcode the version anywhere else — runtime `__version__` (`dftt_timecode/__init__.py`, via `importlib.metadata`) and the Sphinx docs (`docs/conf.py`, via `tomllib`) read it automatically.
+3. In `CHANGELOG.md`, rename `## [Unreleased]` to `## [X.Y.Z] - YYYY-MM-DD` and add a fresh empty `## [Unreleased]` above it.
+4. Commit, push, and open a PR to `main` containing **only** release prep (version + changelog) — no feature code.
+5. Merge the PR.
+6. Create a **GitHub Release** with an annotated tag `vX.Y.Z` on the merge commit. This — not a bare tag push — is what triggers the PyPI publish (`.github/workflows/publish-to-pypi.yml`, `on: release: published`). The workflow runs the test suite and verifies the tag matches `pyproject.toml` before uploading.
+
+### Conventions and gotchas
+- **Tag format:** `vX.Y.Z`, annotated. (Historical tags are inconsistent — standardize going forward.)
+- **Order matters:** the version bump must be merged to `main` *before* the GitHub Release is created, or the tag↔version guard fails and nothing publishes.
+- **PyPI is immutable:** a version can never be re-uploaded. Run `uv run pytest` and `uv build` locally before releasing.
+- **Long-lived `release/*` branches** are only warranted for parallel maintenance lines (e.g. patching 1.x while developing a breaking 2.0). For single-line development, keep release branches short-lived.
 
 ## Common Usage Patterns
 
